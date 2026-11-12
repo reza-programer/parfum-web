@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PaymentStatus;
+use App\Services\PaymentMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -69,6 +70,14 @@ class Payment extends Model
      */
     public function methodLabel(): string
     {
-        return $this->isVirtualAccount() ? 'VA '.($this->channel_code ?? '') : 'QRIS';
+        return $this->isVirtualAccount() ? 'VA '.$this->bankLabel() : 'QRIS';
+    }
+
+    /**
+     * Nama bank singkat: "BCA", "Mandiri".
+     */
+    public function bankLabel(): string
+    {
+        return PaymentMethod::bankLabel($this->channel_code, $this->bank_name);
     }
 }

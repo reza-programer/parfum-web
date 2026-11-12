@@ -78,6 +78,13 @@ final class PaymentMethod
      */
     public function label(): string
     {
-        return $this->isQris() ? 'QRIS' : (self::SHORT_NAMES[$this->bankCode] ?? $this->displayName);
+        return $this->isQris() ? 'QRIS' : self::bankLabel($this->bankCode, $this->displayName);
+    }
+
+    public static function bankLabel(?string $bankCode, ?string $fallback = null): string
+    {
+        $code = strtoupper((string) $bankCode);
+
+        return self::SHORT_NAMES[$code] ?? ($fallback ?: $code);
     }
 }

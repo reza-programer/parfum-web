@@ -39,16 +39,119 @@
         </ol>
     @endif
 
+    @if ($justPaid)
+        <p class="mt-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-900" role="status">Pembayaran diterima. Pesananmu segera kami kemas.</p>
+    @endif
+
     {{-- Aksi sesuai status --}}
     @if ($order->status === OrderStatus::PendingPayment)
-        <div class="card mt-8 p-6">
-            <p class="text-[15px] font-medium">Menunggu pembayaran</p>
-            <p class="mt-1 text-sm text-ink-2">Bayar sebelum <span class="text-ink">{{ $order->expires_at->translatedFormat('j F Y, H:i') }} WIB</span>. Setelah itu pesanan dibatalkan otomatis dan stok dilepas.</p>
-            <div class="mt-4 flex flex-wrap items-center gap-3">
-                <button type="button" disabled class="btn-primary">Bayar {{ rupiah($order->total) }}</button>
-                <button type="button" wire:click="cancel" wire:confirm="Batalkan pesanan {{ $order->code }}?" class="btn-secondary">Batalkan pesanan</button>
-            </div>
-            <p class="meta mt-3">Pembayaran online lewat VA bank, QRIS, dan e-wallet sedang kami siapkan.</p>
+        @php
+            $payment = $this->activePayment;
+            $latest = $order->payment;
+            $qrExpired = $latest && ! $latest->isVirtualAccount() && ! $latest->isPayable();
+            $deadline = $order->expires_at->translatedFormat('j F Y, H:i');
+        @endphp
+        <div class="card mt-8 p-6" @if ($payment) wire:poll.5s="checkPayment" @endif>
+            @if (session('payment-error') && ! $payment)
+                <p class="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">{{ session('payment-error') }} Pilih metode lalu tekan Bayar lagi.</p>
+            @endif
+            @error('payment')
+                <p class="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">{{ $message }}</p>
+            @enderror
+
+            @if ($order->expires_at->isPast() && ! $payment)
+                <p class="text-[15px] font-medium">Batas waktu bayar sudah lewat</p>
+                <p class="mt-1 text-sm text-ink-2">Pesanan ini akan dibatalkan otomatis dan stok dilepas.</p>
+            @elseif ($payment && ! $choosingMethod)
+                @if ($payment->isVirtualAccount())
+                    <p class="text-[15px] font-medium">Transfer ke virtual account {{ $payment->bankLabel() }}</p>
+                    <p class="mt-1 text-sm text-ink-2">Bayar sebelum <span class="text-ink">{{ $payment->expires_at->translatedFormat('j F Y, H:i') }} WIB</span>. Transfer dengan nominal yang persis sama.</p>
+
+                    <dl class="mt-5 grid gap-5 sm:grid-cols-2">
+                        <div>
+                            <dt class="meta">Nomor virtual account</dt>
+                            <dd class="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                                <span class="text-2xl tabular-nums tracking-wide">{{ trim(chunk_split($payment->va_number, 4, ' ')) }}</span>
+                                <x-shop.copy-button :value="$payment->va_number" />
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="meta">Nominal</dt>
+                            <dd class="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                                <span class="price text-2xl">{{ rupiah($payment->amount) }}</span>
+                                <x-shop.copy-button :value="$payment->amount" />
+                            </dd>
+                        </div>
+                    </dl>
+                @else
+                    <p class="text-[15px] font-medium">Scan kode QR</p>
+                    <p class="mt-1 text-sm text-ink-2">Buka m-banking atau e-wallet, pilih bayar dengan QRIS, lalu scan kode ini.</p>
+
+                    <div class="mt-5 flex flex-wrap items-center gap-6">
+                        <div data-qr class="rounded-xl border border-line bg-white p-3 [&_svg]:size-48 sm:[&_svg]:size-56">
+                            {!! \App\Support\QrCode::svg($payment->qr_string) !!}
+                        </div>
+                        <dl class="space-y-3">
+                            <div>
+                                <dt class="meta">Total</dt>
+                                <dd class="price text-2xl">{{ rupiah($payment->amount) }}</dd>
+                            </div>
+                            <div>
+                                <dt class="meta">Berlaku</dt>
+                                <dd class="text-[15px] tabular-nums" wire:key="qr-left-{{ $payment->id }}" wire:ignore
+                                    x-data="{ left: {{ max(0, (int) now()->diffInSeconds($payment->expires_at)) }} }"
+                                    x-init="const start = Date.now(), total = left; const t = setInterval(() => { left = Math.max(0, total - Math.floor((Date.now() - start) / 1000)); if (left === 0) { clearInterval(t); $wire.$refresh() } }, 1000)"
+                                    x-text="Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0')">
+                                    {{ $payment->expires_at->translatedFormat('H:i') }}
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                @endif
+
+                <p class="meta mt-5">Status pembayaran diperbarui otomatis di halaman ini.</p>
+                <div class="mt-4 flex flex-wrap items-center gap-3">
+                    <button type="button" wire:click="changeMethod" class="btn-secondary btn-sm">Ganti metode</button>
+                    <button type="button" wire:click="cancel" wire:confirm="Batalkan pesanan {{ $order->code }}?" class="btn-secondary btn-sm">Batalkan pesanan</button>
+                    @if ($this->isSandbox && $payment->payment_url)
+                        <a href="{{ $payment->payment_url }}" target="_blank" rel="noopener noreferrer" class="text-sm text-ink-2 underline decoration-ink/20 underline-offset-4 hover:text-ink">Simulasikan pembayaran (sandbox)</a>
+                    @endif
+                </div>
+            @else
+                @if ($qrExpired && ! $choosingMethod)
+                    <p class="text-[15px] font-medium">Kode QR sudah tidak berlaku</p>
+                    <p class="mt-1 text-sm text-ink-2">Buat kode baru atau pilih metode lain. Bayar sebelum <span class="text-ink">{{ $deadline }} WIB</span>.</p>
+                @else
+                    <p class="text-[15px] font-medium">Pilih metode pembayaran</p>
+                    <p class="mt-1 text-sm text-ink-2">Bayar sebelum <span class="text-ink">{{ $deadline }} WIB</span>. Setelah itu pesanan dibatalkan otomatis dan stok dilepas.</p>
+                @endif
+
+                <div class="mt-5">
+                    @if ($this->paymentMethods['error'])
+                        <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-paper-raised px-4 py-3">
+                            <p class="text-sm text-red-800">{{ $this->paymentMethods['error'] }}</p>
+                            <button type="button" wire:click="$refresh" class="btn-secondary btn-sm">Coba lagi</button>
+                        </div>
+                    @elseif (empty($this->paymentMethods['methods']))
+                        <p class="text-sm text-ink-2">Belum ada metode pembayaran untuk total ini. Hubungi kami lewat chat.</p>
+                    @else
+                        <x-shop.payment-methods :methods="$this->paymentMethods['methods']" :selected="$paymentMethod" />
+                    @endif
+                    @error('paymentMethod') <p class="mt-2 text-sm text-red-700">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="mt-5 flex flex-wrap items-center gap-3">
+                    <button type="button" wire:click="pay" wire:loading.attr="disabled" wire:target="pay" class="btn-primary">
+                        <span wire:loading.remove wire:target="pay">{{ $qrExpired && $paymentMethod === 'qris' && ! $choosingMethod ? 'Buat QR baru' : 'Bayar '.rupiah($order->total) }}</span>
+                        <span wire:loading wire:target="pay">Memproses</span>
+                    </button>
+                    @if ($choosingMethod && $payment)
+                        <button type="button" wire:click="cancelChange" class="btn-secondary">Kembali</button>
+                    @else
+                        <button type="button" wire:click="cancel" wire:confirm="Batalkan pesanan {{ $order->code }}?" class="btn-secondary">Batalkan pesanan</button>
+                    @endif
+                </div>
+            @endif
         </div>
     @elseif ($order->status === OrderStatus::Shipped)
         <div class="card mt-8 flex flex-wrap items-center justify-between gap-4 p-6">
@@ -86,7 +189,7 @@
                 @endif
                 <div class="flex justify-between border-t border-line pt-2 text-[15px]"><dt>Total</dt><dd class="price font-medium">{{ rupiah($order->total) }}</dd></div>
                 @if ($order->payment?->paid_at)
-                    <div class="flex justify-between pt-1"><dt class="text-ink-2">Dibayar</dt><dd>{{ $order->payment->paid_at->translatedFormat('j M Y, H:i') }}</dd></div>
+                    <div class="flex justify-between pt-1"><dt class="text-ink-2">Dibayar</dt><dd>{{ $order->payment->methodLabel() }} · {{ $order->payment->paid_at->translatedFormat('j M Y, H:i') }}</dd></div>
                 @endif
             </dl>
         </div>
