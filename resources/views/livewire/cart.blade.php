@@ -20,10 +20,10 @@
                             <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
                                 <div class="min-w-0">
                                     <p class="meta">{{ $variant->product->brand->name }}</p>
-                                    <a href="{{ route('products.show', $variant->product) }}" wire:navigate class="text-[15px] font-medium hover:text-ember">{{ $variant->product->name }}</a>
+                                    <a href="{{ route('products.show', $variant->product) }}" wire:navigate class="text-body font-medium hover:text-primary">{{ $variant->product->name }}</a>
                                     <p class="mt-0.5 text-sm text-ink-2">{{ $variant->label() }} · <span class="tabular-nums">{{ rupiah($variant->price) }}</span></p>
                                 </div>
-                                <p class="price text-[15px] font-medium">{{ rupiah($variant->price * $item->qty) }}</p>
+                                <p class="price text-body font-medium">{{ rupiah($variant->price * $item->qty) }}</p>
                             </div>
 
                             <div class="mt-auto flex items-center gap-3 pt-3">
@@ -36,14 +36,14 @@
                                         <x-lucide-plus class="size-4" stroke-width="1.5" />
                                     </button>
                                 </div>
-                                <button type="button" wire:click="remove({{ $item->id }})" class="text-sm text-ink-3 hover:text-red-700">Hapus</button>
+                                <button type="button" wire:click="remove({{ $item->id }})" class="text-sm text-ink-3 hover:text-danger">Hapus</button>
                             </div>
 
                             @if ($item->problem)
-                                <p class="mt-2 text-sm text-red-700">{{ $item->problem }}</p>
+                                <p class="mt-2 text-sm text-danger">{{ $item->problem }}</p>
                             @endif
                             @error('qty.'.$item->id)
-                                <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
+                                <p class="mt-2 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                     </li>
@@ -53,7 +53,7 @@
             <aside class="lg:sticky lg:top-24 lg:self-start">
                 <div class="card p-6">
                     <h2 class="text-lg font-medium">Ringkasan</h2>
-                    <dl class="mt-4 space-y-3 text-[15px]">
+                    <dl class="mt-4 space-y-3 text-body">
                         <div class="flex justify-between">
                             <dt class="text-ink-2">Subtotal ({{ $this->summary->itemCount }} barang)</dt>
                             <dd class="price">{{ rupiah($this->summary->subtotal) }}</dd>

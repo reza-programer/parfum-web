@@ -1,11 +1,11 @@
 @props(['family' => 'woody', 'seed' => 0])
 @php
     $colors = [
-        'woody' => ['#c9a27c', '#8b6b4e'],
-        'floral' => ['#ecbcc6', '#c0788a'],
-        'fresh' => ['#b9dcd2', '#5e9488'],
-        'oriental' => ['#e2a27e', '#b0603a'],
-        'gourmand' => ['#e3c79c', '#a07c4c'],
+        'woody' => ['#dcdcd8', '#8f8f8a'],
+        'floral' => ['#efefec', '#b3b3ae'],
+        'fresh' => ['#f4f4f2', '#c9c9c4'],
+        'oriental' => ['#cdcdc9', '#6b6b67'],
+        'gourmand' => ['#e4e4e0', '#9c9c97'],
     ];
     [$light, $deep] = $colors[$family] ?? $colors['woody'];
     // Variasi bentuk kecil supaya kartu tidak identik.
@@ -28,24 +28,24 @@
             <stop offset="1" stop-color="{{ $deep }}" stop-opacity="0.85" />
         </linearGradient>
         <linearGradient id="{{ $id }}-cap" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#2a241d" />
-            <stop offset="0.45" stop-color="#5a4f43" />
-            <stop offset="1" stop-color="#211c17" />
+            <stop offset="0" stop-color="#141414" />
+            <stop offset="0.45" stop-color="#3d3d3d" />
+            <stop offset="1" stop-color="#0a0a0a" />
         </linearGradient>
         <clipPath id="{{ $id }}-clip">
             <rect x="{{ $x }}" y="{{ $y }}" width="{{ $s['w'] }}" height="{{ $s['h'] }}" rx="{{ $s['r'] }}" />
         </clipPath>
     </defs>
 
-    <ellipse cx="100" cy="204" rx="{{ $s['w'] * 0.62 }}" ry="7" fill="#1f1b16" opacity="0.08" />
+    <ellipse cx="100" cy="204" rx="{{ $s['w'] * 0.62 }}" ry="7" fill="#111111" opacity="0.08" />
 
     {{-- Leher dan tutup --}}
-    <rect x="{{ 100 - 9 }}" y="{{ $y - 10 }}" width="18" height="12" rx="2" fill="#d9d2c6" />
+    <rect x="{{ 100 - 9 }}" y="{{ $y - 10 }}" width="18" height="12" rx="2" fill="#d6d6d2" />
     <rect x="{{ 100 - $s['cap'] / 2 }}" y="{{ $y - 10 - $s['capH'] }}" width="{{ $s['cap'] }}" height="{{ $s['capH'] }}" rx="4" fill="url(#{{ $id }}-cap)" />
     <rect x="{{ 100 - $s['cap'] / 2 + 5 }}" y="{{ $y - 10 - $s['capH'] + 4 }}" width="3" height="{{ $s['capH'] - 8 }}" rx="1.5" fill="#fff" opacity="0.18" />
 
     {{-- Kaca --}}
-    <rect x="{{ $x }}" y="{{ $y }}" width="{{ $s['w'] }}" height="{{ $s['h'] }}" rx="{{ $s['r'] }}" fill="#fbf8f2" stroke="#1f1b16" stroke-opacity="0.12" />
+    <rect x="{{ $x }}" y="{{ $y }}" width="{{ $s['w'] }}" height="{{ $s['h'] }}" rx="{{ $s['r'] }}" fill="#fbfbfa" stroke="#111111" stroke-opacity="0.12" />
     <g clip-path="url(#{{ $id }}-clip)">
         <rect x="{{ $x }}" y="{{ $liquidTop }}" width="{{ $s['w'] }}" height="{{ $s['h'] }}" fill="url(#{{ $id }}-liquid)" />
         <rect x="{{ $x }}" y="{{ $liquidTop }}" width="{{ $s['w'] }}" height="2" fill="#fff" opacity="0.35" />
@@ -54,7 +54,7 @@
     </g>
 
     {{-- Label --}}
-    <rect x="{{ 100 - $s['w'] * 0.3 }}" y="{{ $y + $s['h'] * 0.5 }}" width="{{ $s['w'] * 0.6 }}" height="{{ $s['h'] * 0.22 }}" rx="2" fill="#fdfbf7" opacity="0.92" />
-    <rect x="{{ 100 - $s['w'] * 0.18 }}" y="{{ $y + $s['h'] * 0.58 }}" width="{{ $s['w'] * 0.36 }}" height="2" fill="#1f1b16" opacity="0.5" />
-    <rect x="{{ 100 - $s['w'] * 0.12 }}" y="{{ $y + $s['h'] * 0.64 }}" width="{{ $s['w'] * 0.24 }}" height="1.5" fill="#1f1b16" opacity="0.3" />
+    <rect x="{{ 100 - $s['w'] * 0.3 }}" y="{{ $y + $s['h'] * 0.5 }}" width="{{ $s['w'] * 0.6 }}" height="{{ $s['h'] * 0.22 }}" rx="2" fill="#ffffff" opacity="0.92" />
+    <rect x="{{ 100 - $s['w'] * 0.18 }}" y="{{ $y + $s['h'] * 0.58 }}" width="{{ $s['w'] * 0.36 }}" height="2" fill="#111111" opacity="0.5" />
+    <rect x="{{ 100 - $s['w'] * 0.12 }}" y="{{ $y + $s['h'] * 0.64 }}" width="{{ $s['w'] * 0.24 }}" height="1.5" fill="#111111" opacity="0.3" />
 </svg>

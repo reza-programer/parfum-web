@@ -5,7 +5,7 @@
 
     @if (session('status'))
         <p class="mt-4 flex items-center gap-2 text-sm text-ink-2" role="status">
-            <x-lucide-check class="size-4 text-green-700" stroke-width="1.5" />
+            <x-lucide-check class="size-4 text-ink" stroke-width="1.5" />
             {{ session('status') }}
             <a href="{{ route('cart') }}" wire:navigate class="text-ink underline decoration-ink/30 underline-offset-4">Lihat keranjang</a>
         </p>
@@ -32,7 +32,7 @@
                         </button>
                     </div>
                     @error('wish.'.$wish->id)
-                        <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
+                        <p class="mt-2 text-sm text-danger">{{ $message }}</p>
                     @enderror
                 </div>
             @endforeach

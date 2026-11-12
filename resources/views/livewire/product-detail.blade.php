@@ -42,7 +42,7 @@
                 <span>{{ $product->category->name }}</span>
                 @if ($rating)
                     <a href="#ulasan" class="inline-flex items-center gap-1 tabular-nums hover:text-ink">
-                        <x-lucide-star class="size-4 fill-ember text-ember" stroke-width="1.5" />
+                        <x-lucide-star class="size-4 fill-primary text-primary" stroke-width="1.5" />
                         {{ number_format($rating, 1, ',', '') }}
                         <span class="text-ink-3">({{ $reviewCount }} ulasan)</span>
                     </a>
@@ -68,7 +68,7 @@
                         @foreach ($product->variants as $variant)
                             <button type="button" wire:click="selectVariant({{ $variant->id }})" wire:key="v-{{ $variant->id }}"
                                 @class([
-                                    'relative inline-flex h-11 min-w-[72px] items-center justify-center rounded-lg border px-4 text-[15px] tabular-nums transition-colors duration-150',
+                                    'relative inline-flex h-11 min-w-[72px] items-center justify-center rounded-lg border px-4 text-body tabular-nums transition-colors duration-150',
                                     'border-ink bg-ink text-paper-card' => $variant->id === $variantId,
                                     'border-line bg-paper-card text-ink hover:border-ink/40' => $variant->id !== $variantId && $variant->stock > 0,
                                     'border-line bg-paper-card text-ink-3 line-through decoration-ink/30' => $variant->id !== $variantId && $variant->stock === 0,
@@ -84,7 +84,7 @@
                     <div class="mt-8 flex gap-3">
                         <button type="button" disabled class="btn-primary flex-1">Habis</button>
                         <button type="button" wire:click="toggleWishlist" class="btn-secondary w-11 px-0" aria-label="{{ $this->inWishlist ? 'Hapus dari wishlist' : 'Simpan ke wishlist' }}">
-                            <x-lucide-heart @class(['size-[18px]', 'fill-ember text-ember' => $this->inWishlist]) stroke-width="1.5" />
+                            <x-lucide-heart @class(['size-[18px]', 'fill-primary text-primary' => $this->inWishlist]) stroke-width="1.5" />
                         </button>
                     </div>
                     <p class="meta mt-3">Simpan ke wishlist untuk membelinya nanti.</p>
@@ -103,15 +103,15 @@
                             Tambah ke keranjang
                         </button>
                         <button type="button" wire:click="toggleWishlist" class="btn-secondary w-11 px-0" aria-label="{{ $this->inWishlist ? 'Hapus dari wishlist' : 'Simpan ke wishlist' }}">
-                            <x-lucide-heart @class(['size-[18px]', 'fill-ember text-ember' => $this->inWishlist]) stroke-width="1.5" />
+                            <x-lucide-heart @class(['size-[18px]', 'fill-primary text-primary' => $this->inWishlist]) stroke-width="1.5" />
                         </button>
                     </div>
                     @error('qty')
-                        <p class="mt-3 text-sm text-red-700">{{ $message }}</p>
+                        <p class="mt-3 text-sm text-danger">{{ $message }}</p>
                     @enderror
                     @if (session('cart-added'))
                         <p class="mt-3 flex items-center gap-2 text-sm text-ink-2" role="status">
-                            <x-lucide-check class="size-4 text-green-700" stroke-width="1.5" />
+                            <x-lucide-check class="size-4 text-ink" stroke-width="1.5" />
                             {{ $product->name }} {{ session('cart-added') }} masuk keranjang.
                             <a href="{{ route('cart') }}" wire:navigate class="text-ink underline decoration-ink/30 underline-offset-4">Lihat keranjang</a>
                         </p>
@@ -143,7 +143,7 @@
 
             <div class="mt-10 border-t border-line pt-8">
                 <h2 class="text-lg font-medium">Deskripsi</h2>
-                <div class="mt-3 max-w-prose text-[15px] leading-7 text-ink-2">{!! nl2br(e($product->description)) !!}</div>
+                <div class="mt-3 max-w-prose text-body leading-7 text-ink-2">{!! nl2br(e($product->description)) !!}</div>
             </div>
         </div>
     </div>
@@ -165,11 +165,11 @@
                 <div>
                     <div class="flex gap-0.5" aria-label="{{ $review->rating }} dari 5 bintang">
                         @for ($i = 1; $i <= 5; $i++)
-                            <x-lucide-star @class(['size-4', 'fill-ember text-ember' => $i <= $review->rating, 'text-ink/20' => $i > $review->rating]) stroke-width="1.5" />
+                            <x-lucide-star @class(['size-4', 'fill-primary text-primary' => $i <= $review->rating, 'text-ink/20' => $i > $review->rating]) stroke-width="1.5" />
                         @endfor
                     </div>
                     @if ($review->comment)
-                        <p class="mt-2 max-w-prose text-[15px] leading-7 text-ink-2">{{ $review->comment }}</p>
+                        <p class="mt-2 max-w-prose text-body leading-7 text-ink-2">{{ $review->comment }}</p>
                     @endif
                 </div>
             </article>

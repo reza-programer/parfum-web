@@ -18,13 +18,13 @@
     </div>
 
     @if (session('order-placed'))
-        <p class="mt-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-900" role="status">Pesanan dibuat dan stok sudah kami kunci untukmu.</p>
+        <p class="mt-6 rounded-lg bg-paper-card border border-line px-4 py-3 text-sm text-ink" role="status">Pesanan dibuat dan stok sudah kami kunci untukmu.</p>
     @endif
     @if (session('status'))
-        <p class="mt-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-900" role="status">{{ session('status') }}</p>
+        <p class="mt-6 rounded-lg bg-paper-card border border-line px-4 py-3 text-sm text-ink" role="status">{{ session('status') }}</p>
     @endif
     @error('action')
-        <p class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">{{ $message }}</p>
+        <p class="mt-6 rounded-lg bg-danger/5 px-4 py-3 text-sm text-danger" role="alert">{{ $message }}</p>
     @enderror
 
     {{-- Progres --}}
@@ -32,7 +32,7 @@
         <ol class="mt-8 grid grid-cols-5 gap-2" aria-label="Progres pesanan">
             @foreach ($steps as $i => $step)
                 <li class="min-w-0">
-                    <div @class(['h-1 rounded-full', 'bg-ember' => $i <= $current, 'bg-ink/10' => $i > $current])></div>
+                    <div @class(['h-1 rounded-full', 'bg-primary' => $i <= $current, 'bg-ink/10' => $i > $current])></div>
                     <p @class(['mt-2 truncate text-[13px]', 'text-ink' => $i === $current, 'text-ink-2' => $i < $current, 'text-ink-3' => $i > $current])>{{ $step->label() }}</p>
                 </li>
             @endforeach
@@ -40,7 +40,7 @@
     @endif
 
     @if ($justPaid)
-        <p class="mt-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-900" role="status">Pembayaran diterima. Pesananmu segera kami kemas.</p>
+        <p class="mt-6 rounded-lg bg-paper-card border border-line px-4 py-3 text-sm text-ink" role="status">Pembayaran diterima. Pesananmu segera kami kemas.</p>
     @endif
 
     {{-- Aksi sesuai status --}}
@@ -53,18 +53,18 @@
         @endphp
         <div class="card mt-8 p-6" @if ($payment) wire:poll.5s="checkPayment" @endif>
             @if (session('payment-error') && ! $payment)
-                <p class="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">{{ session('payment-error') }} Pilih metode lalu tekan Bayar lagi.</p>
+                <p class="mb-5 rounded-lg bg-danger/5 px-4 py-3 text-sm text-danger" role="alert">{{ session('payment-error') }} Pilih metode lalu tekan Bayar lagi.</p>
             @endif
             @error('payment')
-                <p class="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">{{ $message }}</p>
+                <p class="mb-5 rounded-lg bg-danger/5 px-4 py-3 text-sm text-danger" role="alert">{{ $message }}</p>
             @enderror
 
             @if ($order->expires_at->isPast() && ! $payment)
-                <p class="text-[15px] font-medium">Batas waktu bayar sudah lewat</p>
+                <p class="text-body font-medium">Batas waktu bayar sudah lewat</p>
                 <p class="mt-1 text-sm text-ink-2">Pesanan ini akan dibatalkan otomatis dan stok dilepas.</p>
             @elseif ($payment && ! $choosingMethod)
                 @if ($payment->isVirtualAccount())
-                    <p class="text-[15px] font-medium">Transfer ke virtual account {{ $payment->bankLabel() }}</p>
+                    <p class="text-body font-medium">Transfer ke virtual account {{ $payment->bankLabel() }}</p>
                     <p class="mt-1 text-sm text-ink-2">Bayar sebelum <span class="text-ink">{{ $payment->expires_at->translatedFormat('j F Y, H:i') }} WIB</span>. Transfer dengan nominal yang persis sama.</p>
 
                     <dl class="mt-5 grid gap-5 sm:grid-cols-2">
@@ -84,7 +84,7 @@
                         </div>
                     </dl>
                 @else
-                    <p class="text-[15px] font-medium">Scan kode QR</p>
+                    <p class="text-body font-medium">Scan kode QR</p>
                     <p class="mt-1 text-sm text-ink-2">Buka m-banking atau e-wallet, pilih bayar dengan QRIS, lalu scan kode ini.</p>
 
                     <div class="mt-5 flex flex-wrap items-center gap-6">
@@ -98,7 +98,7 @@
                             </div>
                             <div>
                                 <dt class="meta">Berlaku</dt>
-                                <dd class="text-[15px] tabular-nums" wire:key="qr-left-{{ $payment->id }}" wire:ignore
+                                <dd class="text-body tabular-nums" wire:key="qr-left-{{ $payment->id }}" wire:ignore
                                     x-data="{ left: {{ max(0, (int) now()->diffInSeconds($payment->expires_at)) }} }"
                                     x-init="const start = Date.now(), total = left; const t = setInterval(() => { left = Math.max(0, total - Math.floor((Date.now() - start) / 1000)); if (left === 0) { clearInterval(t); $wire.$refresh() } }, 1000)"
                                     x-text="Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0')">
@@ -119,17 +119,17 @@
                 </div>
             @else
                 @if ($qrExpired && ! $choosingMethod)
-                    <p class="text-[15px] font-medium">Kode QR sudah tidak berlaku</p>
+                    <p class="text-body font-medium">Kode QR sudah tidak berlaku</p>
                     <p class="mt-1 text-sm text-ink-2">Buat kode baru atau pilih metode lain. Bayar sebelum <span class="text-ink">{{ $deadline }} WIB</span>.</p>
                 @else
-                    <p class="text-[15px] font-medium">Pilih metode pembayaran</p>
+                    <p class="text-body font-medium">Pilih metode pembayaran</p>
                     <p class="mt-1 text-sm text-ink-2">Bayar sebelum <span class="text-ink">{{ $deadline }} WIB</span>. Setelah itu pesanan dibatalkan otomatis dan stok dilepas.</p>
                 @endif
 
                 <div class="mt-5">
                     @if ($this->paymentMethods['error'])
                         <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-paper-raised px-4 py-3">
-                            <p class="text-sm text-red-800">{{ $this->paymentMethods['error'] }}</p>
+                            <p class="text-sm text-danger">{{ $this->paymentMethods['error'] }}</p>
                             <button type="button" wire:click="$refresh" class="btn-secondary btn-sm">Coba lagi</button>
                         </div>
                     @elseif (empty($this->paymentMethods['methods']))
@@ -137,7 +137,7 @@
                     @else
                         <x-shop.payment-methods :methods="$this->paymentMethods['methods']" :selected="$paymentMethod" />
                     @endif
-                    @error('paymentMethod') <p class="mt-2 text-sm text-red-700">{{ $message }}</p> @enderror
+                    @error('paymentMethod') <p class="mt-2 text-sm text-danger">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="mt-5 flex flex-wrap items-center gap-3">
@@ -156,7 +156,7 @@
     @elseif ($order->status === OrderStatus::Shipped)
         <div class="card mt-8 flex flex-wrap items-center justify-between gap-4 p-6">
             <div>
-                <p class="text-[15px] font-medium">Paket dalam perjalanan</p>
+                <p class="text-body font-medium">Paket dalam perjalanan</p>
                 <p class="mt-1 text-sm text-ink-2">Sudah sampai? Tandai diterima supaya kami tahu pesananmu aman.</p>
             </div>
             <button type="button" wire:click="confirmReceived" wire:confirm="Paket sudah kamu terima dengan baik?" class="btn-primary">Pesanan Diterima</button>
@@ -165,7 +165,7 @@
 
     <div class="mt-8 grid gap-6 md:grid-cols-2">
         <div class="card p-6">
-            <h2 class="text-[15px] font-medium">Pengiriman</h2>
+            <h2 class="text-body font-medium">Pengiriman</h2>
             <dl class="mt-3 space-y-2 text-sm">
                 <div class="flex justify-between gap-4"><dt class="text-ink-2">Kurir</dt><dd>{{ strtoupper($order->courier) }} {{ $order->courier_service }}</dd></div>
                 <div class="flex justify-between gap-4">
@@ -180,14 +180,14 @@
         </div>
 
         <div class="card p-6">
-            <h2 class="text-[15px] font-medium">Pembayaran</h2>
+            <h2 class="text-body font-medium">Pembayaran</h2>
             <dl class="mt-3 space-y-2 text-sm">
                 <div class="flex justify-between"><dt class="text-ink-2">Subtotal</dt><dd class="price">{{ rupiah($order->subtotal) }}</dd></div>
                 <div class="flex justify-between"><dt class="text-ink-2">Ongkir</dt><dd class="price">{{ rupiah($order->shipping_cost) }}</dd></div>
                 @if ($order->discount > 0)
-                    <div class="flex justify-between"><dt class="text-ink-2">Diskon</dt><dd class="price text-green-700">−{{ rupiah($order->discount) }}</dd></div>
+                    <div class="flex justify-between"><dt class="text-ink-2">Diskon</dt><dd class="price text-ink">−{{ rupiah($order->discount) }}</dd></div>
                 @endif
-                <div class="flex justify-between border-t border-line pt-2 text-[15px]"><dt>Total</dt><dd class="price font-medium">{{ rupiah($order->total) }}</dd></div>
+                <div class="flex justify-between border-t border-line pt-2 text-body"><dt>Total</dt><dd class="price font-medium">{{ rupiah($order->total) }}</dd></div>
                 @if ($order->payment?->paid_at)
                     <div class="flex justify-between pt-1"><dt class="text-ink-2">Dibayar</dt><dd>{{ $order->payment->methodLabel() }} · {{ $order->payment->paid_at->translatedFormat('j M Y, H:i') }}</dd></div>
                 @endif
@@ -207,13 +207,13 @@
                     @endif
                     <div class="min-w-0 flex-1">
                         @if ($item->variant)
-                            <a href="{{ route('products.show', $item->variant->product) }}" wire:navigate class="text-[15px] hover:text-ember">{{ $item->product_name }}</a>
+                            <a href="{{ route('products.show', $item->variant->product) }}" wire:navigate class="text-body hover:text-primary">{{ $item->product_name }}</a>
                         @else
-                            <p class="text-[15px]">{{ $item->product_name }}</p>
+                            <p class="text-body">{{ $item->product_name }}</p>
                         @endif
                         <p class="meta tabular-nums">{{ $item->size_ml }}ml · {{ $item->qty }} x {{ rupiah($item->price) }}</p>
                     </div>
-                    <p class="price text-[15px]">{{ rupiah($item->lineTotal()) }}</p>
+                    <p class="price text-body">{{ rupiah($item->lineTotal()) }}</p>
                     @if ($order->status === OrderStatus::Completed)
                         <div class="w-full sm:w-auto">
                             @if ($item->review)

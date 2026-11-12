@@ -3,7 +3,7 @@
     $banks = collect($methods)->reject(fn ($m) => $m->isQris());
     $qris = collect($methods)->first(fn ($m) => $m->isQris());
     $tile = fn (string $key) => [
-        'card flex cursor-pointer items-center gap-3 px-3 py-2.5 transition-colors duration-150 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ember/60',
+        'card flex cursor-pointer items-center gap-3 px-3 py-2.5 transition-colors duration-150 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary/60',
         'border-ink' => $selected === $key,
         'hover:border-ink/30' => $selected !== $key,
     ];

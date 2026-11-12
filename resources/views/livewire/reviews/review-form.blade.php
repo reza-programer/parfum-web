@@ -9,14 +9,14 @@
                 @for ($i = 1; $i <= 5; $i++)
                     <button type="button" wire:click="$set('rating', {{ $i }})" role="radio" aria-checked="{{ $rating === $i ? 'true' : 'false' }}" aria-label="{{ $i }} bintang"
                             class="inline-flex size-8 items-center justify-center rounded-md hover:bg-ink/5">
-                        <x-lucide-star @class(['size-5', 'fill-ember text-ember' => $i <= $rating, 'text-ink/25' => $i > $rating]) stroke-width="1.5" />
+                        <x-lucide-star @class(['size-5', 'fill-primary text-primary' => $i <= $rating, 'text-ink/25' => $i > $rating]) stroke-width="1.5" />
                     </button>
                 @endfor
             </div>
-            @error('rating') <p class="text-sm text-red-700">{{ $message }}</p> @enderror
+            @error('rating') <p class="text-sm text-danger">{{ $message }}</p> @enderror
             <label for="review-{{ $orderItemId }}" class="sr-only">Ulasan</label>
             <textarea id="review-{{ $orderItemId }}" wire:model="comment" rows="3" class="field text-sm" placeholder="Bagaimana aromanya, tahan berapa lama?"></textarea>
-            @error('comment') <p class="text-sm text-red-700">{{ $message }}</p> @enderror
+            @error('comment') <p class="text-sm text-danger">{{ $message }}</p> @enderror
             <div class="flex gap-2">
                 <button type="submit" class="btn-primary btn-sm">Kirim ulasan</button>
                 <button type="button" wire:click="$set('open', false)" class="btn-secondary btn-sm">Batal</button>

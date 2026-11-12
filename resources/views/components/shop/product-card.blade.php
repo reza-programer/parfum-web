@@ -5,7 +5,7 @@
     </x-shop.product-image>
     <div class="mt-3 space-y-1">
         <p class="meta">{{ $product->brand->name }}</p>
-        <h3 class="text-[15px] font-medium leading-snug text-ink transition-colors duration-150 group-hover:text-ember">{{ $product->name }}</h3>
+        <h3 class="text-body font-medium leading-snug text-ink transition-colors duration-150 group-hover:text-primary">{{ $product->name }}</h3>
         <div class="flex items-center gap-2 pt-1 text-sm">
             @if ($soldOut)
                 <span class="rounded-md bg-ink/5 px-2 py-0.5 text-[13px] font-medium text-ink-2">Habis</span>

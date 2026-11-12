@@ -27,117 +27,129 @@ new class extends Component
     }
 }; ?>
 
-<nav x-data="{ open: false, search: false }" class="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/80">
-    <div class="page flex h-16 items-center gap-6">
-        <a href="{{ route('home') }}" wire:navigate class="shrink-0">
-            <x-application-logo />
+@php
+    $links = [
+        ['label' => 'Pria', 'url' => route('categories.show', 'pria'), 'active' => request()->is('kategori/pria')],
+        ['label' => 'Wanita', 'url' => route('categories.show', 'wanita'), 'active' => request()->is('kategori/wanita')],
+        ['label' => 'Unisex', 'url' => route('categories.show', 'unisex'), 'active' => request()->is('kategori/unisex')],
+        ['label' => 'Brand', 'url' => route('brands.index'), 'active' => request()->is('brand*')],
+    ];
+    $icon = 'inline-flex size-11 items-center justify-center text-ink transition-opacity duration-150 hover:opacity-60';
+@endphp
+
+<nav x-data="{ search: false }" class="sticky top-0 z-30 border-b border-line bg-paper-card/95 backdrop-blur supports-[backdrop-filter]:bg-paper-card/85">
+    <div class="page relative flex h-16 items-center gap-2 lg:h-[72px] lg:gap-8">
+        {{-- Mobile: hamburger --}}
+        <button type="button" x-on:click="$dispatch('open-drawer', 'menu')" class="{{ $icon }} -ml-3 lg:hidden" aria-label="Menu">
+            <x-lucide-menu class="size-5" stroke-width="1.25" />
+        </button>
+
+        <a href="{{ route('home') }}" wire:navigate class="shrink-0 max-lg:absolute max-lg:left-1/2 max-lg:-translate-x-1/2" aria-label="{{ config('app.name') }}">
+            <x-application-logo class="max-sm:text-lg" />
         </a>
 
-        <div class="hidden items-center gap-1 md:flex">
-            @foreach (['pria' => 'Pria', 'wanita' => 'Wanita', 'unisex' => 'Unisex'] as $slug => $label)
-                <a href="{{ route('categories.show', $slug) }}" wire:navigate
-                   @class(['rounded-lg px-3 py-2 text-[15px] transition-colors duration-150',
-                       'text-ink bg-ink/5' => request()->is('kategori/'.$slug),
-                       'text-ink-2 hover:text-ink' => ! request()->is('kategori/'.$slug)])>{{ $label }}</a>
+        <div class="hidden items-center gap-7 lg:flex">
+            @foreach ($links as $link)
+                <a href="{{ $link['url'] }}" wire:navigate
+                   @class(['relative py-2 text-[13px] font-medium uppercase tracking-nav transition-colors duration-150',
+                       'text-ink after:absolute after:inset-x-0 after:-bottom-px after:h-px after:bg-ink' => $link['active'],
+                       'text-ink-2 hover:text-ink' => ! $link['active']])>{{ $link['label'] }}</a>
             @endforeach
-            <a href="{{ route('brands.index') }}" wire:navigate
-               @class(['rounded-lg px-3 py-2 text-[15px] transition-colors duration-150',
-                   'text-ink bg-ink/5' => request()->is('brand*'),
-                   'text-ink-2 hover:text-ink' => ! request()->is('brand*')])>Brand</a>
         </div>
 
-        <form action="{{ route('catalog') }}" method="GET" class="ms-auto hidden w-full max-w-xs lg:block" role="search">
-            <label for="nav-search" class="sr-only">Cari parfum</label>
-            <div class="relative">
-                <x-lucide-search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-3" stroke-width="1.5" />
-                <input id="nav-search" name="q" type="search" value="{{ request('q') }}" placeholder="Cari nama atau brand"
-                       class="field h-9 pl-9 text-sm" autocomplete="off">
-            </div>
-        </form>
+        <div class="ms-auto flex items-center lg:gap-2">
+            <form action="{{ route('catalog') }}" method="GET" class="hidden lg:block" role="search">
+                <label for="nav-search" class="sr-only">Cari parfum</label>
+                <div class="relative">
+                    <x-lucide-search class="pointer-events-none absolute left-0 top-1/2 size-4 -translate-y-1/2 text-ink-2" stroke-width="1.25" />
+                    <input id="nav-search" name="q" type="search" value="{{ request('q') }}" placeholder="Cari nama atau brand"
+                           class="h-10 w-56 border-0 border-b border-line bg-transparent pl-6 pr-0 text-[13px] text-ink placeholder:text-ink-faint focus:border-ink focus:ring-0"
+                           autocomplete="off">
+                </div>
+            </form>
 
-        <div class="ms-auto flex items-center gap-1 lg:ms-0">
-            <button type="button" @click="search = ! search" class="inline-flex size-9 items-center justify-center rounded-lg text-ink-2 hover:bg-ink/5 hover:text-ink lg:hidden" aria-label="Cari">
-                <x-lucide-search class="size-[18px]" stroke-width="1.5" />
+            <button type="button" x-on:click="search = ! search; $nextTick(() => $refs.mobileSearch?.focus())" class="{{ $icon }} lg:hidden" aria-label="Cari">
+                <x-lucide-search class="size-5" stroke-width="1.25" />
             </button>
 
             @auth
-                <a href="{{ route('wishlist') }}" wire:navigate class="hidden size-9 items-center justify-center rounded-lg text-ink-2 hover:bg-ink/5 hover:text-ink sm:inline-flex" aria-label="Wishlist">
-                    <x-lucide-heart class="size-[18px]" stroke-width="1.5" />
+                <a href="{{ route('wishlist') }}" wire:navigate class="{{ $icon }} max-sm:hidden" aria-label="Wishlist">
+                    <x-lucide-heart class="size-5" stroke-width="1.25" />
                 </a>
             @endauth
 
-            <a href="{{ route('cart') }}" wire:navigate class="relative inline-flex size-9 items-center justify-center rounded-lg text-ink-2 hover:bg-ink/5 hover:text-ink" aria-label="Keranjang">
-                <x-lucide-shopping-bag class="size-[18px]" stroke-width="1.5" />
+            <a href="{{ route('cart') }}" wire:navigate class="{{ $icon }} relative max-sm:-mr-3" aria-label="Keranjang">
+                <x-lucide-shopping-bag class="size-5" stroke-width="1.25" />
                 @if ($cartCount > 0)
-                    <span class="absolute -right-0.5 -top-0.5 min-w-[18px] rounded-full bg-ember px-1 text-center text-[11px] font-medium leading-[18px] text-white tabular-nums" data-testid="cart-count">{{ $cartCount }}</span>
+                    <span class="absolute right-1.5 top-1.5 min-w-[17px] rounded-full bg-primary px-1 text-center text-[10px] font-medium leading-[17px] text-white tabular-nums" data-testid="cart-count">{{ $cartCount }}</span>
                 @endif
             </a>
 
             @auth
-                <div class="relative hidden sm:block" x-data="{ menu: false }" @click.outside="menu = false">
-                    <button type="button" @click="menu = ! menu" class="inline-flex h-9 items-center gap-2 rounded-lg px-3 text-[15px] text-ink-2 hover:bg-ink/5 hover:text-ink">
-                        <span x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name" class="max-w-[10rem] truncate"></span>
-                        <x-lucide-chevron-down class="size-4" stroke-width="1.5" />
+                <div class="relative hidden sm:block" x-data="{ menu: false }" x-on:click.outside="menu = false" x-on:keydown.escape.window="menu = false">
+                    <button type="button" x-on:click="menu = ! menu" class="inline-flex h-11 items-center gap-1.5 px-3 text-ink transition-opacity duration-150 hover:opacity-60 lg:-mr-3" aria-label="Akun" :aria-expanded="menu">
+                        <x-lucide-user class="size-5" stroke-width="1.25" />
+                        <x-lucide-chevron-down class="size-3.5" stroke-width="1.5" />
                     </button>
                     <div x-cloak x-show="menu" x-transition.opacity.duration.150ms
-                         class="absolute right-0 mt-2 w-52 rounded-xl border border-line bg-paper-card p-1 shadow-float">
-                        <a href="{{ route('orders.index') }}" wire:navigate class="flex h-9 items-center gap-2.5 rounded-lg px-3 text-sm text-ink-2 hover:bg-ink/5 hover:text-ink">
-                            <x-lucide-package class="size-4" stroke-width="1.5" /> Pesanan saya
-                        </a>
-                        <a href="{{ route('wishlist') }}" wire:navigate class="flex h-9 items-center gap-2.5 rounded-lg px-3 text-sm text-ink-2 hover:bg-ink/5 hover:text-ink">
-                            <x-lucide-heart class="size-4" stroke-width="1.5" /> Wishlist
-                        </a>
-                        <a href="{{ route('profile') }}" wire:navigate class="flex h-9 items-center gap-2.5 rounded-lg px-3 text-sm text-ink-2 hover:bg-ink/5 hover:text-ink">
-                            <x-lucide-user class="size-4" stroke-width="1.5" /> Profil &amp; alamat
-                        </a>
+                         class="absolute right-0 mt-2 w-60 border border-line bg-paper-card py-2">
+                        <p class="truncate px-4 pb-2 pt-1 text-label text-ink-2" x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></p>
+                        <div class="divider"></div>
+                        @foreach ([
+                            ['Pesanan saya', route('orders.index')],
+                            ['Wishlist', route('wishlist')],
+                            ['Alamat', route('addresses')],
+                            ['Profil', route('profile')],
+                        ] as [$label, $url])
+                            <a href="{{ $url }}" wire:navigate class="flex h-10 items-center px-4 text-body text-ink-2 hover:bg-paper hover:text-ink">{{ $label }}</a>
+                        @endforeach
                         @if (auth()->user()->isAdmin())
-                            <a href="{{ url('/admin') }}" class="flex h-9 items-center gap-2.5 rounded-lg px-3 text-sm text-ink-2 hover:bg-ink/5 hover:text-ink">
-                                <x-lucide-layout-dashboard class="size-4" stroke-width="1.5" /> Panel admin
-                            </a>
+                            <a href="{{ url('/admin') }}" class="flex h-10 items-center px-4 text-body text-ink-2 hover:bg-paper hover:text-ink">Panel admin</a>
                         @endif
-                        <div class="my-1 border-t border-line"></div>
-                        <button wire:click="logout" class="flex h-9 w-full items-center gap-2.5 rounded-lg px-3 text-sm text-ink-2 hover:bg-ink/5 hover:text-ink">
-                            <x-lucide-log-out class="size-4" stroke-width="1.5" /> Keluar
-                        </button>
+                        <div class="divider my-1"></div>
+                        <button wire:click="logout" class="flex h-10 w-full items-center px-4 text-body text-ink-2 hover:bg-paper hover:text-ink">Keluar</button>
                     </div>
                 </div>
             @else
-                <a href="{{ route('login') }}" wire:navigate class="hidden h-9 items-center rounded-lg px-3 text-[15px] text-ink-2 hover:text-ink sm:inline-flex">Masuk</a>
-                <a href="{{ route('register') }}" wire:navigate class="btn-primary btn-sm hidden sm:inline-flex">Daftar</a>
+                <a href="{{ route('login') }}" wire:navigate class="ml-2 hidden h-10 items-center text-[13px] font-medium uppercase tracking-nav text-ink-2 hover:text-ink sm:inline-flex">Masuk</a>
+                <a href="{{ route('register') }}" wire:navigate class="btn-primary btn-sm ml-4 hidden sm:inline-flex">Daftar</a>
             @endauth
-
-            <button type="button" @click="open = ! open" class="inline-flex size-9 items-center justify-center rounded-lg text-ink-2 hover:bg-ink/5 hover:text-ink md:hidden" aria-label="Menu">
-                <x-lucide-menu class="size-[18px]" stroke-width="1.5" x-show="! open" />
-                <x-lucide-x class="size-[18px]" stroke-width="1.5" x-show="open" x-cloak />
-            </button>
         </div>
     </div>
 
-    {{-- Search mobile --}}
-    <div x-cloak x-show="search" class="border-t border-line lg:hidden">
+    {{-- Search mobile/tablet --}}
+    <div x-cloak x-show="search" x-transition.opacity.duration.150ms class="border-t border-line lg:hidden">
         <form action="{{ route('catalog') }}" method="GET" class="page py-3" role="search">
             <label for="nav-search-mobile" class="sr-only">Cari parfum</label>
-            <input id="nav-search-mobile" name="q" type="search" value="{{ request('q') }}" placeholder="Cari nama atau brand" class="field h-10">
+            <input id="nav-search-mobile" x-ref="mobileSearch" name="q" type="search" value="{{ request('q') }}" placeholder="Cari nama atau brand" class="field">
         </form>
     </div>
 
     {{-- Menu mobile --}}
-    <div x-cloak x-show="open" class="border-t border-line md:hidden">
-        <div class="page space-y-1 py-3">
-            @foreach (['pria' => 'Pria', 'wanita' => 'Wanita', 'unisex' => 'Unisex'] as $slug => $label)
-                <a href="{{ route('categories.show', $slug) }}" wire:navigate class="flex h-10 items-center rounded-lg px-3 text-[15px] text-ink-2 hover:bg-ink/5">{{ $label }}</a>
+    <x-ui.drawer name="menu" title="Menu" class="lg:hidden">
+        <div class="-mx-5">
+            @foreach ($links as $link)
+                <a href="{{ $link['url'] }}" wire:navigate
+                   @class(['flex h-12 items-center px-5 text-[13px] font-medium uppercase tracking-nav', 'text-ink' => $link['active'], 'text-ink-2' => ! $link['active']])>{{ $link['label'] }}</a>
             @endforeach
-            <a href="{{ route('brands.index') }}" wire:navigate class="flex h-10 items-center rounded-lg px-3 text-[15px] text-ink-2 hover:bg-ink/5">Brand</a>
-            <div class="my-2 border-t border-line"></div>
+            <a href="{{ route('catalog') }}" wire:navigate class="flex h-12 items-center px-5 text-[13px] font-medium uppercase tracking-nav text-ink-2">Semua parfum</a>
+        </div>
+        <div class="divider my-4"></div>
+        <div class="-mx-5">
             @auth
-                <a href="{{ route('orders.index') }}" wire:navigate class="flex h-10 items-center rounded-lg px-3 text-[15px] text-ink-2 hover:bg-ink/5">Pesanan saya</a>
-                <a href="{{ route('wishlist') }}" wire:navigate class="flex h-10 items-center rounded-lg px-3 text-[15px] text-ink-2 hover:bg-ink/5">Wishlist</a>
-                <a href="{{ route('profile') }}" wire:navigate class="flex h-10 items-center rounded-lg px-3 text-[15px] text-ink-2 hover:bg-ink/5">Profil &amp; alamat</a>
-                <button wire:click="logout" class="flex h-10 w-full items-center rounded-lg px-3 text-[15px] text-ink-2 hover:bg-ink/5">Keluar</button>
+                @foreach ([
+                    ['Pesanan saya', route('orders.index')],
+                    ['Wishlist', route('wishlist')],
+                    ['Alamat', route('addresses')],
+                    ['Profil', route('profile')],
+                ] as [$label, $url])
+                    <a href="{{ $url }}" wire:navigate class="flex h-11 items-center px-5 text-body text-ink-2">{{ $label }}</a>
+                @endforeach
+                <button wire:click="logout" class="flex h-11 w-full items-center px-5 text-body text-ink-2">Keluar</button>
             @else
-                <a href="{{ route('login') }}" wire:navigate class="flex h-10 items-center rounded-lg px-3 text-[15px] text-ink-2 hover:bg-ink/5">Masuk</a>
-                <a href="{{ route('register') }}" wire:navigate class="flex h-10 items-center rounded-lg px-3 text-[15px] text-ink-2 hover:bg-ink/5">Daftar</a>
+                <a href="{{ route('login') }}" wire:navigate class="flex h-11 items-center px-5 text-body text-ink-2">Masuk</a>
+                <a href="{{ route('register') }}" wire:navigate class="flex h-11 items-center px-5 text-body text-ink-2">Daftar</a>
             @endauth
         </div>
-    </div>
+    </x-ui.drawer>
 </nav>

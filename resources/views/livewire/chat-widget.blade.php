@@ -3,10 +3,10 @@
         <section wire:poll.4s="poll" class="mb-3 flex h-[min(560px,calc(100vh-7rem))] w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden rounded-2xl border border-line bg-paper-card shadow-float" aria-label="Chat">
             <header class="flex items-center justify-between border-b border-line px-4 py-3">
                 <div>
-                    <p class="text-[15px] font-medium">Tanya kami</p>
+                    <p class="text-body font-medium">Tanya kami</p>
                     <p class="meta flex items-center gap-1.5">
                         @if ($withAdmin)
-                            <span class="size-1.5 rounded-full bg-green-600"></span> Terhubung ke admin
+                            <span class="size-1.5 rounded-full bg-ink"></span> Terhubung ke admin
                         @else
                             Dijawab otomatis, admin siap bantu
                         @endif
@@ -31,11 +31,11 @@
                             'rounded-tl-md bg-paper-raised' => ! $mine,
                         ])>
                             @if ($message->sender_type === \App\Enums\MessageSender::Admin)
-                                <span class="mb-0.5 block text-xs font-medium text-ember">Admin</span>
+                                <span class="mb-0.5 block text-xs font-medium text-primary">Admin</span>
                             @endif
                             {{ $message->body }}
                             @if (! auth()->check() && $message->body === \App\Services\ChatService::LOGIN_MESSAGE)
-                                <a href="{{ route('login') }}" class="mt-1 block font-medium text-ember underline underline-offset-4">Masuk</a>
+                                <a href="{{ route('login') }}" class="mt-1 block font-medium text-primary underline underline-offset-4">Masuk</a>
                             @endif
                         </div>
                     </div>
@@ -60,13 +60,13 @@
                     <x-lucide-send-horizontal class="size-4" stroke-width="1.5" />
                 </button>
             </form>
-            @error('body') <p class="px-4 pb-3 text-xs text-red-700">{{ $message }}</p> @enderror
+            @error('body') <p class="px-4 pb-3 text-xs text-danger">{{ $message }}</p> @enderror
         </section>
     @endif
 
     <div class="flex justify-end">
         <button type="button" wire:click="$toggle('open')"
-                class="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-5 text-[15px] text-paper-card shadow-float transition-transform duration-150 ease-out hover:bg-ink/90 active:scale-[0.97]"
+                class="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-5 text-body text-paper-card shadow-float transition-transform duration-150 ease-out hover:bg-ink/90 active:scale-[0.97]"
                 aria-expanded="{{ $open ? 'true' : 'false' }}">
             @if ($open)
                 <x-lucide-chevron-down class="size-[18px]" stroke-width="1.5" /> Tutup

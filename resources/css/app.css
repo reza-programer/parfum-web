@@ -8,11 +8,16 @@
     }
 
     body {
-        @apply bg-paper text-ink font-sans antialiased;
+        @apply bg-paper text-ink font-sans text-body antialiased;
+        font-feature-settings: 'cv11', 'ss01';
+    }
+
+    h1, h2, h3 {
+        text-wrap: balance;
     }
 
     :focus-visible {
-        @apply outline-none ring-2 ring-ember/60 ring-offset-2 ring-offset-paper;
+        @apply outline-none ring-1 ring-ink ring-offset-2 ring-offset-paper;
     }
 
     [x-cloak] {
@@ -21,47 +26,73 @@
 }
 
 @layer components {
+    /* Tombol: huruf kapital kecil, sudut tegas, tinggi 44px (area sentuh). */
     .btn {
-        @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 h-11 text-[15px] font-medium transition-[background-color,color,border-color,transform] duration-150 ease-out active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+        @apply inline-flex h-11 items-center justify-center gap-2 px-6 text-label font-medium uppercase tracking-label transition-colors duration-200 ease-out disabled:pointer-events-none disabled:opacity-40;
     }
 
     .btn-primary {
-        @apply btn bg-ink text-paper-card hover:bg-ink/90;
-    }
-
-    .btn-accent {
-        @apply btn bg-ember text-white hover:bg-ember-dark;
+        @apply btn bg-primary text-white hover:bg-primary/85;
     }
 
     .btn-secondary {
-        @apply btn bg-paper-card text-ink border border-line hover:bg-paper-raised;
+        @apply btn border border-ink bg-transparent text-ink hover:bg-ink hover:text-white;
+    }
+
+    .btn-ghost {
+        @apply btn px-3 text-ink-2 hover:text-ink;
     }
 
     .btn-sm {
-        @apply h-9 px-4 text-sm;
+        @apply h-11 px-4 sm:h-10;
+    }
+
+    .link {
+        @apply text-ink underline decoration-ink/25 underline-offset-4 transition-colors duration-150 hover:decoration-ink;
     }
 
     .field {
-        @apply block w-full rounded-lg border-line bg-paper-card text-[15px] text-ink placeholder:text-ink-3 focus:border-ember focus:ring-ember/30;
+        @apply block h-11 w-full border-line bg-paper-card text-body text-ink placeholder:text-ink-faint focus:border-ink focus:ring-0 disabled:text-ink-faint;
+    }
+
+    textarea.field {
+        @apply h-auto;
     }
 
     .label {
-        @apply block text-sm font-medium text-ink-2 mb-2;
+        @apply mb-2 block text-label font-medium text-ink;
+    }
+
+    /* Label kecil kapital: brand, keluarga aroma, judul kolom. */
+    .eyebrow {
+        @apply text-caption font-medium uppercase tracking-nav text-ink-2;
     }
 
     .card {
-        @apply rounded-2xl bg-paper-card border border-line;
+        @apply border border-line bg-paper-card;
     }
 
     .page {
-        @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+        @apply mx-auto w-full max-w-page px-4 sm:px-6;
+    }
+
+    .heading-page {
+        @apply font-serif text-page font-medium text-ink;
+    }
+
+    .heading-section {
+        @apply font-serif text-section font-medium text-ink;
     }
 
     .meta {
-        @apply text-[13px] leading-5 text-ink-3;
+        @apply text-label text-ink-2;
     }
 
     .price {
         @apply tabular-nums;
+    }
+
+    .divider {
+        @apply border-t border-line;
     }
 }

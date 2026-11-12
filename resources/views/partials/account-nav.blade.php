@@ -7,7 +7,7 @@
     ] as [$route, $label, $pattern])
         <a href="{{ route($route) }}" wire:navigate
            @class([
-               '-mb-px whitespace-nowrap border-b-2 px-3 pb-3 text-[15px] transition-colors duration-150',
+               '-mb-px whitespace-nowrap border-b-2 px-3 pb-3 text-body transition-colors duration-150',
                'border-ink text-ink' => request()->is($pattern),
                'border-transparent text-ink-2 hover:text-ink' => ! request()->is($pattern),
            ])>{{ $label }}</a>

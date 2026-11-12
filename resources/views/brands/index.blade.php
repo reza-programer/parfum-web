@@ -12,7 +12,7 @@
                         <span class="flex size-12 items-center justify-center rounded-lg bg-paper-raised font-serif text-xl text-ink-2">{{ mb_substr($brand->name, 0, 1) }}</span>
                     @endif
                     <span>
-                        <span class="block text-[15px] font-medium">{{ $brand->name }}</span>
+                        <span class="block text-body font-medium">{{ $brand->name }}</span>
                         <span class="meta tabular-nums">{{ $brand->products_count }} parfum</span>
                     </span>
                 </a>

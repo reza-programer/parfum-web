@@ -18,7 +18,7 @@
                class="card block p-5 transition-colors duration-150 hover:border-ink/25">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <p class="text-[15px] font-medium tabular-nums">{{ $order->code }}</p>
+                        <p class="text-body font-medium tabular-nums">{{ $order->code }}</p>
                         <p class="meta">{{ $order->created_at->translatedFormat('j F Y, H:i') }}</p>
                     </div>
                     <x-shop.order-status :status="$order->status" />
@@ -30,7 +30,7 @@
                             <span class="text-ink-3">+{{ $order->items->count() - 1 }} barang lain</span>
                         @endif
                     </p>
-                    <p class="price text-[15px] font-medium">{{ rupiah($order->total) }}</p>
+                    <p class="price text-body font-medium">{{ rupiah($order->total) }}</p>
                 </div>
             </a>
         @empty

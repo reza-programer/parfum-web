@@ -38,7 +38,7 @@
             @foreach ($scents as $scent)
                 <a href="{{ route('catalog', ['aroma' => [$scent->value]]) }}" wire:navigate
                    class="card group flex flex-col gap-3 p-5 transition-colors duration-150 hover:border-ink/25">
-                    <span class="flex items-center gap-2 text-[15px] font-medium">
+                    <span class="flex items-center gap-2 text-body font-medium">
                         <x-shop.scent-dot :family="$scent" class="size-2.5" />
                         {{ $scent->label() }}
                     </span>

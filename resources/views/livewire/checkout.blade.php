@@ -2,7 +2,7 @@
     <h1 class="font-serif text-4xl sm:text-5xl">Checkout</h1>
 
     @error('order')
-        <p class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">{{ $message }}</p>
+        <p class="mt-6 rounded-lg bg-danger/5 px-4 py-3 text-sm text-danger" role="alert">{{ $message }}</p>
     @enderror
 
     <div class="mt-8 grid gap-10 lg:grid-cols-[1fr_380px]">
@@ -28,10 +28,10 @@
                                        'border-ink' => $address->id === $addressId,
                                        'hover:border-ink/30' => $address->id !== $addressId])>
                                 <input type="radio" wire:model.live="addressId" value="{{ $address->id }}" class="sr-only">
-                                <span class="flex items-center gap-2 text-[15px] font-medium">
+                                <span class="flex items-center gap-2 text-body font-medium">
                                     {{ $address->label }}
                                     @if ($address->is_default)
-                                        <span class="rounded-md bg-ember-soft px-2 py-0.5 text-xs font-medium text-ember">Utama</span>
+                                        <span class="rounded-md bg-primary-soft px-2 py-0.5 text-xs font-medium text-primary">Utama</span>
                                     @endif
                                 </span>
                                 <span class="mt-1 block text-sm text-ink">{{ $address->recipient }} · <span class="tabular-nums">{{ $address->phone }}</span></span>
@@ -40,7 +40,7 @@
                         @endforeach
                     </div>
                 @endif
-                @error('addressId') <p class="mt-2 text-sm text-red-700">{{ $message }}</p> @enderror
+                @error('addressId') <p class="mt-2 text-sm text-danger">{{ $message }}</p> @enderror
             </section>
 
             {{-- 2. Kurir --}}
@@ -53,7 +53,7 @@
                         <p class="text-sm text-ink-2">Pilih alamat untuk melihat ongkir.</p>
                     @elseif ($this->shippingOptions['error'])
                         <div class="card flex flex-wrap items-center justify-between gap-3 p-4">
-                            <p class="text-sm text-red-800">{{ $this->shippingOptions['error'] }}</p>
+                            <p class="text-sm text-danger">{{ $this->shippingOptions['error'] }}</p>
                             <button type="button" wire:click="$refresh" class="btn-secondary btn-sm">Coba lagi</button>
                         </div>
                     @elseif (empty($this->shippingOptions['options']))
@@ -62,18 +62,18 @@
                         <div class="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-paper-card">
                             @foreach ($this->shippingOptions['options'] as $option)
                                 <label wire:key="ship-{{ $option->key() }}" class="flex cursor-pointer items-center gap-4 px-4 py-3.5 transition-colors duration-150 hover:bg-paper-raised/60">
-                                    <input type="radio" wire:model.live="shippingKey" value="{{ $option->key() }}" class="size-4 border-ink/30 text-ember focus:ring-ember/30">
+                                    <input type="radio" wire:model.live="shippingKey" value="{{ $option->key() }}" class="size-4 border-ink/30 text-primary focus:ring-primary/30">
                                     <span class="min-w-0 flex-1">
-                                        <span class="block text-[15px]">{{ $option->courierLabel() }} <span class="text-ink-2">{{ $option->service }}</span></span>
+                                        <span class="block text-body">{{ $option->courierLabel() }} <span class="text-ink-2">{{ $option->service }}</span></span>
                                         <span class="meta block">{{ $option->description }}@if ($option->etd) · {{ $option->etd }}@endif</span>
                                     </span>
-                                    <span class="price text-[15px]">{{ rupiah($option->cost) }}</span>
+                                    <span class="price text-body">{{ rupiah($option->cost) }}</span>
                                 </label>
                             @endforeach
                         </div>
                     @endif
                 </div>
-                @error('shippingKey') <p class="mt-2 text-sm text-red-700">{{ $message }}</p> @enderror
+                @error('shippingKey') <p class="mt-2 text-sm text-danger">{{ $message }}</p> @enderror
             </section>
 
             {{-- 3. Pembayaran --}}
@@ -83,7 +83,7 @@
                 <div class="mt-4">
                     @if ($this->paymentMethods['error'])
                         <div class="card flex flex-wrap items-center justify-between gap-3 p-4">
-                            <p class="text-sm text-red-800">{{ $this->paymentMethods['error'] }}</p>
+                            <p class="text-sm text-danger">{{ $this->paymentMethods['error'] }}</p>
                             <button type="button" wire:click="$refresh" class="btn-secondary btn-sm">Coba lagi</button>
                         </div>
                     @elseif (empty($this->paymentMethods['methods']))
@@ -92,7 +92,7 @@
                         <x-shop.payment-methods :methods="$this->paymentMethods['methods']" :selected="$paymentMethod" />
                     @endif
                 </div>
-                @error('paymentMethod') <p class="mt-2 text-sm text-red-700">{{ $message }}</p> @enderror
+                @error('paymentMethod') <p class="mt-2 text-sm text-danger">{{ $message }}</p> @enderror
             </section>
 
             {{-- 4. Barang --}}
@@ -103,15 +103,15 @@
                         <li class="flex items-center gap-4 py-3" wire:key="co-{{ $item->id }}">
                             <x-shop.product-image :product="$item->variant->product" class="aspect-square w-14 shrink-0 rounded-lg" />
                             <div class="min-w-0 flex-1">
-                                <p class="truncate text-[15px]">{{ $item->variant->product->name }}</p>
+                                <p class="truncate text-body">{{ $item->variant->product->name }}</p>
                                 <p class="meta tabular-nums">{{ $item->variant->label() }} · {{ $item->qty }} x {{ rupiah($item->variant->price) }}</p>
                             </div>
-                            <p class="price text-[15px]">{{ rupiah($item->variant->price * $item->qty) }}</p>
+                            <p class="price text-body">{{ rupiah($item->variant->price * $item->qty) }}</p>
                         </li>
                     @endforeach
                 </ul>
                 @if ($this->summary->hasProblems)
-                    <p class="mt-3 text-sm text-red-700">Ada barang yang stoknya berubah. <a href="{{ route('cart') }}" wire:navigate class="underline">Cek keranjang</a></p>
+                    <p class="mt-3 text-sm text-danger">Ada barang yang stoknya berubah. <a href="{{ route('cart') }}" wire:navigate class="underline">Cek keranjang</a></p>
                 @endif
             </section>
         </div>
@@ -123,8 +123,8 @@
 
                 <div class="mt-4">
                     @if ($voucherCode && $this->voucher)
-                        <div class="flex items-center justify-between rounded-lg bg-ember-soft px-3 py-2 text-sm">
-                            <span class="font-medium text-ember">{{ $voucherCode }}</span>
+                        <div class="flex items-center justify-between rounded-lg bg-primary-soft px-3 py-2 text-sm">
+                            <span class="font-medium text-primary">{{ $voucherCode }}</span>
                             <button type="button" wire:click="removeVoucher" class="text-ink-2 hover:text-ink">Hapus</button>
                         </div>
                     @else
@@ -134,10 +134,10 @@
                             <button type="submit" class="btn-secondary h-10 px-4 text-sm">Pakai</button>
                         </form>
                     @endif
-                    @error('voucherInput') <p class="mt-2 text-sm text-red-700">{{ $message }}</p> @enderror
+                    @error('voucherInput') <p class="mt-2 text-sm text-danger">{{ $message }}</p> @enderror
                 </div>
 
-                <dl class="mt-5 space-y-3 border-t border-line pt-5 text-[15px]">
+                <dl class="mt-5 space-y-3 border-t border-line pt-5 text-body">
                     <div class="flex justify-between">
                         <dt class="text-ink-2">Subtotal</dt>
                         <dd class="price">{{ rupiah($this->summary->subtotal) }}</dd>
@@ -149,7 +149,7 @@
                     @if ($this->discount > 0)
                         <div class="flex justify-between">
                             <dt class="text-ink-2">Diskon</dt>
-                            <dd class="price text-green-700">−{{ rupiah($this->discount) }}</dd>
+                            <dd class="price text-ink">−{{ rupiah($this->discount) }}</dd>
                         </div>
                     @endif
                     <div class="flex justify-between border-t border-line pt-3 text-lg">
