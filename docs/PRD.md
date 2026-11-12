@@ -4,9 +4,9 @@ Nov 11, 2026 · @itsupport
 
 ## Ringkasan & Tujuan
 
-Toko parfum online dengan 14 fitur inti, ongkir otomatis lewat RajaOngkir, pembayaran lewat Midtrans, dan chat customer–admin dengan chatbot FAQ. Dibangun dengan Laravel (sisi customer), Filament (panel admin), dan MySQL dalam satu project.
+Toko parfum online dengan 14 fitur inti, ongkir otomatis lewat RajaOngkir, pembayaran lewat Komerce Payment, dan chat customer–admin dengan chatbot FAQ. Dibangun dengan Laravel (sisi customer), Filament (panel admin), dan MySQL dalam satu project.
 
-Catatan penting: RajaOngkir hanya untuk menghitung ongkos kirim, bukan pembayaran. Pembayaran ditangani Midtrans (VA bank, QRIS, e-wallet).
+Catatan penting: RajaOngkir (Komerce) dipakai untuk ongkos kirim dan data wilayah. Pembayaran memakai Komerce Payment API (VA bank dan QRIS). Keduanya produk Komerce, tetapi API key-nya berbeda. Keputusan pindah dari Midtrans dicatat di docs/plans/pembayaran-komerce.md (12 Nov 2026).
 
 **Tujuan:**
 
@@ -55,7 +55,7 @@ Fitur 7, 8, dan 10 adalah fitur wajib dari klien. Prioritas P0 = harus ada saat 
 | 5 | Keranjang | Sebagai customer, saya ingin menyimpan beberapa produk sebelum bayar. | Tambah, ubah jumlah, hapus; jumlah tidak boleh melebihi stok; subtotal dan total berat tampil. | P0 |
 | 6 | Wishlist | Sebagai customer, saya ingin menyimpan parfum incaran untuk dibeli nanti. | Tambah/hapus dari halaman produk; pindah ke keranjang dari halaman wishlist. | P1 |
 | 7 | Checkout + ongkir RajaOngkir | Sebagai customer, saya ingin tahu ongkir sebelum bayar. | Pilih alamat; ongkir dihitung dari total berat lewat API RajaOngkir; pilih kurir dan layanan (JNE, J&T, SiCepat, dll); hasil di-cache per tujuan+berat. | P0 |
-| 8 | Pembayaran Midtrans | Sebagai customer, saya ingin bayar dengan VA, QRIS, atau e-wallet. | Midtrans Snap popup; status order diperbarui otomatis via webhook (notification URL) dengan validasi signature; order kedaluwarsa setelah 24 jam tanpa bayar dan stok dikembalikan. | P0 |
+| 8 | Pembayaran Komerce | Sebagai customer, saya ingin bayar dengan VA bank atau QRIS. | Metode dipilih di checkout; nomor VA atau kode QR tampil di halaman pesanan (QR berlaku 5 menit, bisa dibuat ulang, metode bisa diganti); status diperbarui otomatis lewat callback bertanda tangan valid dan cek status ke API Komerce; order kedaluwarsa setelah 24 jam tanpa bayar dan stok dikembalikan. | P0 |
 | 9 | Pesanan & tracking | Sebagai customer, saya ingin memantau status pesanan sampai diterima. | Status: Menunggu Bayar, Dibayar, Dikemas, Dikirim, Selesai, Dibatalkan; nomor resi tampil; tombol "Pesanan Diterima". | P0 |
 | 10 | Chat & chatbot | Sebagai customer, saya ingin bertanya dan langsung dapat jawaban. | Widget chat di semua halaman; chatbot mencocokkan keyword ke tabel FAQ; jika tidak cocok atau customer pilih "Bicara dengan admin", percakapan masuk inbox admin; pesan baru muncul tanpa reload (polling 3–5 detik). | P0 |
 | 11 | Review & rating | Sebagai customer, saya ingin memberi ulasan parfum yang sudah saya beli. | Hanya untuk order berstatus Selesai; bintang 1–5 + teks; satu review per item order; admin bisa menyembunyikan review. | P1 |
@@ -65,7 +65,7 @@ Fitur 7, 8, dan 10 adalah fitur wajib dari klien. Prioritas P0 = harus ada saat 
 
 ## Alur Utama
 
-Status order hanya berubah menjadi Dibayar lewat webhook Midtrans, bukan dari halaman sukses di browser, supaya tidak bisa dipalsukan.
+Status order hanya berubah menjadi Dibayar berdasarkan jawaban Komerce dari server ke server (callback yang tanda tangannya valid, atau API cek status), bukan dari halaman sukses di browser, supaya tidak bisa dipalsukan.
 
 [embedded content: alur order dan alur chat]
 
@@ -91,7 +91,7 @@ Memilih ukuran mengganti harga, stok, dan berat yang dipakai untuk ongkir. Di ba
 
 [embedded content: wireframe checkout · desktop]
 
-Daftar kurir dan ongkir diambil dari RajaOngkir setiap kali alamat berubah. Tombol "Bayar Sekarang" membuat order, mengunci stok, lalu membuka popup Midtrans Snap.
+Daftar kurir dan ongkir diambil dari RajaOngkir setiap kali alamat berubah. Di bawah kurir ada pilihan pembayaran (VA per bank dan QRIS). Tombol "Bayar Sekarang" membuat order, mengunci stok, membuat VA atau QR di Komerce, lalu membuka halaman pesanan yang menampilkan nomor VA atau kode QR.
 
 ### 4. Chat & Chatbot
 
@@ -111,7 +111,7 @@ Sisi customer dan panel admin berada dalam satu project Laravel dan satu databas
 
 [embedded content: arsitektur sistem · 1 aplikasi, 4 layanan luar]
 
-Semua panggilan ke RajaOngkir dan Midtrans lewat service class, sehingga controller dan halaman Filament tidak bergantung langsung pada API pihak ketiga.
+Semua panggilan ke RajaOngkir dan Komerce Payment lewat service class, sehingga controller dan halaman Filament tidak bergantung langsung pada API pihak ketiga.
 
 | Lapisan | Teknologi |
 | --- | --- |
@@ -120,7 +120,7 @@ Semua panggilan ke RajaOngkir dan Midtrans lewat service class, sehingga control
 | Panel admin | Filament 3 di `/admin` |
 | Database | MySQL 8 |
 | Ongkir | RajaOngkir API (lewat HTTP client Laravel) |
-| Pembayaran | Midtrans Snap (`midtrans/midtrans-php`) |
+| Pembayaran | Komerce Payment API (VA + QRIS, lewat HTTP client Laravel); QR dirender dengan `bacon/bacon-qr-code` |
 | Chat | Livewire `wire:poll` 3–5 detik; opsi Laravel Reverb jika pindah ke VPS |
 | Queue dan jadwal | Driver database + cron `schedule:run` tiap menit |
 | Hosting | Shared hosting dengan SSH, Composer, cron |
@@ -139,9 +139,9 @@ Semua panggilan ke RajaOngkir dan Midtrans lewat service class, sehingga control
 | product_variants | size_ml, sku, price, stock, weight_gram | milik products |
 | carts | user_id, product_variant_id, qty | milik users |
 | wishlists | user_id, product_id | milik users |
-| orders | code, user_id, status, subtotal, shipping_cost, discount, total, courier, courier_service, tracking_number, address_snapshot (json), voucher_id, expires_at | milik users; punya banyak order_items, satu payment |
+| orders | code, user_id, status, subtotal, shipping_cost, discount, total, courier, courier_service, tracking_number, address_snapshot (json), voucher_id, expires_at | milik users; punya banyak order_items dan payments (satu per percobaan bayar) |
 | order_items | order_id, product_variant_id, product_name, size_ml, price, qty | milik orders |
-| payments | order_id, midtrans_order_id, snap_token, payment_type, status, paid_at, raw_response (json) | milik orders |
+| payments | order_id, reference, provider_payment_id, payment_type (bank_transfer/qris), channel_code, bank_name, va_number, qr_string, payment_url, amount, status (pending/paid/expired/canceled), expires_at, paid_at, needs_refund, raw_response (json) | milik orders |
 | vouchers | code, type (fixed/percent), value, min_purchase, quota, used, starts_at, ends_at | dipakai orders |
 | reviews | user_id, product_id, order_item_id, rating, comment, is_visible | milik users, products |
 | conversations | user_id, status (bot/waiting_admin/open/closed), last_message_at | milik users; punya banyak messages |
@@ -152,7 +152,7 @@ Harga, nama produk, dan alamat disalin (snapshot) ke order supaya riwayat pesana
 
 ## Kebutuhan Non-Fungsional
 
-- **Keamanan:** HTTPS wajib; validasi signature webhook Midtrans; API key RajaOngkir dan Midtrans hanya di `.env`; CSRF dan rate limit di login dan chat; panel `/admin` hanya untuk role admin.
+- **Keamanan:** HTTPS wajib; validasi tanda tangan HMAC callback Komerce; API key RajaOngkir dan Komerce hanya di `.env`; CSRF dan rate limit di login dan chat; panel `/admin` hanya untuk role admin.
 - **Integritas stok:** stok dikurangi saat order dibuat dalam database transaction dengan row lock, dikembalikan saat order kedaluwarsa atau dibatalkan.
 - **Performa:** halaman katalog dimuat di bawah 3 detik di koneksi 4G; gambar dikompres (WebP) dan di-lazy-load; hasil ongkir dan daftar kota di-cache.
 - **Kompatibilitas hosting:** harus jalan di shared hosting (PHP 8.2+, MySQL 8, cron). Queue pakai driver database yang diproses cron `schedule:run` tiap menit; tanpa proses yang harus jalan terus.
@@ -169,7 +169,7 @@ Biaya operasional tahun pertama diperkirakan Rp450–800 ribu, masih di bawah bu
 | Shared hosting | Rp300–600 ribu/tahun | Wajib PHP 8.2+, MySQL 8, SSH, Composer, cron |
 | SSL | Rp0 | Let's Encrypt dari hosting |
 | Email transaksi | Rp0 | SMTP bawaan hosting |
-| Midtrans | Rp0 biaya bulanan | Potongan per transaksi sesuai metode bayar |
+| Komerce Payment | Rp0 biaya bulanan | Potongan per transaksi. Di sandbox: VA Rp10.000 → diterima Rp5.560; QRIS Rp10.000 → Rp9.971. Cek tarif produksi |
 | RajaOngkir | Cek paket terbaru | Pastikan kuota API cukup untuk volume checkout |
 
 Timeline mengasumsikan satu developer full-time.
@@ -183,12 +183,12 @@ Fitur wajib (ongkir, pembayaran, chat) dikerjakan berurutan di minggu 4–6 sete
 | Risiko | Dampak | Mitigasi |
 | --- | --- | --- |
 | Paket/harga API RajaOngkir berubah (layanannya sekarang di bawah Komerce) | Ongkir gagal dihitung | Cek paket terbaru sebelum mulai; bungkus API di satu service class agar mudah diganti; cache hasil ongkir |
-| Webhook Midtrans gagal sampai ke server | Order terbayar tapi status masih "Menunggu Bayar" | Tombol "Cek status" di admin yang memanggil API status Midtrans; log semua notifikasi |
+| Callback Komerce gagal sampai ke server | Order terbayar tapi status masih "Menunggu Bayar" | Halaman pesanan mengecek status tiap 5 detik; tombol "Cek status bayar" di admin; `orders:expire` mengecek status sebelum membatalkan; semua callback dicatat di log |
 | Shared hosting tidak mendukung websocket | Chat tidak realtime | Pakai polling Livewire; migrasi ke Laravel Reverb jika pindah ke VPS |
 | Chatbot tidak memahami pertanyaan | Customer frustrasi | Tombol "Bicara dengan admin" selalu tersedia; admin menambah FAQ dari pertanyaan yang sering masuk |
 | Budget pengembangan Rp1 juta terlalu kecil untuk 14 fitur jika memakai jasa developer | Proyek molor atau kualitas turun | Kerjakan P0 dulu; P1 menyusul |
 
-**Asumsi:** satu admin aktif; katalog awal di bawah 200 varian; Midtrans dan RajaOngkir sudah terdaftar atas nama toko; aset foto produk disediakan pemilik toko.
+**Asumsi:** satu admin aktif; katalog awal di bawah 200 varian; akun Komerce (RajaOngkir dan Payment) sudah terdaftar atas nama toko; aset foto produk disediakan pemilik toko.
 
 **Metrik sukses 3 bulan pertama:**
 
@@ -224,7 +224,7 @@ Baca docs/PRD.md sebelum mengerjakan apa pun. PRD adalah sumber kebenaran untuk 
 - Sisi customer: Blade + Livewire 3 + Tailwind + Alpine
 - Panel admin: Filament 3 di /admin (satu project, satu database)
 - Ongkir: RajaOngkir lewat app/Services/ShippingService.php
-- Pembayaran: Midtrans Snap lewat app/Services/PaymentService.php
+- Pembayaran: Komerce Payment (VA bank + QRIS) lewat app/Services/PaymentService.php
 - Chatbot: rule-based dari tabel faqs lewat app/Services/ChatbotService.php
 - Test: Pest
 
@@ -245,7 +245,7 @@ Baca docs/PRD.md sebelum mengerjakan apa pun. PRD adalah sumber kebenaran untuk 
 ## Batasan teknis
 - Target shared hosting: tidak ada proses yang jalan terus. Queue pakai driver database, diproses lewat scheduler (cron schedule:run tiap menit). Chat realtime pakai Livewire wire:poll, bukan Reverb.
 - Stok dikurangi di dalam DB transaction dengan lockForUpdate.
-- Status order Dibayar HANYA dari webhook Midtrans yang signature-nya valid.
+- Status order Dibayar HANYA lewat PaymentService, berdasarkan jawaban Komerce dari server ke server (callback bertanda tangan valid atau API cek status).
 - API key hanya di .env, jangan pernah di-commit.
 - Harga, nama produk, dan alamat disalin ke order (snapshot).
 
@@ -282,7 +282,7 @@ Fase 3: Kerjakan fitur 5, 6, 7. Buat ShippingService untuk RajaOngkir (daftar pr
 ```
 
 ```text
-Fase 4: Kerjakan fitur 8, 9, 13. Buat PaymentService untuk Midtrans Snap (sandbox), endpoint webhook dengan validasi signature, scheduler untuk membatalkan order lewat 24 jam dan mengembalikan stok. Tambah aksi Input resi di resource Pesanan Filament.
+Fase 4: Kerjakan fitur 8, 9, 13. Buat PaymentService untuk Komerce Payment (sandbox), endpoint callback dengan validasi tanda tangan, scheduler untuk membatalkan order lewat 24 jam dan mengembalikan stok. Tambah aksi Input resi di resource Pesanan Filament.
 ```
 
 ```text
@@ -290,7 +290,7 @@ Fase 5: Kerjakan fitur 10. Widget chat Livewire di semua halaman, ChatbotService
 ```
 
 ```text
-Fase 6: Kerjakan fitur 11, 12, dan dashboard Filament (wireframe 5). Lalu jalankan uji end-to-end alur belanja sampai Selesai dengan Midtrans sandbox, dan laporkan hasilnya.
+Fase 6: Kerjakan fitur 11, 12, dan dashboard Filament (wireframe 5). Lalu jalankan uji end-to-end alur belanja sampai Selesai dengan Komerce sandbox, dan laporkan hasilnya.
 ```
 
 ### 5. Prompt pakai ulang

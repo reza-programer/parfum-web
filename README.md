@@ -21,6 +21,8 @@ php artisan serve
 - **Customer uji dari seeder:** `customer@tokoparfum.test` / `password`.
 - **Admin:** buat lewat `php artisan app:create-admin`. Seeder sengaja tidak membuat admin.
 - **Ongkir tanpa API key:** set `RAJAONGKIR_FAKE=true`. Ini hanya berlaku di `APP_ENV=local` dan memakai data wilayah serta tarif contoh.
+- **Pembayaran (Komerce sandbox):** isi `KOMERCE_PAYMENT_API_KEY` dan `KOMERCE_CALLBACK_KEY`, lalu biarkan `KOMERCE_IS_PRODUCTION=false`. Setelah checkout, halaman pesanan menampilkan tautan "Simulasikan pembayaran (sandbox)". Buka tautan itu, klik "Click here to simulate your payment", dan dalam beberapa detik status pesanan berubah jadi Dibayar karena halaman pesanan mengecek ke Komerce tiap 5 detik.
+- **Callback di laptop:** Komerce tidak bisa memanggil `127.0.0.1`. Kalau perlu menguji callback, jalankan `ngrok http 8000` (ngrok ada di Laragon dan perlu authtoken), lalu isi `KOMERCE_CALLBACK_URL=https://xxxx.ngrok-free.app/pembayaran/komerce/callback`. Tanpa callback pun status tetap terbarui lewat cek status.
 - **Email:** di lokal `MAIL_MAILER=log`, jadi isi email tertulis di `storage/logs/laravel.log`. Email dikirim lewat queue, jadi jalankan `php artisan queue:work` atau `php artisan schedule:work`.
 
 ## Test
@@ -34,10 +36,12 @@ Test memakai database MySQL `parfum_test` (lihat `phpunit.xml`).
 
 ## Produksi (shared hosting)
 
-- Cukup satu cron: `* * * * * cd /path/app && php artisan schedule:run >> /dev/null 2>&1`. Scheduler membatalkan order yang lewat 24 jam (`orders:expire`) dan memproses queue email (`queue:work --stop-when-empty`).
+- Cukup satu cron: `* * * * * cd /path/app && php artisan schedule:run >> /dev/null 2>&1`. Scheduler membatalkan order yang lewat 24 jam (`orders:expire`, yang lebih dulu mengecek status bayar ke Komerce) dan memproses queue email (`queue:work --stop-when-empty`).
 - Isi `RAJAONGKIR_API_KEY`, lalu `RAJAONGKIR_ORIGIN` dengan ID kecamatan gudang. Pastikan `RAJAONGKIR_FAKE=false`.
+- Isi key Komerce Payment produksi, lalu set `KOMERCE_IS_PRODUCTION=true`. Daftarkan URL callback `https://domain-toko/pembayaran/komerce/callback` di dashboard Komerce, atau biarkan aplikasi mengirimnya otomatis di setiap pembayaran.
+- Pembayaran yang masuk untuk pesanan yang sudah batal, atau pembayaran ganda, ditandai **Perlu refund manual** di detail pesanan admin.
 - `APP_ENV=production`, `APP_DEBUG=false`, dan HTTPS wajib.
 
 ## Status fitur
 
-Semua 14 fitur PRD sudah dikerjakan **kecuali pembayaran Midtrans (fitur 8)**, yang ditunda atas permintaan pemilik. Order dibuat dengan status Menunggu Bayar dan dibatalkan otomatis setelah 24 jam. `OrderService::markPaid()` sudah siap dipanggil dari webhook Midtrans. Langkah-langkah yang tersisa ada di [docs/plans/fase-4.md](docs/plans/fase-4.md).
+Semua 14 fitur PRD sudah dikerjakan. Pembayaran (fitur 8) memakai Komerce Payment (VA bank + QRIS) sebagai pengganti Midtrans. Keputusan, hasil uji sandbox, dan rancangannya ada di [docs/plans/pembayaran-komerce.md](docs/plans/pembayaran-komerce.md).

@@ -7,7 +7,7 @@ Baca docs/PRD.md sebelum mengerjakan apa pun. PRD adalah sumber kebenaran untuk 
 - Sisi customer: Blade + Livewire 3 + Tailwind + Alpine
 - Panel admin: Filament 3 di /admin (satu project, satu database)
 - Ongkir: RajaOngkir lewat app/Services/ShippingService.php
-- Pembayaran: Midtrans Snap lewat app/Services/PaymentService.php
+- Pembayaran: Komerce Payment (VA bank + QRIS) lewat app/Services/PaymentService.php. Rencana dan hasil uji sandbox ada di docs/plans/pembayaran-komerce.md
 - Chatbot: rule-based dari tabel faqs lewat app/Services/ChatbotService.php
 - Test: Pest
 
@@ -29,7 +29,8 @@ Baca docs/PRD.md sebelum mengerjakan apa pun. PRD adalah sumber kebenaran untuk 
 ## Batasan teknis
 - Target shared hosting: tidak ada proses yang jalan terus. Queue pakai driver database, diproses lewat scheduler (cron schedule:run tiap menit). Chat realtime pakai Livewire wire:poll, bukan Reverb.
 - Stok dikurangi di dalam DB transaction dengan lockForUpdate.
-- Status order Dibayar HANYA dari webhook Midtrans yang signature-nya valid.
+- Status order Dibayar HANYA lewat PaymentService, berdasarkan jawaban Komerce dari server ke server: callback yang tanda tangan HMAC-nya valid, atau API cek status. Nominal harus cocok. Tidak ada tombol "tandai dibayar" manual, dan halaman sukses di browser tidak pernah mengubah status.
+- Test tidak boleh memanggil API asli: pakai Http::fake (FakeRajaOngkir, tests/Support/FakeKomerce). TestCase memakai Http::preventStrayRequests().
 - API key hanya di .env, jangan pernah di-commit.
 - Harga, nama produk, dan alamat disalin ke order (snapshot).
 
