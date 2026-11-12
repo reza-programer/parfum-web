@@ -38,6 +38,37 @@ class ShippingService
     }
 
     /**
+     * Kelurahan/desa beserta kode posnya, urut nama. Kode pos yang tidak 5 digit dianggap kosong.
+     * Ongkir tetap dihitung per kecamatan; kelurahan hanya untuk alamat lengkap dan kode pos.
+     *
+     * @return array<int, array{name: string, zip: ?string}>
+     */
+    public function subdistricts(int $districtId): array
+    {
+        $key = "rajaongkir.subdistricts.{$districtId}";
+        $cached = Cache::get($key);
+
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $rows = collect($this->call(fn (PendingRequest $http) => $http->get("destination/sub-district/{$districtId}")))
+            ->filter(fn ($row) => is_array($row) && isset($row['id'], $row['name']))
+            ->mapWithKeys(fn (array $row) => [(int) $row['id'] => [
+                'name' => (string) $row['name'],
+                'zip' => preg_match('/^\d{5}$/', (string) ($row['zip_code'] ?? '')) ? (string) $row['zip_code'] : null,
+            ]])
+            ->sortBy('name')
+            ->all();
+
+        if ($rows) {
+            Cache::put($key, $rows, self::REGION_TTL);
+        }
+
+        return $rows;
+    }
+
+    /**
      * Opsi kurir untuk tujuan dan berat tertentu, urut dari termurah.
      *
      * @return list<ShippingOption>

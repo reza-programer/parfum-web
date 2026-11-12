@@ -153,3 +153,40 @@ it('mengganti asal gudang tidak memakai ongkir lama dari cache', function () {
 
     Http::assertSentCount(2);
 });
+
+it('mengambil kelurahan beserta kode pos dan meng-cache-nya', function () {
+    // Bentuk respons sama dengan API asli (/destination/sub-district/{district_id}).
+    Http::fake([
+        'rajaongkir.test/api/v1/destination/sub-district/1235' => Http::response(['meta' => ['code' => 200], 'data' => [
+            ['id' => 16472, 'name' => 'SAKERTA TIMUR', 'zip_code' => '45562'],
+            ['id' => 16457, 'name' => 'BAKOM', 'zip_code' => '45562'],
+            ['id' => 16999, 'name' => 'TANPA KODE', 'zip_code' => ''],
+            ['name' => 'TANPA ID'],
+        ]]),
+    ]);
+    $service = app(ShippingService::class);
+
+    expect($service->subdistricts(1235))->toBe([
+        16457 => ['name' => 'BAKOM', 'zip' => '45562'],
+        16472 => ['name' => 'SAKERTA TIMUR', 'zip' => '45562'],
+        16999 => ['name' => 'TANPA KODE', 'zip' => null],
+    ]);
+    $service->subdistricts(1235);
+
+    Http::assertSentCount(1);
+});
+
+it('kecamatan tanpa data kelurahan menghasilkan daftar kosong', function () {
+    Http::fake(['rajaongkir.test/api/v1/destination/sub-district/77' => Http::response(['data' => []])]);
+
+    expect(app(ShippingService::class)->subdistricts(77))->toBe([]);
+});
+
+it('data kelurahan contoh tersedia untuk mode fake dan test', function () {
+    App\Support\FakeRajaOngkir::register('https://rajaongkir.test/api/v1');
+
+    $rows = app(ShippingService::class)->subdistricts(1001);
+
+    expect($rows)->not->toBeEmpty()
+        ->and(collect($rows)->every(fn ($row) => preg_match('/^\d{5}$/', $row['zip'])))->toBeTrue();
+});
