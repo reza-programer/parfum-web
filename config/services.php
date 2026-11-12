@@ -29,6 +29,18 @@ return [
         'fake' => (bool) env('RAJAONGKIR_FAKE', false),
     ],
 
+    'komerce' => [
+        'payment_key' => env('KOMERCE_PAYMENT_API_KEY'),
+        // Kunci HMAC-SHA256 untuk memverifikasi header X-Callback-Api-Key.
+        'callback_key' => env('KOMERCE_CALLBACK_KEY'),
+        // false = sandbox (api-sandbox.collaborator.komerce.id). PaymentService memilih base URL dari sini.
+        'production' => (bool) env('KOMERCE_IS_PRODUCTION', false),
+        // Opsional: timpa base URL (dipakai test).
+        'base_url' => env('KOMERCE_PAYMENT_BASE_URL'),
+        // Opsional: URL callback publik (misalnya https://xxxx.ngrok-free.app/pembayaran/komerce/callback) saat uji di laptop.
+        'callback_url' => env('KOMERCE_CALLBACK_URL'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],

@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
@@ -32,11 +33,51 @@ it('menyimpan snapshot alamat sebagai array', function () {
     expect($order->fresh()->address_snapshot['city_name'])->toBe('Bandung');
 });
 
-it('satu order hanya punya satu payment', function () {
+it('satu order bisa punya beberapa percobaan bayar, payment() adalah yang terbaru', function () {
     $order = Order::factory()->create();
-    Payment::factory()->for($order)->create();
+    $first = Payment::factory()->for($order)->create(['status' => PaymentStatus::Expired]);
+    $latest = Payment::factory()->for($order)->create();
 
-    expect(fn () => Payment::factory()->for($order)->create())->toThrow(QueryException::class);
+    $order->refresh();
+
+    expect($order->payments)->toHaveCount(2)
+        ->and($order->payment->is($latest))->toBeTrue()
+        ->and($first->fresh()->status)->toBe(PaymentStatus::Expired)
+        ->and($latest->fresh()->status)->toBe(PaymentStatus::Pending);
+});
+
+it('reference dan id pembayaran Komerce unik', function () {
+    Payment::factory()->create(['reference' => 'INV-1-1', 'provider_payment_id' => 'KPAY-1/KM/2026']);
+
+    expect(fn () => Payment::factory()->create(['reference' => 'INV-1-1']))->toThrow(QueryException::class)
+        ->and(fn () => Payment::factory()->create(['provider_payment_id' => 'KPAY-1/KM/2026']))->toThrow(QueryException::class);
+});
+
+it('menyimpan detail VA dan QRIS dari Komerce', function () {
+    $payment = Payment::factory()->create([
+        'payment_type' => 'bank_transfer',
+        'channel_code' => 'BCA',
+        'bank_name' => 'Bank Central Asia',
+        'va_number' => '381659999580702',
+        'amount' => 250000,
+        'expires_at' => now()->addHour(),
+        'payment_url' => 'https://pay-sandbox.komerce.my.id/abc',
+    ])->fresh();
+
+    expect($payment->isVirtualAccount())->toBeTrue()
+        ->and($payment->amount)->toBe(250000)
+        ->and($payment->expires_at)->toBeInstanceOf(DateTimeInterface::class)
+        ->and($payment->needs_refund)->toBeFalse();
+
+    $qris = Payment::factory()->qris()->create()->fresh();
+
+    expect($qris->isVirtualAccount())->toBeFalse()
+        ->and($qris->qr_string)->not->toBeEmpty();
+});
+
+it('label status pembayaran dalam bahasa Indonesia', function () {
+    expect(array_map(fn (PaymentStatus $s) => $s->label(), PaymentStatus::cases()))
+        ->toBe(['Menunggu', 'Dibayar', 'Kedaluwarsa', 'Dibatalkan']);
 });
 
 it('menghubungkan order dengan item, payment, dan voucher', function () {

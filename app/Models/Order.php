@@ -54,9 +54,17 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Percobaan bayar terbaru (QR yang kedaluwarsa atau ganti bank membuat payment baru).
+     */
     public function payment(): HasOne
     {
-        return $this->hasOne(Payment::class);
+        return $this->hasOne(Payment::class)->latestOfMany();
     }
 
     public function getRouteKeyName(): string

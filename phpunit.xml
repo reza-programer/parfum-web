@@ -32,5 +32,12 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <!-- Test tidak pernah memakai key asli dari .env; semua HTTP ke pihak ketiga di-fake. -->
+        <env name="RAJAONGKIR_API_KEY" value="test-rajaongkir-key"/>
+        <env name="KOMERCE_PAYMENT_API_KEY" value="test-komerce-key"/>
+        <env name="KOMERCE_CALLBACK_KEY" value="test-callback-key"/>
+        <env name="KOMERCE_IS_PRODUCTION" value="false"/>
+        <env name="KOMERCE_PAYMENT_BASE_URL" value="https://komerce.test/user"/>
+        <env name="KOMERCE_CALLBACK_URL" value=""/>
     </php>
 </phpunit>
