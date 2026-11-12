@@ -6,6 +6,10 @@ use App\Models\Faq;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+
+// Seeder memasang render demo ke disk public: pakai disk palsu supaya tidak menulis ke storage asli.
+beforeEach(fn () => Storage::fake('public'));
 
 it('mengisi data dev yang dibutuhkan fase berikutnya', function () {
     $this->seed();
