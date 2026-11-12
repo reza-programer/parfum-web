@@ -56,15 +56,35 @@ class ProductDetail extends Component
 
     public function addToCart(CartService $cart): void
     {
+        if (! $this->putInCart($cart)) {
+            return;
+        }
+
+        $this->dispatch('cart-updated');
+        $this->dispatch('toast', message: "{$this->product->name} {$this->variant->label()} masuk keranjang");
+    }
+
+    /**
+     * Masukkan ke keranjang lalu langsung ke checkout.
+     */
+    public function buyNow(CartService $cart): void
+    {
+        if ($this->putInCart($cart)) {
+            $this->redirectRoute('checkout', navigate: true);
+        }
+    }
+
+    private function putInCart(CartService $cart): bool
+    {
         if (! auth()->check()) {
             session()->put('url.intended', route('products.show', $this->product));
             $this->redirectRoute('login', navigate: true);
 
-            return;
+            return false;
         }
 
         if (! $this->variant) {
-            return;
+            return false;
         }
 
         try {
@@ -72,12 +92,12 @@ class ProductDetail extends Component
         } catch (CartException $e) {
             $this->addError('qty', $e->getMessage());
 
-            return;
+            return false;
         }
 
         $this->resetErrorBag();
-        $this->dispatch('cart-updated');
-        session()->flash('cart-added', $this->variant->label());
+
+        return true;
     }
 
     public function toggleWishlist(WishlistService $wishlist): void
@@ -108,13 +128,18 @@ class ProductDetail extends Component
             'rating' => $reviews->isEmpty() ? null : round($this->product->visibleReviews()->avg('rating'), 1),
             'reviewCount' => $this->product->visibleReviews()->count(),
             'soldOut' => $this->product->isSoldOut(),
+            // Aroma yang sama didahulukan, lalu kategori yang sama.
             'related' => Product::query()
                 ->with(['brand:id,name,slug', 'variants:id,product_id,size_ml,is_decant,price,stock'])
                 ->withMin('variants as min_price', 'price')
                 ->withSum('variants as total_stock', 'stock')
                 ->where('id', '!=', $this->product->id)
-                ->where('scent_family', $this->product->scent_family)
                 ->where('is_active', true)
+                ->where(fn ($q) => $q
+                    ->where('scent_family', $this->product->scent_family)
+                    ->orWhere('category_id', $this->product->category_id))
+                ->orderByRaw('scent_family = ? desc', [$this->product->scent_family->value])
+                ->orderByDesc('created_at')
                 ->limit(4)
                 ->get(),
         ])->title($this->product->name);
