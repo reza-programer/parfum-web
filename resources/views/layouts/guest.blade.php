@@ -8,7 +8,7 @@
         <title>{{ config('app.name') }}</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=cormorant-garamond:500,600|inter:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=cormorant-garamond:600|inter:400,500,600,700&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -18,7 +18,7 @@
                 <x-application-logo />
             </a>
 
-            <div class="mt-10 w-full bg-paper-card px-6 py-10 sm:max-w-[440px] sm:px-10">
+            <div class="mt-8 w-full rounded-xl border border-line bg-paper-card px-5 py-8 shadow-card sm:max-w-[420px] sm:px-8">
                 {{ $slot }}
             </div>
         </div>

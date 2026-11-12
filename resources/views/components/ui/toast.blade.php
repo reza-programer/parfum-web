@@ -19,7 +19,7 @@
     <template x-for="item in items" :key="item.id">
         <div x-transition:enter="transition duration-200 ease-out" x-transition:enter-start="translate-y-2 opacity-0"
              x-transition:leave="transition duration-150 ease-in" x-transition:leave-end="opacity-0"
-             class="pointer-events-auto min-w-[16rem] max-w-sm bg-primary px-5 py-3 text-center text-body text-white"
+             class="pointer-events-auto min-w-[16rem] max-w-sm rounded-lg bg-ink/90 px-5 py-3 text-center text-body font-medium text-white shadow-float"
              x-text="item.message"></div>
     </template>
 </div>

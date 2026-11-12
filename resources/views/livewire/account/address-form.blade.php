@@ -1,6 +1,6 @@
 <form wire:submit="save" class="space-y-5">
     @if ($regionError)
-        <p class="border-l-2 border-danger bg-danger/5 px-4 py-3 text-body text-danger">{{ $regionError }}</p>
+        <p class="rounded-md border border-danger/30 bg-red-50 px-4 py-3 text-body text-danger">{{ $regionError }}</p>
     @endif
 
     <div class="grid gap-5 sm:grid-cols-2">
@@ -84,7 +84,7 @@
     </div>
 
     <label class="flex items-center gap-3 text-body text-ink-2">
-        <input type="checkbox" wire:model="is_default" class="size-4 rounded-none border-ink/40 text-ink focus:ring-0 focus:ring-offset-0">
+        <input type="checkbox" wire:model="is_default" class="size-4 rounded border-ink-faint text-primary focus:ring-0 focus:ring-offset-0">
         Jadikan alamat utama
     </label>
 

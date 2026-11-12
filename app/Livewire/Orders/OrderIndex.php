@@ -40,7 +40,7 @@ class OrderIndex extends Component
         };
 
         $orders = auth()->user()->orders()
-            ->with('items')
+            ->with('items.variant.product:id,name,images,scent_family')
             ->when($statuses !== null, fn ($q) => $q->whereIn('status', $statuses))
             ->latest()
             ->paginate(10);

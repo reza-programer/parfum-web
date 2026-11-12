@@ -5,19 +5,19 @@
     $visible = 6;
     $selectedIndex = $banks->search(fn ($m) => $m->key() === $selected);
     $row = fn (string $key) => [
-        'flex min-h-14 cursor-pointer items-center gap-4 px-4 py-3 transition-colors duration-150 has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-inset has-[:focus-visible]:ring-ink',
-        'bg-paper-card' => $selected === $key,
-        'hover:bg-paper-card/60' => $selected !== $key,
+        'flex min-h-14 cursor-pointer items-center gap-3 rounded-md border px-3.5 py-3 transition-colors duration-150 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary/40',
+        'border-primary bg-primary-soft' => $selected === $key,
+        'border-line bg-paper-card hover:border-ink-faint' => $selected !== $key,
     ];
-    $radio = 'size-4 shrink-0 border-ink/40 text-ink focus:ring-0 focus:ring-offset-0';
+    $radio = 'size-4 shrink-0 border-ink-faint text-primary focus:ring-0 focus:ring-offset-0';
     $logo = 'h-5 w-12 shrink-0 object-contain object-left';
 @endphp
-{{-- Daftar bergaris: VA per bank lalu QRIS. Bank di luar 6 teratas dilipat supaya ringkas. --}}
-<div {{ $attributes->class('space-y-6') }} x-data="{ all: {{ $selectedIndex !== false && $selectedIndex >= $visible ? 'true' : 'false' }} }">
+{{-- Pilihan bersudut: VA per bank lalu QRIS. Bank di luar 6 teratas dilipat supaya ringkas. --}}
+<div {{ $attributes->class('space-y-5') }} x-data="{ all: {{ $selectedIndex !== false && $selectedIndex >= $visible ? 'true' : 'false' }} }">
     @if ($banks->isNotEmpty())
         <div role="radiogroup" aria-label="Transfer virtual account">
-            <p class="eyebrow">Transfer virtual account</p>
-            <div class="mt-3 divide-y divide-line border-y border-line">
+            <p class="text-body font-semibold text-ink">Transfer virtual account</p>
+            <div class="mt-2.5 grid gap-2 sm:grid-cols-2">
                 @foreach ($banks as $i => $method)
                     <label wire:key="pm-{{ $method->key() }}" @class($row($method->key())) @if ($i >= $visible) x-show="all" x-cloak @endif>
                         <input type="radio" wire:model.live="{{ $model }}" value="{{ $method->key() }}" class="{{ $radio }}">
@@ -29,15 +29,15 @@
                 @endforeach
             </div>
             @if ($banks->count() > $visible)
-                <button type="button" x-show="! all" x-on:click="all = true" class="link mt-3 text-label">Tampilkan semua bank ({{ $banks->count() }})</button>
+                <button type="button" x-show="! all" x-on:click="all = true" class="link mt-2.5 text-body">Tampilkan semua bank ({{ $banks->count() }})</button>
             @endif
         </div>
     @endif
 
     @if ($qris)
         <div role="radiogroup" aria-label="QRIS">
-            <p class="eyebrow">QRIS</p>
-            <div class="mt-3 border-y border-line">
+            <p class="text-body font-semibold text-ink">QRIS</p>
+            <div class="mt-2.5">
                 <label wire:key="pm-qris" @class($row('qris'))>
                     <input type="radio" wire:model.live="{{ $model }}" value="qris" class="{{ $radio }}">
                     @if ($qris->logoUrl)

@@ -9,7 +9,7 @@
                 @for ($i = 1; $i <= 5; $i++)
                     <button type="button" wire:click="$set('rating', {{ $i }})" role="radio" aria-checked="{{ $rating === $i ? 'true' : 'false' }}" aria-label="{{ $i }} bintang"
                             class="inline-flex size-8 items-center justify-center rounded-md hover:bg-ink/5">
-                        <x-lucide-star @class(['size-5', 'fill-primary text-primary' => $i <= $rating, 'text-ink/25' => $i > $rating]) stroke-width="1.5" />
+                        <x-lucide-star @class(['size-5', 'fill-amber-400 text-amber-400' => $i <= $rating, 'text-ink-faint' => $i > $rating]) stroke-width="1.5" />
                     </button>
                 @endfor
             </div>
