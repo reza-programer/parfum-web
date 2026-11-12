@@ -23,6 +23,21 @@ class Catalog extends Component
 
     public const PER_PAGE = 24;
 
+    /** Pilihan harga cepat di kotak filter (dalam Rupiah). */
+    public const PRICE_RANGES = [
+        ['label' => 'Di bawah Rp100rb', 'min' => null, 'max' => 100_000],
+        ['label' => 'Rp100rb – Rp250rb', 'min' => 100_000, 'max' => 250_000],
+        ['label' => 'Di atas Rp250rb', 'min' => 250_000, 'max' => null],
+    ];
+
+    /** Tab urutan di atas hasil. Kunci sama dengan CatalogQuery::SORTS. */
+    public const SORT_TABS = [
+        'terbaru' => 'Terbaru',
+        'terlaris' => 'Terlaris',
+        'termurah' => 'Harga terendah',
+        'termahal' => 'Harga tertinggi',
+    ];
+
     #[Url(except: '')]
     public string $q = '';
 
@@ -91,6 +106,91 @@ class Catalog extends Component
         }
 
         $this->resetPage();
+    }
+
+    public function setPriceRange(?int $min = null, ?int $max = null): void
+    {
+        $this->min = $min === null ? '' : (string) max(0, $min);
+        $this->max = $max === null ? '' : (string) max(0, $max);
+        $this->resetPage();
+    }
+
+    /**
+     * Hapus satu filter dari chip filter aktif. Tipe yang tidak dikenal diabaikan.
+     */
+    public function removeFilter(string $type, string $value = ''): void
+    {
+        $without = fn (array $values) => array_values(array_filter($values, fn ($v) => $v !== $value));
+
+        match ($type) {
+            'q' => $this->q = '',
+            'category' => $this->category = '',
+            'brand' => $this->brands = $without($this->brands),
+            'scent' => $this->scents = $without($this->scents),
+            'size' => $this->sizes = $without($this->sizes),
+            'concentration' => $this->concentrations = $without($this->concentrations),
+            'price' => [$this->min, $this->max] = ['', ''],
+            'tersedia' => $this->tersedia = false,
+            default => null,
+        };
+
+        $this->resetPage();
+    }
+
+    /**
+     * Chip filter aktif dengan nama yang mudah dibaca.
+     *
+     * @return list<array{key: string, type: string, value: string, label: string}>
+     */
+    #[Computed]
+    public function activeChips(): array
+    {
+        $chips = [];
+        $add = function (string $type, string $value, string $label) use (&$chips) {
+            $chips[] = ['key' => $value === '' ? $type : "{$type}:{$value}", 'type' => $type, 'value' => $value, 'label' => $label];
+        };
+        $strings = fn (array $values) => array_values(array_filter($values, 'is_string'));
+
+        if ($this->q !== '') {
+            $add('q', '', '“'.$this->q.'”');
+        }
+
+        if ($this->category !== '' && ! $this->lockedCategoryId) {
+            $add('category', '', Category::where('slug', $this->category)->value('name') ?? $this->category);
+        }
+
+        $brandNames = Brand::whereIn('slug', $strings($this->brands))->pluck('name', 'slug');
+        foreach ($strings($this->brands) as $slug) {
+            $add('brand', $slug, $brandNames[$slug] ?? $slug);
+        }
+
+        foreach ($strings($this->scents) as $scent) {
+            $add('scent', $scent, ScentFamily::tryFrom($scent)?->label() ?? $scent);
+        }
+
+        foreach ($strings($this->sizes) as $size) {
+            $add('size', $size, $size === 'decant' ? 'Decant' : "{$size}ml");
+        }
+
+        foreach ($strings($this->concentrations) as $concentration) {
+            $add('concentration', $concentration, Concentration::tryFrom($concentration)?->label() ?? $concentration);
+        }
+
+        $min = $this->priceValue($this->min);
+        $max = $this->priceValue($this->max);
+        if ($min !== null || $max !== null) {
+            $add('price', '', match (true) {
+                $min !== null && $max !== null => rupiah($min).' – '.rupiah($max),
+                $min !== null => 'Mulai '.rupiah($min),
+                default => 'Sampai '.rupiah($max),
+            });
+        }
+
+        if ($this->tersedia) {
+            $add('tersedia', '', 'Tersedia');
+        }
+
+        return $chips;
     }
 
     #[Computed]
