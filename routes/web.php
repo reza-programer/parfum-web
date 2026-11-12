@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KomerceCallbackController;
 use App\Livewire\Account\Addresses;
 use App\Livewire\Cart;
 use App\Livewire\Catalog;
@@ -32,5 +33,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::redirect('dashboard', '/')->name('dashboard');
+
+// Callback Komerce Payment (server ke server, dikecualikan dari CSRF di bootstrap/app.php)
+Route::post('pembayaran/komerce/callback', KomerceCallbackController::class)
+    ->middleware('throttle:120,1')
+    ->name('payments.komerce.callback');
 
 require __DIR__.'/auth.php';

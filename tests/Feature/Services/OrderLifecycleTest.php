@@ -87,7 +87,7 @@ it('orders:expire terjadwal di scheduler', function () {
 it('markPaid mengubah status dan mengirim email pembayaran', function () {
     $order = orderWithItem($this->variant);
 
-    $this->orders->markPaid($order, ['payment_type' => 'qris']);
+    $this->orders->markPaid($order);
 
     expect($order->fresh()->status)->toBe(OrderStatus::Paid);
     Mail::assertQueued(PaymentReceivedMail::class, fn ($m) => $m->order->is($order));
@@ -96,7 +96,7 @@ it('markPaid mengubah status dan mengirim email pembayaran', function () {
 it('markPaid pada order yang sudah dibatalkan tidak mengubah status', function () {
     $order = orderWithItem($this->variant, 1, ['status' => OrderStatus::Cancelled]);
 
-    expect(fn () => $this->orders->markPaid($order, []))->toThrow(OrderException::class);
+    expect(fn () => $this->orders->markPaid($order))->toThrow(OrderException::class);
 });
 
 it('alur dikemas, kirim dengan resi, lalu diterima', function () {

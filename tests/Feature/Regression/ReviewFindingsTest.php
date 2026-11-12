@@ -80,8 +80,8 @@ it('markPaid yang diulang hanya mengirim satu email', function () {
     Mail::fake();
     $order = Order::factory()->create();
 
-    app(OrderService::class)->markPaid($order, []);
-    app(OrderService::class)->markPaid($order->fresh(), []);
+    app(OrderService::class)->markPaid($order);
+    app(OrderService::class)->markPaid($order->fresh());
 
     Mail::assertQueued(PaymentReceivedMail::class, 1);
 });

@@ -11,7 +11,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Dipanggil server Komerce, keasliannya dicek lewat tanda tangan HMAC.
+        $middleware->validateCsrfTokens(except: ['pembayaran/komerce/callback']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

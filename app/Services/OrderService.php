@@ -208,18 +208,17 @@ class OrderService
     }
 
     /**
-     * HANYA dipanggil dari webhook Midtrans dengan signature valid.
-     *
-     * @param  array<string, mixed>  $payment
+     * HANYA dipanggil dari PaymentService setelah Komerce (server ke server) menyatakan PAID
+     * dengan nominal yang cocok. Data pembayarannya disimpan PaymentService di tabel payments.
      */
-    public function markPaid(Order $order, array $payment): Order
+    public function markPaid(Order $order): Order
     {
         $changed = false;
 
-        $order = DB::transaction(function () use ($order, $payment, &$changed) {
+        $order = DB::transaction(function () use ($order, &$changed) {
             $locked = $this->lock($order);
 
-            // Notifikasi Midtrans bisa dikirim ulang: idempotent, tanpa email kedua.
+            // Callback dan polling bisa datang bersamaan: idempotent, tanpa email kedua.
             if ($locked->status === OrderStatus::Paid) {
                 return $locked;
             }
@@ -229,12 +228,6 @@ class OrderService
             }
 
             $locked->update(['status' => OrderStatus::Paid]);
-            $locked->payment?->update([
-                'status' => 'settlement',
-                'payment_type' => $payment['payment_type'] ?? $locked->payment->payment_type,
-                'paid_at' => now(),
-                'raw_response' => $payment,
-            ]);
             $changed = true;
 
             return $locked;
