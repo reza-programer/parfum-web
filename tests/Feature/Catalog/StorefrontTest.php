@@ -23,7 +23,7 @@ function productWith(array $attrs = [], array $variants = [[50, 300000, 5]]): Pr
 it('menampilkan beranda', function () {
     productWith(['name' => 'Hutan Pagi']);
 
-    $this->get('/')->assertOk()->assertSee('Hutan Pagi')->assertSee('Lihat katalog');
+    $this->get('/')->assertOk()->assertSee('Hutan Pagi')->assertSee('Baru masuk');
 });
 
 it('katalog menampilkan produk dan label habis', function () {
