@@ -126,15 +126,31 @@ new class extends Component
     </div>
 
     {{-- Menu mobile --}}
-    <x-ui.drawer name="menu" title="Menu" class="lg:hidden">
+    {{-- Menu mobile: di-teleport ke <body> karena navbar memakai backdrop-filter (lihat x-ui.drawer). --}}
+    @php
+        $menuLink = 'flex h-12 items-center justify-between px-5 transition-colors duration-150 active:bg-paper';
+    @endphp
+    <x-ui.drawer name="menu" title="Menu" teleport class="lg:hidden">
         <div class="-mx-5">
             @foreach ($links as $link)
                 <a href="{{ $link['url'] }}" wire:navigate
-                   @class(['flex h-12 items-center px-5 text-[13px] font-medium uppercase tracking-nav', 'text-ink' => $link['active'], 'text-ink-2' => ! $link['active']])>{{ $link['label'] }}</a>
+                   @class([$menuLink, 'text-[13px] font-medium uppercase tracking-nav', 'text-ink' => $link['active'], 'text-ink-2' => ! $link['active']])>
+                    {{ $link['label'] }}
+                    <x-lucide-chevron-right class="size-4 text-ink-faint" stroke-width="1.25" />
+                </a>
             @endforeach
-            <a href="{{ route('catalog') }}" wire:navigate class="flex h-12 items-center px-5 text-[13px] font-medium uppercase tracking-nav text-ink-2">Semua parfum</a>
+            <a href="{{ route('catalog') }}" wire:navigate class="{{ $menuLink }} text-[13px] font-medium uppercase tracking-nav text-ink-2">
+                Semua parfum
+                <x-lucide-chevron-right class="size-4 text-ink-faint" stroke-width="1.25" />
+            </a>
         </div>
-        <div class="divider my-4"></div>
+
+        <form action="{{ route('catalog') }}" method="GET" class="mt-4" role="search">
+            <label for="menu-search" class="sr-only">Cari parfum</label>
+            <input id="menu-search" name="q" type="search" placeholder="Cari nama atau brand" class="field" autocomplete="off">
+        </form>
+
+        <div class="divider my-5"></div>
         <div class="-mx-5">
             @auth
                 @foreach ([
@@ -143,12 +159,12 @@ new class extends Component
                     ['Alamat', route('addresses')],
                     ['Profil', route('profile')],
                 ] as [$label, $url])
-                    <a href="{{ $url }}" wire:navigate class="flex h-11 items-center px-5 text-body text-ink-2">{{ $label }}</a>
+                    <a href="{{ $url }}" wire:navigate class="{{ $menuLink }} text-body text-ink-2">{{ $label }}</a>
                 @endforeach
-                <button wire:click="logout" class="flex h-11 w-full items-center px-5 text-body text-ink-2">Keluar</button>
+                <button type="button" wire:click="logout" class="{{ $menuLink }} w-full text-body text-ink-2">Keluar</button>
             @else
-                <a href="{{ route('login') }}" wire:navigate class="flex h-11 items-center px-5 text-body text-ink-2">Masuk</a>
-                <a href="{{ route('register') }}" wire:navigate class="flex h-11 items-center px-5 text-body text-ink-2">Daftar</a>
+                <a href="{{ route('login') }}" wire:navigate class="{{ $menuLink }} text-body text-ink-2">Masuk</a>
+                <a href="{{ route('register') }}" wire:navigate class="{{ $menuLink }} text-body text-ink-2">Daftar</a>
             @endauth
         </div>
     </x-ui.drawer>
