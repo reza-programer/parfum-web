@@ -1,5 +1,7 @@
 # Redesign Monokrom Premium — Rencana
 
+> Arah tampilan ini sudah **diganti** oleh `redesign-marketplace.md` (12 Nov 2026). Fitur dan logikanya tetap dipakai; warna dan tata letaknya tidak lagi.
+
 Status: **selesai dikerjakan 12 Nov 2026**, belum di-merge. Branch: `feat/redesign-monokrom` (dibuat di atas `feat/pembayaran-komerce`, jadi nanti di-merge berurutan).
 
 ## Hasil verifikasi
