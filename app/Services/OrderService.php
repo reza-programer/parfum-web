@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\OrderStatus;
+use App\Events\OrderCancelled;
 use App\Events\OrderPaid;
 use App\Events\OrderPlaced;
 use App\Events\OrderShipped;
@@ -154,7 +155,7 @@ class OrderService
      */
     private function cancelFrom(Order $order, array $allowedFrom, bool $mustBeOverdue = false): Order
     {
-        return DB::transaction(function () use ($order, $allowedFrom, $mustBeOverdue) {
+        $cancelled = DB::transaction(function () use ($order, $allowedFrom, $mustBeOverdue) {
             $locked = $this->lock($order);
 
             if (! in_array($locked->status, $allowedFrom, true)) {
@@ -183,6 +184,11 @@ class OrderService
 
             return $locked;
         });
+
+        // Di luar transaction: listener memanggil API Komerce untuk membatalkan VA.
+        OrderCancelled::dispatch($cancelled);
+
+        return $cancelled;
     }
 
     /**
