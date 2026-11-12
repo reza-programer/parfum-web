@@ -4,16 +4,19 @@ namespace App\Filament\Resources\OrderResource\Pages;
 
 use App\Enums\OrderStatus;
 use App\Exceptions\OrderException;
+use App\Exceptions\PaymentException;
 use App\Filament\Resources\OrderResource;
 use App\Models\Order;
 use App\Services\OrderService;
+use App\Services\PaymentService;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 
 /**
- * Status Dibayar sengaja tidak punya aksi di sini: hanya webhook Midtrans yang boleh mengubahnya.
+ * Status Dibayar sengaja tidak bisa diubah manual di sini. "Cek status bayar" hanya menanyakan
+ * ke Komerce; yang menandai dibayar tetap PaymentService berdasarkan jawaban Komerce.
  */
 class ViewOrder extends ViewRecord
 {
@@ -22,6 +25,13 @@ class ViewOrder extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('checkPayment')
+                ->label('Cek status bayar')
+                ->icon('heroicon-o-arrow-path')
+                ->color('gray')
+                ->visible(fn (Order $record) => $record->status === OrderStatus::PendingPayment && $record->payments()->exists())
+                ->action(fn (Order $record) => $this->checkPayment($record)),
+
             Actions\Action::make('process')
                 ->label('Tandai dikemas')
                 ->icon('heroicon-o-archive-box')
@@ -51,6 +61,23 @@ class ViewOrder extends ViewRecord
                 ->visible(fn (Order $record) => in_array($record->status, [OrderStatus::PendingPayment, OrderStatus::Paid, OrderStatus::Processing], true))
                 ->action(fn (Order $record) => $this->run(fn (OrderService $s) => $s->cancel($record), 'Pesanan dibatalkan')),
         ];
+    }
+
+    private function checkPayment(Order $record): void
+    {
+        try {
+            app(PaymentService::class)->refreshPending($record, wait: true);
+        } catch (PaymentException $e) {
+            Notification::make()->danger()->title($e->getMessage())->send();
+
+            return;
+        }
+
+        $this->record->refresh();
+
+        $this->record->status === OrderStatus::Paid
+            ? Notification::make()->success()->title('Pembayaran sudah masuk, pesanan ditandai dibayar')->send()
+            : Notification::make()->info()->title('Belum ada pembayaran masuk')->send();
     }
 
     private function run(callable $action, string $success): void

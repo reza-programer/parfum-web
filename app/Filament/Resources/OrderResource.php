@@ -3,8 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Models\Order;
+use App\Models\Payment;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
@@ -90,6 +92,25 @@ class OrderResource extends Resource
                     })
                     ->columnSpanFull(),
             ])->columns(2),
+
+            Infolists\Components\Section::make('Pembayaran')
+                ->description('Status dari Komerce. Dibayar hanya diubah oleh Komerce (callback atau cek status), bukan manual.')
+                ->schema([
+                    Infolists\Components\RepeatableEntry::make('payments')->label('')->schema([
+                        Infolists\Components\TextEntry::make('reference')->label('Referensi')->copyable(),
+                        Infolists\Components\TextEntry::make('payment_type')->label('Metode')
+                            ->formatStateUsing(fn (Payment $record) => $record->methodLabel()),
+                        Infolists\Components\TextEntry::make('amount')->label('Nominal')->money('IDR', locale: 'id'),
+                        Infolists\Components\TextEntry::make('status')->badge()
+                            ->formatStateUsing(fn (PaymentStatus $state) => $state->label())
+                            ->color(fn (PaymentStatus $state) => $state->color()),
+                        Infolists\Components\TextEntry::make('paid_at')->label('Dibayar')->dateTime('j M Y, H:i')->placeholder('–'),
+                        Infolists\Components\TextEntry::make('needs_refund')->label('Catatan')->badge()->color('danger')
+                            ->formatStateUsing(fn () => 'Perlu refund manual')
+                            ->visible(fn (Payment $record) => $record->needs_refund),
+                    ])->columns(6),
+                ])
+                ->visible(fn (Order $record) => $record->payments()->exists()),
 
             Infolists\Components\Section::make('Barang')->schema([
                 Infolists\Components\RepeatableEntry::make('items')->label('')->schema([
