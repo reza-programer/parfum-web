@@ -132,3 +132,36 @@ it('mengabaikan nilai filter yang tidak dikenal', function () {
 
     expect(names(new CatalogQuery(scents: ['bukan-aroma'], sizes: ['abc'])))->toBe(['A']);
 });
+
+it('memfilter konsentrasi dan mengabaikan nilai yang tidak dikenal', function () {
+    makeProduct(['name' => 'A', 'concentration' => 'edp']);
+    makeProduct(['name' => 'B', 'concentration' => 'edt']);
+    makeProduct(['name' => 'C']);
+
+    expect(names(new CatalogQuery(concentrations: ['edp'])))->toBe(['A'])
+        ->and(names(new CatalogQuery(concentrations: ['asal'])))->toHaveCount(3);
+});
+
+it('filter tersedia hanya menampilkan produk yang masih punya stok', function () {
+    makeProduct(['name' => 'Ada'], [[50, 300000, 2], [100, 500000, 0]]);
+    makeProduct(['name' => 'Habis'], [[50, 300000, 0]]);
+
+    expect(names(new CatalogQuery(inStock: true)))->toBe(['Ada']);
+});
+
+it('urutan harga tertinggi memakai harga mulai yang paling mahal', function () {
+    makeProduct(['name' => 'Murah'], [[50, 100000, 1]]);
+    makeProduct(['name' => 'Mahal'], [[50, 900000, 1]]);
+    makeProduct(['name' => 'Ada Decant'], [[50, 400000, 1], [10, 50000, 1]]);
+
+    expect(names((new CatalogQuery)->sorted('termahal')))->toBe(['Mahal', 'Murah', 'Ada Decant']);
+});
+
+it('pilihan urutan sesuai brief redesign', function () {
+    expect(CatalogQuery::SORTS)->toBe([
+        'terbaru' => 'Terbaru',
+        'termurah' => 'Harga terendah',
+        'termahal' => 'Harga tertinggi',
+        'terlaris' => 'Terlaris',
+    ]);
+});

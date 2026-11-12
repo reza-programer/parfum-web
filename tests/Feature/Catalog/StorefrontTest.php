@@ -156,3 +156,29 @@ it('produk nonaktif tidak bisa dibeli', function () {
 
     expect($user->cartItems()->count())->toBe(0);
 });
+
+it('filter konsentrasi hanya muncul kalau ada datanya dan membaca query string', function () {
+    productWith(['name' => 'Tanpa Data']);
+    Livewire::test(Catalog::class)->assertDontSee('Konsentrasi');
+
+    productWith(['name' => 'Pekat', 'concentration' => 'edp']);
+    Livewire::withQueryParams(['konsentrasi' => ['edp']])
+        ->test(Catalog::class)
+        ->assertSee('Konsentrasi')
+        ->assertSee('Eau de Parfum')
+        ->assertSee('Pekat')
+        ->assertDontSee('Tanpa Data');
+});
+
+it('filter tersedia dan urutan harga tertinggi bisa diubah dari komponen', function () {
+    productWith(['name' => 'Kosong Semua'], [[50, 300000, 0]]);
+    productWith(['name' => 'Masih Ada'], [[50, 500000, 3]]);
+
+    Livewire::test(Catalog::class)
+        ->set('tersedia', true)
+        ->assertSee('Masih Ada')
+        ->assertDontSee('Kosong Semua')
+        ->set('tersedia', false)
+        ->set('sort', 'termahal')
+        ->assertSeeInOrder(['Masih Ada', 'Kosong Semua']);
+});

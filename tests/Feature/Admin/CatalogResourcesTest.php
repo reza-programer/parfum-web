@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Concentration;
 use App\Filament\Resources\BrandResource;
 use App\Filament\Resources\CategoryResource;
 use App\Filament\Resources\ProductResource;
@@ -53,6 +54,7 @@ it('admin membuat produk beserta varian', function () {
             'category_id' => $category->id,
             'brand_id' => $brand->id,
             'scent_family' => 'woody',
+            'concentration' => 'edp',
             'description' => 'Aroma kayu pagi.',
             'top_notes' => 'Bergamot',
             'is_active' => true,
@@ -68,7 +70,10 @@ it('admin membuat produk beserta varian', function () {
 
     expect($product)->not->toBeNull()
         ->and($product->variants)->toHaveCount(2)
-        ->and($product->variants->firstWhere('sku', 'HP-50')->price)->toBe(279000);
+        ->and($product->variants->firstWhere('sku', 'HP-50')->price)->toBe(279000)
+        ->and($product->concentration)->toBe(Concentration::Edp)
+        ->and($product->concentration->label())->toBe('Eau de Parfum')
+        ->and($product->concentration->short())->toBe('EDP');
 });
 
 it('menolak varian tanpa harga dan sku ganda', function () {

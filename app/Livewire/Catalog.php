@@ -2,9 +2,11 @@
 
 namespace App\Livewire;
 
+use App\Enums\Concentration;
 use App\Enums\ScentFamily;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Queries\CatalogQuery;
 use Illuminate\Contracts\View\View;
@@ -38,6 +40,13 @@ class Catalog extends Component
     /** @var list<string> */
     #[Url(as: 'ukuran', except: [])]
     public array $sizes = [];
+
+    /** @var list<string> */
+    #[Url(as: 'konsentrasi', except: [])]
+    public array $concentrations = [];
+
+    #[Url(except: false)]
+    public bool $tersedia = false;
 
     #[Url(except: '')]
     public string $min = '';
@@ -75,7 +84,7 @@ class Catalog extends Component
 
     public function resetFilters(): void
     {
-        $this->reset('q', 'brands', 'scents', 'sizes', 'min', 'max', 'sort');
+        $this->reset('q', 'brands', 'scents', 'sizes', 'concentrations', 'tersedia', 'min', 'max', 'sort');
 
         if (! $this->lockedCategoryId) {
             $this->category = '';
@@ -107,15 +116,34 @@ class Catalog extends Component
             sizes: $this->sizes,
             minPrice: $this->priceValue($this->min),
             maxPrice: $this->priceValue($this->max),
+            concentrations: $this->concentrations,
+            inStock: $this->tersedia,
         ))->sorted($this->sort);
     }
 
     #[Computed]
     public function activeFilterCount(): int
     {
-        return count($this->brands) + count($this->scents) + count($this->sizes)
+        return count($this->brands) + count($this->scents) + count($this->sizes) + count($this->concentrations)
             + ($this->category && ! $this->lockedCategoryId ? 1 : 0)
+            + ($this->tersedia ? 1 : 0)
             + ($this->min !== '' ? 1 : 0) + ($this->max !== '' ? 1 : 0);
+    }
+
+    /**
+     * Konsentrasi yang benar-benar dipakai produk aktif. Kosong → filter tidak ditampilkan.
+     *
+     * @return list<Concentration>
+     */
+    #[Computed]
+    public function concentrationOptions(): array
+    {
+        $used = Product::query()->where('is_active', true)->whereNotNull('concentration')
+            ->distinct()->pluck('concentration')
+            ->map(fn ($c) => $c instanceof Concentration ? $c->value : $c)
+            ->all();
+
+        return array_values(array_filter(Concentration::cases(), fn (Concentration $c) => in_array($c->value, $used, true)));
     }
 
     public function render(): View

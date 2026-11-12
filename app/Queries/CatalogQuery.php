@@ -2,6 +2,7 @@
 
 namespace App\Queries;
 
+use App\Enums\Concentration;
 use App\Enums\OrderStatus;
 use App\Enums\ScentFamily;
 use App\Models\OrderItem;
@@ -15,7 +16,8 @@ final class CatalogQuery
 {
     public const SORTS = [
         'terbaru' => 'Terbaru',
-        'termurah' => 'Termurah',
+        'termurah' => 'Harga terendah',
+        'termahal' => 'Harga tertinggi',
         'terlaris' => 'Terlaris',
     ];
 
@@ -23,6 +25,7 @@ final class CatalogQuery
      * @param  list<string>  $brands  slug brand
      * @param  list<string>  $scents  nilai ScentFamily
      * @param  list<string>  $sizes  size_ml sebagai string, atau "decant"
+     * @param  list<string>  $concentrations  nilai Concentration
      */
     public function __construct(
         public ?string $search = null,
@@ -33,6 +36,8 @@ final class CatalogQuery
         public ?int $minPrice = null,
         public ?int $maxPrice = null,
         public string $sort = 'terbaru',
+        public array $concentrations = [],
+        public bool $inStock = false,
     ) {}
 
     public function sorted(string $sort): self
@@ -46,7 +51,8 @@ final class CatalogQuery
     public function builder(): Builder
     {
         $query = Product::query()
-            ->with(['brand:id,name,slug', 'category:id,name,slug'])
+            // Varian ikut dimuat untuk pilihan ukuran "Tambah cepat" di kartu.
+            ->with(['brand:id,name,slug', 'category:id,name,slug', 'variants:id,product_id,size_ml,is_decant,price,stock'])
             ->withMin('variants as min_price', 'price')
             ->withSum('variants as total_stock', 'stock');
 
@@ -54,11 +60,32 @@ final class CatalogQuery
         $this->applyCategory($query);
         $this->applyBrands($query);
         $this->applyScents($query);
+        $this->applyConcentrations($query);
         $this->applySizes($query);
         $this->applyPrice($query);
+        $this->applyStock($query);
         $this->applySort($query);
 
         return $query;
+    }
+
+    private function applyConcentrations(Builder $query): void
+    {
+        $values = array_values(array_filter(
+            $this->concentrations,
+            fn ($c) => is_string($c) && Concentration::tryFrom($c) !== null,
+        ));
+
+        if ($values) {
+            $query->whereIn('concentration', $values);
+        }
+    }
+
+    private function applyStock(Builder $query): void
+    {
+        if ($this->inStock) {
+            $query->where('is_active', true)->whereHas('variants', fn (Builder $q) => $q->where('stock', '>', 0));
+        }
     }
 
     private function applySearch(Builder $query): void
@@ -148,6 +175,7 @@ final class CatalogQuery
     {
         match ($this->sort) {
             'termurah' => $query->orderBy('min_price')->orderBy('products.id'),
+            'termahal' => $query->orderByDesc('min_price')->orderBy('products.id'),
             'terlaris' => $query
                 ->addSelect(['sold_qty' => OrderItem::query()
                     ->selectRaw('coalesce(sum(order_items.qty), 0)')

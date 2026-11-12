@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Concentration;
 use App\Enums\ScentFamily;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'category_id', 'brand_id', 'name', 'slug', 'description', 'scent_family',
+        'category_id', 'brand_id', 'name', 'slug', 'description', 'scent_family', 'concentration',
         'top_notes', 'middle_notes', 'base_notes', 'images', 'is_active',
     ];
 
@@ -21,6 +22,7 @@ class Product extends Model
     {
         return [
             'scent_family' => ScentFamily::class,
+            'concentration' => Concentration::class,
             'images' => 'array',
             'is_active' => 'boolean',
             'min_price' => 'integer',

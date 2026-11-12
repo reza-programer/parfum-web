@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Concentration;
 use App\Enums\ScentFamily;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
@@ -116,6 +117,11 @@ class ProductResource extends Resource
                         ->label('Keluarga aroma')
                         ->options(ScentFamily::options())
                         ->required(),
+                    Forms\Components\Select::make('concentration')
+                        ->label('Konsentrasi')
+                        ->options(Concentration::options())
+                        ->placeholder('Belum diisi')
+                        ->helperText('Dipakai untuk filter katalog. Kosongkan kalau belum tahu.'),
                 ]),
                 Forms\Components\Section::make('Foto')->schema([
                     Forms\Components\FileUpload::make('images')
