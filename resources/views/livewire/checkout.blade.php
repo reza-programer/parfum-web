@@ -37,7 +37,7 @@
                                     <span class="flex items-center gap-2 text-body font-medium text-ink">
                                         {{ $address->label }}
                                         @if ($address->is_default)
-                                            <x-ui.badge class="h-5 bg-ink/[0.06] text-ink">Utama</x-ui.badge>
+                                            <x-ui.badge tone="soft">Utama</x-ui.badge>
                                         @endif
                                     </span>
                                     <span class="mt-1 block text-body text-ink">{{ $address->recipient }} · <span class="tabular-nums">{{ $address->phone }}</span></span>

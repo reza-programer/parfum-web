@@ -37,6 +37,16 @@ enum OrderStatus: string
     }
 
     /**
+     * Status yang dihitung sebagai "terjual" (sudah dibayar, belum batal).
+     *
+     * @return list<string>
+     */
+    public static function soldValues(): array
+    {
+        return array_map(fn (self $s) => $s->value, [self::Paid, self::Processing, self::Shipped, self::Completed]);
+    }
+
+    /**
      * @return array<string, string>
      */
     public static function options(): array

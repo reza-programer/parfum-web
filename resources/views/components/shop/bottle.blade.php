@@ -1,11 +1,11 @@
 @props(['family' => 'woody', 'seed' => 0])
 @php
     $colors = [
-        'woody' => ['#dcdcd8', '#8f8f8a'],
-        'floral' => ['#efefec', '#b3b3ae'],
-        'fresh' => ['#f4f4f2', '#c9c9c4'],
-        'oriental' => ['#cdcdc9', '#6b6b67'],
-        'gourmand' => ['#e4e4e0', '#9c9c97'],
+        'woody' => ['#ece4d6', '#a68a5f'],
+        'floral' => ['#f6e6e6', '#d49aa0'],
+        'fresh' => ['#e3f0f0', '#7fb0bf'],
+        'oriental' => ['#f0e0d4', '#a2532e'],
+        'gourmand' => ['#f1e5d6', '#b07a45'],
     ];
     [$light, $deep] = $colors[$family] ?? $colors['woody'];
     // Variasi bentuk kecil supaya kartu tidak identik.

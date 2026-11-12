@@ -1,12 +1,11 @@
 @props(['status'])
 @php
-    // Badge monokrom: makin jauh prosesnya, makin pekat. Dibatalkan tampil paling redup.
+    // Warna status: kuning menunggu bayar, biru sedang diproses/dikirim, hijau selesai, abu-abu batal.
     $tone = match ($status) {
-        \App\Enums\OrderStatus::PendingPayment => 'border border-ink text-ink',
-        \App\Enums\OrderStatus::Paid, \App\Enums\OrderStatus::Processing => 'bg-ink/[0.06] text-ink',
-        \App\Enums\OrderStatus::Shipped => 'bg-ink/[0.12] text-ink',
-        \App\Enums\OrderStatus::Completed => 'bg-ink text-white',
-        \App\Enums\OrderStatus::Cancelled => 'border border-line text-ink-2',
+        \App\Enums\OrderStatus::PendingPayment => 'warning',
+        \App\Enums\OrderStatus::Paid, \App\Enums\OrderStatus::Processing, \App\Enums\OrderStatus::Shipped => 'info',
+        \App\Enums\OrderStatus::Completed => 'success',
+        \App\Enums\OrderStatus::Cancelled => 'neutral',
     };
 @endphp
-<x-ui.badge {{ $attributes->class($tone) }}>{{ $status->label() }}</x-ui.badge>
+<x-ui.badge :tone="$tone" size="md" {{ $attributes }}>{{ $status->label() }}</x-ui.badge>

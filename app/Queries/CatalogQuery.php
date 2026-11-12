@@ -54,7 +54,12 @@ final class CatalogQuery
             // Varian ikut dimuat untuk pilihan ukuran "Tambah cepat" di kartu.
             ->with(['brand:id,name,slug', 'category:id,name,slug', 'variants:id,product_id,size_ml,is_decant,price,stock'])
             ->withMin('variants as min_price', 'price')
-            ->withSum('variants as total_stock', 'stock');
+            ->withMax('variants as max_price', 'price')
+            ->withSum('variants as total_stock', 'stock')
+            // Rating dan terjual untuk kartu produk (hanya ditampilkan kalau ada datanya).
+            ->withAvg(['reviews as rating_avg' => fn (Builder $q) => $q->where('is_visible', true)], 'rating')
+            ->withCount(['reviews as rating_count' => fn (Builder $q) => $q->where('is_visible', true)])
+            ->addSelect(['sold_qty' => self::soldQuantity()]);
 
         $this->applySearch($query);
         $this->applyCategory($query);
@@ -176,19 +181,21 @@ final class CatalogQuery
         match ($this->sort) {
             'termurah' => $query->orderBy('min_price')->orderBy('products.id'),
             'termahal' => $query->orderByDesc('min_price')->orderBy('products.id'),
-            'terlaris' => $query
-                ->addSelect(['sold_qty' => OrderItem::query()
-                    ->selectRaw('coalesce(sum(order_items.qty), 0)')
-                    ->join('product_variants', 'product_variants.id', '=', 'order_items.product_variant_id')
-                    ->join('orders', 'orders.id', '=', 'order_items.order_id')
-                    ->whereColumn('product_variants.product_id', 'products.id')
-                    ->whereIn('orders.status', array_map(fn (OrderStatus $s) => $s->value, [
-                        OrderStatus::Paid, OrderStatus::Processing, OrderStatus::Shipped, OrderStatus::Completed,
-                    ])),
-                ])
-                ->orderByDesc('sold_qty')
-                ->orderByDesc('products.created_at'),
+            'terlaris' => $query->orderByDesc('sold_qty')->orderByDesc('products.created_at'),
             default => $query->orderByDesc('products.created_at')->orderByDesc('products.id'),
         };
+    }
+
+    /**
+     * Subquery jumlah terjual per produk (pesanan yang sudah dibayar dan tidak batal).
+     */
+    public static function soldQuantity(): Builder
+    {
+        return OrderItem::query()
+            ->selectRaw('coalesce(sum(order_items.qty), 0)')
+            ->join('product_variants', 'product_variants.id', '=', 'order_items.product_variant_id')
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->whereColumn('product_variants.product_id', 'products.id')
+            ->whereIn('orders.status', OrderStatus::soldValues());
     }
 }
