@@ -16,7 +16,7 @@
         <div>
             <p class="text-sm font-medium text-ink">Bantuan</p>
             <ul class="mt-3 space-y-2 text-sm text-ink-2">
-                <li>Pembayaran: VA bank, QRIS, e-wallet</li>
+                <li>Pembayaran: VA bank dan QRIS</li>
                 <li>Pengiriman: JNE, J&amp;T, SiCepat, dan lainnya</li>
                 <li>Tanya kami lewat chat di pojok kanan bawah</li>
             </ul>

@@ -13,7 +13,7 @@ class FaqSeeder extends Seeder
             [
                 'Cara order',
                 'cara order,cara pesan,cara beli,order,pesan,beli,checkout',
-                'Pilih parfum dan ukurannya, klik "Tambah ke keranjang", lalu buka keranjang dan klik "Checkout". Pilih alamat dan kurir, lalu bayar lewat VA, QRIS, atau e-wallet.',
+                'Pilih parfum dan ukurannya, klik "Tambah ke keranjang", lalu buka keranjang dan klik "Checkout". Pilih alamat, kurir, dan cara bayar (VA bank atau QRIS). Nomor VA atau kode QR muncul di halaman pesanan, dan statusnya berubah sendiri setelah kamu bayar.',
             ],
             [
                 'Ongkir',
