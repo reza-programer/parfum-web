@@ -1,6 +1,25 @@
 # Redesign Monokrom Premium — Rencana
 
-Status: **disetujui 12 Nov 2026**, sedang dikerjakan. Branch: `feat/redesign-monokrom` (dibuat di atas `feat/pembayaran-komerce`, jadi nanti di-merge berurutan).
+Status: **selesai dikerjakan 12 Nov 2026**, belum di-merge. Branch: `feat/redesign-monokrom` (dibuat di atas `feat/pembayaran-komerce`, jadi nanti di-merge berurutan).
+
+## Hasil verifikasi
+
+- **Otomatis:** `php artisan test` lulus 308 test (1012 assertion), termasuk test baru untuk konsentrasi, filter stok, urutan harga tertinggi, tambah cepat, wishlist di kartu, Beli Sekarang, produk terkait, galeri, dan toast. `pint --test` dan `npm run build` lulus.
+  - Satu run sebelumnya sempat gagal di 1 test (`AddressesTest`, dropdown wilayah). Run itu berjalan bersamaan dengan pemuatan banyak halaman di server dev, yang memakai folder cache view Blade yang sama.
+  - Test yang sama lulus saat dijalankan sendirian, dan run penuh berikutnya tanpa aktivitas browser lulus semua.
+  - Saran: jangan menjalankan `php artisan test` sambil membuka halaman di server dev.
+- **Overflow horizontal:** dicek di 375, 768, dan 1440px untuk beranda, katalog, kategori, brand, detail produk, keranjang, checkout, wishlist, riwayat pesanan, detail pesanan, alamat, dan profil. Hasilnya 0px di semua kombinasi.
+- **Uji manual di browser:**
+  - drawer filter (panel dari bawah di ponsel);
+  - tambah cepat sebagai customer (toast dan angka keranjang bertambah);
+  - checkout dengan ongkir RajaOngkir asli dan VA BNI sandbox Komerce, lalu simulasi bayar sampai Dibayar lewat polling.
+- **Admin:** tema termuat. Sudut 0, header tabel `#FAFAFA` 12px, baris sekitar 56px, kolom Total rata kanan, badge kapital.
+- **Belum dicek visual:** halaman login, daftar, dan lupa password sebagai tamu (sesi uji sedang login). Test autentikasi lulus.
+
+## Penyimpangan kecil dari rencana
+
+- **`ink-3`** memakai `#707070` (sama dengan teks sekunder), bukan `#BDBDBD`. Banyak teks kecil di view lama memakai `ink-3`, dan `#BDBDBD` tidak terbaca untuk teks. Warna disabled dan placeholder dipindah ke token baru `ink-faint` (`#BDBDBD`).
+- **Produk terkait** sudah ada sebelumnya (hanya dari aroma yang sama). Sekarang aroma yang sama didahulukan, lalu kategori yang sama.
 
 Sumber permintaan: brief "Redesign e-commerce parfum — premium monochrome" dari pemilik (12 Nov 2026). Rencana ini menerjemahkan brief itu ke kondisi project yang sebenarnya.
 
@@ -44,7 +63,8 @@ Nama token lama dipertahankan supaya semua view berubah serentak dan konsisten. 
 | `paper.raised` | `#F1F1EF` | latar foto/ilustrasi produk, skeleton |
 | `ink` | `#171717` | teks utama |
 | `ink-2` | `#707070` | teks sekunder (lihat catatan kontras) |
-| `ink-3` | `#BDBDBD` | disabled dan placeholder |
+| `ink-3` | `#707070` | teks tersier (lihat "Penyimpangan kecil") |
+| `ink-faint` | `#BDBDBD` | disabled dan placeholder |
 | `primary` (`ember` diganti) | `#111111` | tombol utama, harga, badge aktif |
 | `line` | `#E8E8E8` | border tipis |
 
