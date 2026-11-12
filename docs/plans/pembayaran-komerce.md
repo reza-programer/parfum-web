@@ -1,6 +1,15 @@
 # Pembayaran Komerce (fitur 8) — Rencana
 
-Status: **disetujui 12 Nov 2026**, sedang dikerjakan. Branch: `feat/pembayaran-komerce`.
+Status: **selesai dikerjakan 12 Nov 2026**, belum di-merge. Branch: `feat/pembayaran-komerce`.
+
+## Hasil verifikasi
+
+- **`php artisan test`:** semua lulus (288 test, termasuk test baru untuk PaymentService, callback, siklus pesanan, checkout, halaman bayar, dan admin). `pint --test` lulus.
+- **Uji manual end-to-end di sandbox asli** (customer uji, alamat Coblong, Bandung):
+  - VA BCA Rp401.000 → simulasi bayar → halaman pesanan berubah sendiri jadi Dibayar lewat polling; email "pesanan dibuat" dan "pembayaran diterima" masuk antrean.
+  - QRIS Rp211.000 → kode QR dan hitung mundur tampil → simulasi bayar → Dibayar.
+- **Callback lewat HTTP asli ke server dev:** tanda tangan salah dijawab 401, tanda tangan benar dijawab 200, dan rute tidak kena CSRF (419).
+- **Belum teruji: callback asli dari Komerce.** ngrok di Laragon belum punya authtoken, jadi Komerce tidak bisa menjangkau laptop. Verifikasi tanda tangan sudah diuji dengan HMAC yang dihitung sendiri. Format payload asli dan encoding hash perlu dicek di log (`Komerce callback diterima`) saat pertama kali jalan di server publik.
 
 Midtrans diganti sepenuhnya dengan **Komerce Payment API** (VA bank + QRIS). Ongkir tetap lewat RajaOngkir versi Komerce yang sudah ada; untuk ongkir hanya API key dan ID gudang yang diisi di `.env`.
 
