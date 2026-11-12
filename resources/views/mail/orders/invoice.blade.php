@@ -29,7 +29,7 @@
 
 **Dikirim ke**<br>
 {{ $order->address_snapshot['recipient'] ?? '' }} ({{ $order->address_snapshot['phone'] ?? '' }})<br>
-{{ $order->address_snapshot['detail'] ?? '' }}, {{ $order->address_snapshot['district_name'] ?? '' }}, {{ $order->address_snapshot['city_name'] ?? '' }}, {{ $order->address_snapshot['province_name'] ?? '' }} {{ $order->address_snapshot['postal_code'] ?? '' }}
+{{ \App\Support\AddressText::fromSnapshot($order->address_snapshot ?? []) }}
 
 <x-mail::button :url="route('orders.show', $order)">
 Lihat pesanan

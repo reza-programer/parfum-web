@@ -7,6 +7,7 @@ use App\Enums\PaymentStatus;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Support\AddressText;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
@@ -87,8 +88,7 @@ class OrderResource extends Resource
                         $a = $record->address_snapshot;
 
                         return ($a['recipient'] ?? '').' ('.($a['phone'] ?? '').")\n"
-                            .($a['detail'] ?? '').', '.region_name($a['district_name'] ?? '').', '
-                            .region_name($a['city_name'] ?? '').', '.region_name($a['province_name'] ?? '').' '.($a['postal_code'] ?? '');
+                            .AddressText::fromSnapshot($a ?? []);
                     })
                     ->columnSpanFull(),
             ])->columns(2),
