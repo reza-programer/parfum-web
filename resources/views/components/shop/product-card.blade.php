@@ -1,21 +1,30 @@
-@props(['product'])
-@php($soldOut = $product->isSoldOut())
-<a href="{{ route('products.show', $product) }}" wire:navigate {{ $attributes->merge(['class' => 'group block']) }}>
-    <x-shop.product-image :product="$product" class="aspect-[4/5] rounded-xl">
-    </x-shop.product-image>
-    <div class="mt-3 space-y-1">
-        <p class="meta">{{ $product->brand->name }}</p>
-        <h3 class="text-body font-medium leading-snug text-ink transition-colors duration-150 group-hover:text-primary">{{ $product->name }}</h3>
-        <div class="flex items-center gap-2 pt-1 text-sm">
-            @if ($soldOut)
-                <span class="rounded-md bg-ink/5 px-2 py-0.5 text-[13px] font-medium text-ink-2">Habis</span>
-            @else
-                <span class="price text-ink-2">mulai <span class="text-ink">{{ rupiah($product->startingPrice()) }}</span></span>
-            @endif
-            <span class="ms-auto inline-flex items-center gap-1.5 text-[13px] text-ink-3">
-                <x-shop.scent-dot :family="$product->scent_family" />
-                {{ $product->scent_family->label() }}
-            </span>
-        </div>
+@props(['product', 'wished' => null, 'eager' => false])
+@php
+    $soldOut = $product->isSoldOut();
+    $wished ??= \App\Support\WishlistIds::has($product->id);
+@endphp
+<article {{ $attributes->merge(['class' => 'group relative']) }}>
+    <div class="relative overflow-hidden bg-paper-raised">
+        <a href="{{ route('products.show', $product) }}" wire:navigate class="block" tabindex="-1" aria-hidden="true">
+            <x-shop.product-image :product="$product" :eager="$eager"
+                                  class="aspect-square transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none" />
+        </a>
+        @if ($soldOut)
+            <x-ui.badge class="absolute left-0 top-0 bg-paper-card text-ink-2">Habis</x-ui.badge>
+        @endif
+        <livewire:product-actions :product="$product" :wished="$wished" :key="'pa-'.$product->id" />
     </div>
-</a>
+
+    <a href="{{ route('products.show', $product) }}" wire:navigate class="mt-4 block">
+        <div class="flex items-baseline justify-between gap-3">
+            <p class="eyebrow truncate">{{ $product->brand->name }}</p>
+            <p class="shrink-0 text-caption uppercase tracking-label text-ink-2">{{ $product->scent_family->label() }}</p>
+        </div>
+        <h3 class="mt-1.5 text-product font-medium text-ink decoration-ink/30 underline-offset-4 group-hover:underline">{{ $product->name }}</h3>
+        @if ($soldOut)
+            <p class="mt-1 text-body text-ink-2">Stok habis</p>
+        @else
+            <p class="price mt-1 text-body text-ink"><span class="text-ink-2">mulai</span> {{ rupiah($product->startingPrice()) }}</p>
+        @endif
+    </a>
+</article>

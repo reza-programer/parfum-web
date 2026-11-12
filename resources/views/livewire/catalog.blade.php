@@ -1,47 +1,51 @@
-<div x-data="{ sheet: false }">
-    <div class="page pt-10">
-        @if ($this->lockedBrand)
-            <p class="meta">Brand</p>
-        @elseif ($this->lockedCategory)
-            <p class="meta">Kategori</p>
-        @endif
-        <div class="mt-1 flex flex-wrap items-end justify-between gap-4">
-            <h1 class="font-serif text-4xl leading-tight text-ink sm:text-5xl">{{ $heading }}</h1>
+@php
+    $sortSelect = 'h-10 border-line bg-paper-card py-0 pl-3 pr-9 text-[13px] text-ink focus:border-ink focus:ring-0';
+@endphp
+<div>
+    <header class="page pt-10 lg:pt-14">
+        <p class="eyebrow">
+            @if ($this->lockedBrand) Brand @elseif ($this->lockedCategory) Kategori @else Katalog @endif
+        </p>
+        <div class="mt-3 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+            <h1 class="heading-page">{{ $heading }}</h1>
             <p class="meta tabular-nums" data-testid="result-count">{{ $products->total() }} parfum</p>
+        </div>
+    </header>
+
+    {{-- Bilah filter tablet/mobile --}}
+    <div class="sticky top-16 z-20 mt-8 border-y border-line bg-paper/95 backdrop-blur lg:hidden">
+        <div class="page flex h-14 items-center gap-3">
+            <button type="button" x-on:click="$dispatch('open-drawer', 'filters')" class="inline-flex h-11 items-center gap-2 text-[13px] font-medium uppercase tracking-nav text-ink">
+                <x-lucide-sliders-horizontal class="size-4" stroke-width="1.25" />
+                Filter
+                @if ($this->activeFilterCount)
+                    <span class="inline-flex size-5 items-center justify-center rounded-full bg-ink text-[10px] tabular-nums text-white">{{ $this->activeFilterCount }}</span>
+                @endif
+            </button>
+            <label for="sort-mobile" class="sr-only">Urutkan</label>
+            <select id="sort-mobile" wire:model.live="sort" class="{{ $sortSelect }} ms-auto">
+                @foreach (\App\Queries\CatalogQuery::SORTS as $value => $label)
+                    <option value="{{ $value }}">{{ $label }}</option>
+                @endforeach
+            </select>
         </div>
     </div>
 
-    <div class="page mt-8 flex items-center gap-3 border-y border-line py-3 lg:hidden">
-        <button type="button" @click="sheet = true" class="btn-secondary btn-sm">
-            <x-lucide-sliders-horizontal class="size-4" stroke-width="1.5" />
-            Filter
-            @if ($this->activeFilterCount)
-                <span class="tabular-nums text-ink-3">{{ $this->activeFilterCount }}</span>
-            @endif
-        </button>
-        <label for="sort-mobile" class="sr-only">Urutkan</label>
-        <select id="sort-mobile" wire:model.live="sort" class="field ms-auto h-9 w-auto py-0 text-sm">
-            @foreach (\App\Queries\CatalogQuery::SORTS as $value => $label)
-                <option value="{{ $value }}">{{ $label }}</option>
-            @endforeach
-        </select>
-    </div>
-
-    <div class="page mt-6 lg:mt-10 lg:grid lg:grid-cols-[240px_1fr] lg:gap-12">
+    <div class="page mt-8 lg:mt-12 lg:grid lg:grid-cols-[220px_1fr] lg:gap-12">
         <aside class="hidden lg:block">
             @include('livewire.partials.catalog-filters', ['prefix' => 'd'])
         </aside>
 
         <section>
-            <div class="mb-6 hidden items-center justify-between lg:flex">
+            <div class="mb-8 hidden min-h-10 items-center justify-between gap-4 lg:flex">
                 @if ($this->activeFilterCount || $q !== '')
-                    <button type="button" wire:click="resetFilters" class="text-sm text-ink-2 underline decoration-ink/20 underline-offset-4 hover:text-ink">Hapus semua filter</button>
+                    <button type="button" wire:click="resetFilters" class="link text-[13px]">Hapus semua filter</button>
                 @else
                     <span></span>
                 @endif
                 <div class="flex items-center gap-3">
-                    <label for="sort" class="text-sm text-ink-3">Urutkan</label>
-                    <select id="sort" wire:model.live="sort" class="field h-9 w-auto py-0 text-sm">
+                    <label for="sort" class="eyebrow">Urutkan</label>
+                    <select id="sort" wire:model.live="sort" class="{{ $sortSelect }}">
                         @foreach (\App\Queries\CatalogQuery::SORTS as $value => $label)
                             <option value="{{ $value }}">{{ $label }}</option>
                         @endforeach
@@ -49,44 +53,49 @@
                 </div>
             </div>
 
-            <div wire:loading.class="opacity-60" class="transition-opacity duration-150">
-                @if ($products->isEmpty())
-                    <div class="card flex flex-col items-start gap-4 p-8">
-                        <p class="text-lg text-ink">Tidak ada parfum yang cocok</p>
-                        <p class="text-sm text-ink-2">Coba kurangi filter atau cari dengan kata lain.</p>
-                        <button type="button" wire:click="resetFilters" class="btn-secondary btn-sm">Hapus filter</button>
-                    </div>
-                @else
-                    <div class="grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-3 sm:gap-x-6">
-                        @foreach ($products as $product)
-                            <x-shop.product-card :product="$product" wire:key="p-{{ $product->id }}" />
-                        @endforeach
-                    </div>
+            @if ($products->isEmpty())
+                <div wire:loading.remove class="border-t border-line py-16">
+                    <p class="heading-section">Tidak ada parfum yang cocok</p>
+                    <p class="mt-2 text-body text-ink-2">Coba kurangi filter atau cari dengan kata lain.</p>
+                    <button type="button" wire:click="resetFilters" class="btn-secondary mt-6">Hapus filter</button>
+                </div>
+            @else
+                <div wire:loading.remove class="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+                    @foreach ($products as $product)
+                        <x-shop.product-card :product="$product" :eager="$loop->index < 4" wire:key="p-{{ $product->id }}" />
+                    @endforeach
+                </div>
 
-                    <div class="mt-12">
-                        {{ $products->links() }}
+                <div wire:loading.remove class="mt-14">
+                    {{ $products->links('partials.pagination') }}
+                </div>
+            @endif
+
+            {{-- Skeleton saat filter, urutan, atau halaman berubah --}}
+            <div wire:loading.grid class="grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4" aria-hidden="true">
+                @foreach (range(1, min(8, max(4, $products->count()))) as $i)
+                    <div>
+                        <x-ui.skeleton class="aspect-square" />
+                        <x-ui.skeleton class="mt-4 h-3 w-1/3" />
+                        <x-ui.skeleton class="mt-2 h-4 w-2/3" />
+                        <x-ui.skeleton class="mt-2 h-3 w-1/2" />
                     </div>
-                @endif
+                @endforeach
             </div>
         </section>
     </div>
 
-    {{-- Panel filter mobile (bottom sheet) --}}
-    <div x-cloak x-show="sheet" class="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Filter">
-        <div x-show="sheet" x-transition.opacity.duration.200ms @click="sheet = false" class="absolute inset-0 bg-ink/30"></div>
-        <div x-show="sheet"
-             x-transition:enter="transition-transform duration-300 ease-out" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
-             x-transition:leave="transition-transform duration-200 ease-out" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
-             class="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-paper-card px-4 pb-6 pt-4">
-            <div class="mx-auto mb-4 h-1 w-10 rounded-full bg-ink/15"></div>
-            <div class="mb-4 flex items-center justify-between">
-                <p class="text-lg font-medium">Filter</p>
-                <button type="button" wire:click="resetFilters" class="text-sm text-ink-2 underline decoration-ink/20 underline-offset-4">Hapus semua</button>
+    {{-- Filter tablet/mobile: drawer samping di tablet, panel dari bawah di ponsel (PRD wireframe 1) --}}
+    <x-ui.drawer name="filters" title="Filter" mobile-bottom class="lg:hidden">
+        @include('livewire.partials.catalog-filters', ['prefix' => 'm'])
+
+        <x-slot:footer>
+            <div class="flex items-center gap-3">
+                <button type="button" wire:click="resetFilters" class="btn-ghost -ml-3">Hapus semua</button>
+                <button type="button" x-on:click="$dispatch('close-drawer')" class="btn-primary ms-auto flex-1">
+                    Lihat {{ $products->total() }} parfum
+                </button>
             </div>
-            @include('livewire.partials.catalog-filters', ['prefix' => 'm'])
-            <button type="button" @click="sheet = false" class="btn-primary mt-6 w-full">
-                Lihat {{ $products->total() }} parfum
-            </button>
-        </div>
-    </div>
+        </x-slot:footer>
+    </x-ui.drawer>
 </div>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Catalog;
+use App\Livewire\ProductActions;
 use App\Livewire\ProductDetail;
 use App\Models\Brand;
 use App\Models\Category;
@@ -181,4 +182,13 @@ it('filter tersedia dan urutan harga tertinggi bisa diubah dari komponen', funct
         ->set('tersedia', false)
         ->set('sort', 'termahal')
         ->assertSeeInOrder(['Masih Ada', 'Kosong Semua']);
+});
+
+it('kartu di katalog punya tombol wishlist dan tambah cepat', function () {
+    productWith(['name' => 'Ada Stok'], [[50, 300000, 3]]);
+
+    Livewire::test(Catalog::class)
+        ->assertSeeLivewire(ProductActions::class)
+        ->assertSee('Simpan ke wishlist')
+        ->assertSee('Tambah cepat');
 });

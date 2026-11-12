@@ -14,8 +14,8 @@
     </div>
 
     @unless ($this->lockedCategory)
-        <fieldset>
-            <legend class="eyebrow mb-3 text-ink">Kategori</legend>
+        <div role="group" aria-label="Kategori">
+            <p class="eyebrow mb-3 text-ink">Kategori</p>
             <div>
                 <label class="{{ $row }}">
                     <input type="radio" wire:model.live="category" value="" class="size-4 border-ink/40 text-ink focus:ring-0 focus:ring-offset-0">
@@ -28,11 +28,11 @@
                     </label>
                 @endforeach
             </div>
-        </fieldset>
+        </div>
     @endunless
 
-    <fieldset>
-        <legend class="eyebrow mb-3 text-ink">Keluarga aroma</legend>
+    <div role="group" aria-label="Keluarga aroma">
+            <p class="eyebrow mb-3 text-ink">Keluarga aroma</p>
         <div>
             @foreach ($scentOptions as $scent)
                 <label class="{{ $row }}">
@@ -41,11 +41,11 @@
                 </label>
             @endforeach
         </div>
-    </fieldset>
+    </div>
 
     @unless ($this->lockedBrand)
-        <fieldset>
-            <legend class="eyebrow mb-3 text-ink">Brand</legend>
+        <div role="group" aria-label="Brand">
+            <p class="eyebrow mb-3 text-ink">Brand</p>
             <div>
                 @foreach ($brandOptions as $brandOption)
                     <label class="{{ $row }}">
@@ -54,11 +54,11 @@
                     </label>
                 @endforeach
             </div>
-        </fieldset>
+        </div>
     @endunless
 
-    <fieldset>
-        <legend class="eyebrow mb-3 text-ink">Harga</legend>
+    <div role="group" aria-label="Harga">
+            <p class="eyebrow mb-3 text-ink">Harga</p>
         <div class="grid grid-cols-2 gap-3">
             <div>
                 <label for="{{ $prefix }}-min" class="sr-only">Harga minimum</label>
@@ -70,10 +70,10 @@
             </div>
         </div>
         <p class="meta mt-2">Dalam Rupiah, misalnya 200000</p>
-    </fieldset>
+    </div>
 
-    <fieldset>
-        <legend class="eyebrow mb-3 text-ink">Ukuran</legend>
+    <div role="group" aria-label="Ukuran">
+            <p class="eyebrow mb-3 text-ink">Ukuran</p>
         <div class="flex flex-wrap gap-2">
             @foreach ($sizeOptions as $size)
                 <label class="cursor-pointer">
@@ -86,11 +86,11 @@
                 <span class="{{ $chip }}">Decant</span>
             </label>
         </div>
-    </fieldset>
+    </div>
 
     @if ($this->concentrationOptions)
-        <fieldset>
-            <legend class="eyebrow mb-3 text-ink">Konsentrasi</legend>
+        <div role="group" aria-label="Konsentrasi">
+            <p class="eyebrow mb-3 text-ink">Konsentrasi</p>
             <div>
                 @foreach ($this->concentrationOptions as $concentration)
                     <label class="{{ $row }}">
@@ -99,14 +99,14 @@
                     </label>
                 @endforeach
             </div>
-        </fieldset>
+        </div>
     @endif
 
-    <fieldset>
-        <legend class="eyebrow mb-3 text-ink">Ketersediaan</legend>
+    <div role="group" aria-label="Ketersediaan">
+            <p class="eyebrow mb-3 text-ink">Ketersediaan</p>
         <label class="{{ $row }}">
             <input type="checkbox" wire:model.live="tersedia" class="{{ $check }}">
             Hanya yang tersedia
         </label>
-    </fieldset>
+    </div>
 </div>

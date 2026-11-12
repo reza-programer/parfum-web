@@ -44,7 +44,7 @@ new class extends Component
             <x-lucide-menu class="size-5" stroke-width="1.25" />
         </button>
 
-        <a href="{{ route('home') }}" wire:navigate class="shrink-0 max-lg:absolute max-lg:left-1/2 max-lg:-translate-x-1/2" aria-label="{{ config('app.name') }}">
+        <a href="{{ route('home') }}" wire:navigate class="inline-flex h-11 shrink-0 items-center max-lg:absolute max-lg:left-1/2 max-lg:-translate-x-1/2" aria-label="{{ config('app.name') }}">
             <x-application-logo class="max-sm:text-lg" />
         </a>
 

@@ -109,7 +109,7 @@ class ProductDetail extends Component
             'reviewCount' => $this->product->visibleReviews()->count(),
             'soldOut' => $this->product->isSoldOut(),
             'related' => Product::query()
-                ->with('brand:id,name,slug')
+                ->with(['brand:id,name,slug', 'variants:id,product_id,size_ml,is_decant,price,stock'])
                 ->withMin('variants as min_price', 'price')
                 ->withSum('variants as total_stock', 'stock')
                 ->where('id', '!=', $this->product->id)

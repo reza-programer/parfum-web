@@ -51,7 +51,7 @@ class Wishlist extends Component
     {
         $items = auth()->user()->wishlistItems()
             ->with(['product' => fn ($q) => $q
-                ->with('brand:id,name')
+                ->with(['brand:id,name', 'variants:id,product_id,size_ml,is_decant,price,stock'])
                 ->withMin('variants as min_price', 'price')
                 ->withSum('variants as total_stock', 'stock')])
             ->latest()
