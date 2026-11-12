@@ -25,6 +25,11 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
+    <div class="mb-8 text-center">
+        <h1 class="heading-page">Masuk</h1>
+        <p class="mt-2 text-body text-ink-2">Masuk untuk belanja, melacak pesanan, dan menyimpan wishlist.</p>
+    </div>
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -32,7 +37,7 @@ new #[Layout('layouts.guest')] class extends Component
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="form.email" id="email" class="block mt-1 w-full" type="email" name="email" required autofocus autocomplete="username" />
+            <x-text-input wire:model="form.email" id="email" class="mt-1 block w-full" type="email" name="email" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('form.email')" class="mt-2" />
         </div>
 
@@ -40,7 +45,7 @@ new #[Layout('layouts.guest')] class extends Component
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
 
-            <x-text-input wire:model="form.password" id="password" class="block mt-1 w-full"
+            <x-text-input wire:model="form.password" id="password" class="mt-1 block w-full"
                             type="password"
                             name="password"
                             required autocomplete="current-password" />
@@ -51,19 +56,19 @@ new #[Layout('layouts.guest')] class extends Component
         <!-- Remember Me -->
         <div class="block mt-4">
             <label for="remember" class="inline-flex items-center">
-                <input wire:model="form.remember" id="remember" type="checkbox" class="rounded border-ink/30 text-primary focus:ring-primary/40" name="remember">
+                <input wire:model="form.remember" id="remember" type="checkbox" class="size-4 rounded-none border-ink/40 text-ink focus:ring-0 focus:ring-offset-0" name="remember">
                 <span class="ms-2 text-sm text-ink-2">{{ __('Remember me') }}</span>
             </label>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
+        <div class="mt-8 flex flex-col-reverse items-stretch gap-4 text-center">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-ink-2 hover:text-ink rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/40" href="{{ route('password.request') }}" wire:navigate>
+                <a class="link text-label text-ink-2 hover:text-ink" href="{{ route('password.request') }}" wire:navigate>
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
+            <x-primary-button class="h-12 w-full">
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
