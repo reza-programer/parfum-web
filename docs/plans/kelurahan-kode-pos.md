@@ -1,6 +1,16 @@
 # Kelurahan/Desa dan Kode Pos Otomatis — Rencana
 
-Status: **disetujui 12 Nov 2026**, sedang dikerjakan. Branch: `feat/kelurahan-kode-pos` (dari `main` terbaru).
+Status: **selesai 12 Nov 2026**, belum di-merge. Branch: `feat/kelurahan-kode-pos` (dari `main` terbaru).
+
+## Hasil verifikasi
+
+- **`php artisan test`:** lulus 332 test (1156 assertion). Pint lulus.
+- **Uji manual di browser, lebar HP, data RajaOngkir asli:**
+  - Jawa Barat › Kuningan › Darma menampilkan 19 desa.
+  - Memilih Sakerta Timur mengisi kode pos 45562 beserta keterangan bahwa kode pos terisi otomatis.
+  - Alamat tersimpan sebagai "…, Kel. Sakerta Timur, Darma, Kuningan, Jawa Barat 45562".
+  - Alamat lama di daftar ditandai "Lengkapi kelurahan".
+- **Ongkir ke Darma** tetap dihitung per kecamatan (10 opsi kurir).
 
 Permintaan pemilik (12 Nov 2026): form alamat jangan berhenti di kecamatan. Tambahkan kelurahan/desa (contoh: Kuningan › Darma › Sakerta Timur), dan kode pos langsung terisi begitu kelurahan dipilih.
 
