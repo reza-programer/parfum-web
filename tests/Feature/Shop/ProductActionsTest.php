@@ -32,7 +32,8 @@ it('customer menyimpan lalu menghapus wishlist dari kartu', function () {
     $card = actions($this->user)
         ->call('toggleWishlist')
         ->assertSet('wished', true)
-        ->assertDispatched('toast', message: 'Disimpan ke wishlist');
+        ->assertDispatched('toast', message: 'Disimpan ke wishlist')
+        ->assertDispatched('wishlist-updated');
 
     expect($this->user->wishlistItems()->count())->toBe(1);
 

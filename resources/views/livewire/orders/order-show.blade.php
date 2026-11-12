@@ -4,43 +4,43 @@
     $current = array_search($order->status, $steps, true);
     $snap = $order->address_snapshot;
 @endphp
-<div class="page max-w-4xl pt-10">
-    <a href="{{ route('orders.index') }}" wire:navigate class="meta inline-flex items-center gap-1 hover:text-ink">
+<div class="page max-w-5xl pt-10 lg:pt-14">
+    <a href="{{ route('orders.index') }}" wire:navigate class="eyebrow inline-flex h-11 items-center gap-1.5 hover:text-ink">
         <x-lucide-arrow-left class="size-3.5" stroke-width="1.5" /> Pesanan saya
     </a>
 
     <div class="mt-3 flex flex-wrap items-center justify-between gap-4">
         <div>
-            <h1 class="font-serif text-4xl tabular-nums">{{ $order->code }}</h1>
+            <h1 class="heading-page tabular-nums">{{ $order->code }}</h1>
             <p class="meta mt-1">Dibuat {{ $order->created_at->translatedFormat('j F Y, H:i') }} WIB</p>
         </div>
-        <x-shop.order-status :status="$order->status" class="h-8 px-3 text-sm" />
+        <x-shop.order-status :status="$order->status" class="h-7 px-3" />
     </div>
 
     @if (session('order-placed'))
-        <p class="mt-6 rounded-lg bg-paper-card border border-line px-4 py-3 text-sm text-ink" role="status">Pesanan dibuat dan stok sudah kami kunci untukmu.</p>
+        <p class="mt-6 border-l-2 border-ink bg-paper-card px-4 py-3 text-body text-ink" role="status">Pesanan dibuat dan stok sudah kami kunci untukmu.</p>
     @endif
     @if (session('status'))
-        <p class="mt-6 rounded-lg bg-paper-card border border-line px-4 py-3 text-sm text-ink" role="status">{{ session('status') }}</p>
+        <p class="mt-6 border-l-2 border-ink bg-paper-card px-4 py-3 text-body text-ink" role="status">{{ session('status') }}</p>
     @endif
     @error('action')
-        <p class="mt-6 rounded-lg bg-danger/5 px-4 py-3 text-sm text-danger" role="alert">{{ $message }}</p>
+        <p class="mt-6 border-l-2 border-danger bg-danger/5 px-4 py-3 text-body text-danger" role="alert">{{ $message }}</p>
     @enderror
 
     {{-- Progres --}}
     @if ($order->status !== OrderStatus::Cancelled)
-        <ol class="mt-8 grid grid-cols-5 gap-2" aria-label="Progres pesanan">
+        <ol class="mt-10 grid grid-cols-5 gap-1.5" aria-label="Progres pesanan">
             @foreach ($steps as $i => $step)
                 <li class="min-w-0">
-                    <div @class(['h-1 rounded-full', 'bg-primary' => $i <= $current, 'bg-ink/10' => $i > $current])></div>
-                    <p @class(['mt-2 truncate text-[13px]', 'text-ink' => $i === $current, 'text-ink-2' => $i < $current, 'text-ink-3' => $i > $current])>{{ $step->label() }}</p>
+                    <div @class(['h-0.5', 'bg-ink' => $i <= $current, 'bg-line' => $i > $current])></div>
+                    <p @class(['mt-2.5 truncate text-caption uppercase tracking-label', 'font-medium text-ink' => $i === $current, 'text-ink-2' => $i < $current, 'text-ink-faint' => $i > $current])>{{ $step->label() }}</p>
                 </li>
             @endforeach
         </ol>
     @endif
 
     @if ($justPaid)
-        <p class="mt-6 rounded-lg bg-paper-card border border-line px-4 py-3 text-sm text-ink" role="status">Pembayaran diterima. Pesananmu segera kami kemas.</p>
+        <p class="mt-6 border-l-2 border-ink bg-paper-card px-4 py-3 text-body text-ink" role="status">Pembayaran diterima. Pesananmu segera kami kemas.</p>
     @endif
 
     {{-- Aksi sesuai status --}}
@@ -51,50 +51,50 @@
             $qrExpired = $latest && ! $latest->isVirtualAccount() && ! $latest->isPayable();
             $deadline = $order->expires_at->translatedFormat('j F Y, H:i');
         @endphp
-        <div class="card mt-8 p-6" @if ($payment) wire:poll.5s="checkPayment" @endif>
+        <div class="mt-10 bg-paper-card p-6 sm:p-8" @if ($payment) wire:poll.5s="checkPayment" @endif>
             @if (session('payment-error') && ! $payment)
-                <p class="mb-5 rounded-lg bg-danger/5 px-4 py-3 text-sm text-danger" role="alert">{{ session('payment-error') }} Pilih metode lalu tekan Bayar lagi.</p>
+                <p class="mb-5 border-l-2 border-danger bg-danger/5 px-4 py-3 text-body text-danger" role="alert">{{ session('payment-error') }} Pilih metode lalu tekan Bayar lagi.</p>
             @endif
             @error('payment')
-                <p class="mb-5 rounded-lg bg-danger/5 px-4 py-3 text-sm text-danger" role="alert">{{ $message }}</p>
+                <p class="mb-5 border-l-2 border-danger bg-danger/5 px-4 py-3 text-body text-danger" role="alert">{{ $message }}</p>
             @enderror
 
             @if ($order->expires_at->isPast() && ! $payment)
-                <p class="text-body font-medium">Batas waktu bayar sudah lewat</p>
-                <p class="mt-1 text-sm text-ink-2">Pesanan ini akan dibatalkan otomatis dan stok dilepas.</p>
+                <p class="heading-section">Batas waktu bayar sudah lewat</p>
+                <p class="mt-1 text-body text-ink-2">Pesanan ini akan dibatalkan otomatis dan stok dilepas.</p>
             @elseif ($payment && ! $choosingMethod)
                 @if ($payment->isVirtualAccount())
-                    <p class="text-body font-medium">Transfer ke virtual account {{ $payment->bankLabel() }}</p>
-                    <p class="mt-1 text-sm text-ink-2">Bayar sebelum <span class="text-ink">{{ $payment->expires_at->translatedFormat('j F Y, H:i') }} WIB</span>. Transfer dengan nominal yang persis sama.</p>
+                    <p class="heading-section">Transfer ke virtual account {{ $payment->bankLabel() }}</p>
+                    <p class="mt-1 text-body text-ink-2">Bayar sebelum <span class="text-ink">{{ $payment->expires_at->translatedFormat('j F Y, H:i') }} WIB</span>. Transfer dengan nominal yang persis sama.</p>
 
                     <dl class="mt-5 grid gap-5 sm:grid-cols-2">
                         <div>
                             <dt class="meta">Nomor virtual account</dt>
                             <dd class="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                                <span class="text-2xl tabular-nums tracking-wide">{{ trim(chunk_split($payment->va_number, 4, ' ')) }}</span>
+                                <span class="text-[28px] font-medium leading-none tabular-nums tracking-[0.06em]">{{ trim(chunk_split($payment->va_number, 4, ' ')) }}</span>
                                 <x-shop.copy-button :value="$payment->va_number" />
                             </dd>
                         </div>
                         <div>
                             <dt class="meta">Nominal</dt>
                             <dd class="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                                <span class="price text-2xl">{{ rupiah($payment->amount) }}</span>
+                                <span class="price text-[28px] font-medium leading-none">{{ rupiah($payment->amount) }}</span>
                                 <x-shop.copy-button :value="$payment->amount" />
                             </dd>
                         </div>
                     </dl>
                 @else
-                    <p class="text-body font-medium">Scan kode QR</p>
-                    <p class="mt-1 text-sm text-ink-2">Buka m-banking atau e-wallet, pilih bayar dengan QRIS, lalu scan kode ini.</p>
+                    <p class="heading-section">Scan kode QR</p>
+                    <p class="mt-1 text-body text-ink-2">Buka m-banking atau e-wallet, pilih bayar dengan QRIS, lalu scan kode ini.</p>
 
                     <div class="mt-5 flex flex-wrap items-center gap-6">
-                        <div data-qr class="rounded-xl border border-line bg-white p-3 [&_svg]:size-48 sm:[&_svg]:size-56">
+                        <div data-qr class="border border-line bg-white p-3 [&_svg]:size-48 sm:[&_svg]:size-56">
                             {!! \App\Support\QrCode::svg($payment->qr_string) !!}
                         </div>
                         <dl class="space-y-3">
                             <div>
                                 <dt class="meta">Total</dt>
-                                <dd class="price text-2xl">{{ rupiah($payment->amount) }}</dd>
+                                <dd class="price text-[28px] font-medium leading-none">{{ rupiah($payment->amount) }}</dd>
                             </div>
                             <div>
                                 <dt class="meta">Berlaku</dt>
@@ -114,30 +114,30 @@
                     <button type="button" wire:click="changeMethod" class="btn-secondary btn-sm">Ganti metode</button>
                     <button type="button" wire:click="cancel" wire:confirm="Batalkan pesanan {{ $order->code }}?" class="btn-secondary btn-sm">Batalkan pesanan</button>
                     @if ($this->isSandbox && $payment->payment_url)
-                        <a href="{{ $payment->payment_url }}" target="_blank" rel="noopener noreferrer" class="text-sm text-ink-2 underline decoration-ink/20 underline-offset-4 hover:text-ink">Simulasikan pembayaran (sandbox)</a>
+                        <a href="{{ $payment->payment_url }}" target="_blank" rel="noopener noreferrer" class="text-body text-ink-2 underline decoration-ink/20 underline-offset-4 hover:text-ink">Simulasikan pembayaran (sandbox)</a>
                     @endif
                 </div>
             @else
                 @if ($qrExpired && ! $choosingMethod)
-                    <p class="text-body font-medium">Kode QR sudah tidak berlaku</p>
-                    <p class="mt-1 text-sm text-ink-2">Buat kode baru atau pilih metode lain. Bayar sebelum <span class="text-ink">{{ $deadline }} WIB</span>.</p>
+                    <p class="heading-section">Kode QR sudah tidak berlaku</p>
+                    <p class="mt-1 text-body text-ink-2">Buat kode baru atau pilih metode lain. Bayar sebelum <span class="text-ink">{{ $deadline }} WIB</span>.</p>
                 @else
-                    <p class="text-body font-medium">Pilih metode pembayaran</p>
-                    <p class="mt-1 text-sm text-ink-2">Bayar sebelum <span class="text-ink">{{ $deadline }} WIB</span>. Setelah itu pesanan dibatalkan otomatis dan stok dilepas.</p>
+                    <p class="heading-section">Pilih metode pembayaran</p>
+                    <p class="mt-1 text-body text-ink-2">Bayar sebelum <span class="text-ink">{{ $deadline }} WIB</span>. Setelah itu pesanan dibatalkan otomatis dan stok dilepas.</p>
                 @endif
 
                 <div class="mt-5">
                     @if ($this->paymentMethods['error'])
-                        <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-paper-raised px-4 py-3">
-                            <p class="text-sm text-danger">{{ $this->paymentMethods['error'] }}</p>
+                        <div class="flex flex-wrap items-center justify-between gap-3 border-l-2 border-danger bg-danger/5 px-4 py-3">
+                            <p class="text-body text-danger">{{ $this->paymentMethods['error'] }}</p>
                             <button type="button" wire:click="$refresh" class="btn-secondary btn-sm">Coba lagi</button>
                         </div>
                     @elseif (empty($this->paymentMethods['methods']))
-                        <p class="text-sm text-ink-2">Belum ada metode pembayaran untuk total ini. Hubungi kami lewat chat.</p>
+                        <p class="text-body text-ink-2">Belum ada metode pembayaran untuk total ini. Hubungi kami lewat chat.</p>
                     @else
                         <x-shop.payment-methods :methods="$this->paymentMethods['methods']" :selected="$paymentMethod" />
                     @endif
-                    @error('paymentMethod') <p class="mt-2 text-sm text-danger">{{ $message }}</p> @enderror
+                    @error('paymentMethod') <p class="mt-2 text-body text-danger">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="mt-5 flex flex-wrap items-center gap-3">
@@ -154,34 +154,34 @@
             @endif
         </div>
     @elseif ($order->status === OrderStatus::Shipped)
-        <div class="card mt-8 flex flex-wrap items-center justify-between gap-4 p-6">
+        <div class="mt-10 flex flex-wrap items-center justify-between gap-4 bg-paper-card p-6 sm:p-8">
             <div>
-                <p class="text-body font-medium">Paket dalam perjalanan</p>
-                <p class="mt-1 text-sm text-ink-2">Sudah sampai? Tandai diterima supaya kami tahu pesananmu aman.</p>
+                <p class="heading-section">Paket dalam perjalanan</p>
+                <p class="mt-1 text-body text-ink-2">Sudah sampai? Tandai diterima supaya kami tahu pesananmu aman.</p>
             </div>
             <button type="button" wire:click="confirmReceived" wire:confirm="Paket sudah kamu terima dengan baik?" class="btn-primary">Pesanan Diterima</button>
         </div>
     @endif
 
-    <div class="mt-8 grid gap-6 md:grid-cols-2">
-        <div class="card p-6">
-            <h2 class="text-body font-medium">Pengiriman</h2>
-            <dl class="mt-3 space-y-2 text-sm">
+    <div class="mt-10 grid gap-6 md:grid-cols-2">
+        <div class="bg-paper-card p-6 sm:p-8">
+            <h2 class="eyebrow text-ink">Pengiriman</h2>
+            <dl class="mt-4 space-y-2.5 text-body">
                 <div class="flex justify-between gap-4"><dt class="text-ink-2">Kurir</dt><dd>{{ strtoupper($order->courier) }} {{ $order->courier_service }}</dd></div>
                 <div class="flex justify-between gap-4">
                     <dt class="text-ink-2">No. resi</dt>
                     <dd class="tabular-nums">{{ $order->tracking_number ?? 'Belum ada' }}</dd>
                 </div>
             </dl>
-            <div class="mt-4 border-t border-line pt-4 text-sm leading-6">
+            <div class="mt-4 border-t border-line pt-4 text-body leading-6">
                 <p class="text-ink">{{ $snap['recipient'] ?? '' }} · <span class="tabular-nums">{{ $snap['phone'] ?? '' }}</span></p>
                 <p class="text-ink-2">{{ $snap['detail'] ?? '' }}, {{ region_name($snap['district_name'] ?? '') }}, {{ region_name($snap['city_name'] ?? '') }}, {{ region_name($snap['province_name'] ?? '') }} {{ $snap['postal_code'] ?? '' }}</p>
             </div>
         </div>
 
-        <div class="card p-6">
-            <h2 class="text-body font-medium">Pembayaran</h2>
-            <dl class="mt-3 space-y-2 text-sm">
+        <div class="bg-paper-card p-6 sm:p-8">
+            <h2 class="eyebrow text-ink">Pembayaran</h2>
+            <dl class="mt-4 space-y-2.5 text-body">
                 <div class="flex justify-between"><dt class="text-ink-2">Subtotal</dt><dd class="price">{{ rupiah($order->subtotal) }}</dd></div>
                 <div class="flex justify-between"><dt class="text-ink-2">Ongkir</dt><dd class="price">{{ rupiah($order->shipping_cost) }}</dd></div>
                 @if ($order->discount > 0)
@@ -195,19 +195,19 @@
         </div>
     </div>
 
-    <section class="mt-8">
-        <h2 class="text-lg font-medium">Barang</h2>
+    <section class="mt-14">
+        <h2 class="heading-section">Barang</h2>
         <ul class="mt-4 divide-y divide-line border-y border-line">
             @foreach ($order->items as $item)
                 <li class="flex flex-wrap items-center gap-4 py-4" wire:key="oi-{{ $item->id }}">
                     @if ($item->variant)
-                        <x-shop.product-image :product="$item->variant->product" class="aspect-square w-14 shrink-0 rounded-lg" />
+                        <x-shop.product-image :product="$item->variant->product" class="aspect-square w-16 shrink-0" />
                     @else
-                        <div class="aspect-square w-14 shrink-0 rounded-lg bg-paper-raised"></div>
+                        <div class="aspect-square w-16 shrink-0 bg-paper-raised"></div>
                     @endif
                     <div class="min-w-0 flex-1">
                         @if ($item->variant)
-                            <a href="{{ route('products.show', $item->variant->product) }}" wire:navigate class="text-body hover:text-primary">{{ $item->product_name }}</a>
+                            <a href="{{ route('products.show', $item->variant->product) }}" wire:navigate class="text-body text-ink hover:underline">{{ $item->product_name }}</a>
                         @else
                             <p class="text-body">{{ $item->product_name }}</p>
                         @endif

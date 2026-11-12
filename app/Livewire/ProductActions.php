@@ -35,6 +35,8 @@ class ProductActions extends Component
 
         $this->wished = $wishlist->toggle(auth()->user(), $this->product);
         $this->dispatch('toast', message: $this->wished ? 'Disimpan ke wishlist' : 'Dihapus dari wishlist');
+        // Halaman wishlist mendengarkan ini supaya daftarnya ikut diperbarui.
+        $this->dispatch('wishlist-updated');
     }
 
     public function add(int $variantId, CartService $cart): void

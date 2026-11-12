@@ -46,6 +46,7 @@ class Cart extends Component
 
         if ($item) {
             $cart->remove($item);
+            $this->dispatch('toast', message: 'Dihapus dari keranjang');
         }
 
         unset($this->summary);

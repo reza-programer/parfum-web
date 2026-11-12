@@ -96,3 +96,10 @@
         @apply border-t border-line;
     }
 }
+
+/* Halaman dengan bilah bayar menempel di bawah (keranjang, checkout): naikkan tombol chat di layar kecil. */
+@media (max-width: 1023px) {
+    body:has([data-bottom-bar]) .chat-launcher {
+        bottom: 6rem;
+    }
+}

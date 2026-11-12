@@ -105,3 +105,21 @@ it('pindah ke keranjang gagal jika produk habis', function () {
 
     expect(WishlistItem::find($wish->id))->not->toBeNull();
 });
+
+it('hapus dari keranjang, hapus dari wishlist, dan pindah ke keranjang memunculkan toast', function () {
+    $item = CartItem::factory()->for($this->user)->create();
+    Livewire::actingAs($this->user)->test(Cart::class)
+        ->call('remove', $item->id)
+        ->assertDispatched('toast', message: 'Dihapus dari keranjang');
+
+    $product = Product::factory()->create(['name' => 'Melati Senja']);
+    ProductVariant::factory()->for($product)->create(['size_ml' => 50, 'is_decant' => false, 'stock' => 3]);
+    $wish = WishlistItem::factory()->for($this->user)->for($product)->create();
+    $gone = WishlistItem::factory()->for($this->user)->create();
+
+    Livewire::actingAs($this->user)->test(Wishlist::class)
+        ->call('remove', $gone->id)
+        ->assertDispatched('toast', message: 'Dihapus dari wishlist')
+        ->call('moveToCart', $wish->id)
+        ->assertDispatched('toast', message: 'Melati Senja 50ml dipindah ke keranjang');
+});

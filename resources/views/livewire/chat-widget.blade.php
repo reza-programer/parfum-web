@@ -1,4 +1,4 @@
-<div class="fixed bottom-4 right-4 z-40 sm:bottom-6 sm:right-6">
+<div class="chat-launcher fixed bottom-4 right-4 z-40 transition-[bottom] duration-200 sm:bottom-6 sm:right-6">
     @if ($open)
         <section wire:poll.4s="poll" class="mb-3 flex h-[min(560px,calc(100vh-7rem))] w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden rounded-2xl border border-line bg-paper-card shadow-float" aria-label="Chat">
             <header class="flex items-center justify-between border-b border-line px-4 py-3">
