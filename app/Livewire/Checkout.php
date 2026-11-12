@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Exceptions\OrderException;
+use App\Exceptions\PaymentException;
 use App\Exceptions\ShippingException;
 use App\Exceptions\VoucherException;
 use App\Models\Address;
@@ -10,6 +11,8 @@ use App\Models\Voucher;
 use App\Services\CartService;
 use App\Services\CartSummary;
 use App\Services\OrderService;
+use App\Services\PaymentMethod;
+use App\Services\PaymentService;
 use App\Services\ShippingOption;
 use App\Services\ShippingService;
 use App\Services\VoucherService;
@@ -25,6 +28,9 @@ class Checkout extends Component
     public ?int $addressId = null;
 
     public ?string $shippingKey = null;
+
+    /** "qris" atau "va:BCA" (lihat PaymentMethod::key()). */
+    public ?string $paymentMethod = null;
 
     public string $voucherInput = '';
 
@@ -116,6 +122,25 @@ class Checkout extends Component
         return $this->voucher ? app(VoucherService::class)->discountFor($this->voucher, $this->summary->subtotal) : 0;
     }
 
+    #[Computed]
+    public function total(): int
+    {
+        return $this->summary->subtotal - $this->discount + ($this->selectedShipping?->cost ?? 0);
+    }
+
+    /**
+     * @return array{methods: list<PaymentMethod>, error: ?string}
+     */
+    #[Computed]
+    public function paymentMethods(): array
+    {
+        try {
+            return ['methods' => app(PaymentService::class)->methods($this->total), 'error' => null];
+        } catch (PaymentException $e) {
+            return ['methods' => [], 'error' => $e->getMessage()];
+        }
+    }
+
     public function applyVoucher(VoucherService $vouchers): void
     {
         $this->resetErrorBag('voucherInput');
@@ -134,16 +159,16 @@ class Checkout extends Component
 
         $this->voucherCode = $voucher->code;
         $this->voucherInput = '';
-        unset($this->voucher, $this->discount);
+        unset($this->voucher, $this->discount, $this->total, $this->paymentMethods);
     }
 
     public function removeVoucher(): void
     {
         $this->voucherCode = null;
-        unset($this->voucher, $this->discount);
+        unset($this->voucher, $this->discount, $this->total, $this->paymentMethods);
     }
 
-    public function placeOrder(OrderService $orders): void
+    public function placeOrder(OrderService $orders, PaymentService $payments): void
     {
         $this->resetErrorBag();
 
@@ -161,6 +186,12 @@ class Checkout extends Component
             return;
         }
 
+        if (! $this->paymentMethod) {
+            $this->addError('paymentMethod', 'Pilih metode pembayaran.');
+
+            return;
+        }
+
         try {
             $order = $orders->place(auth()->user(), $address, $this->shippingKey, $this->voucherCode);
         } catch (VoucherException $e) {
@@ -173,6 +204,14 @@ class Checkout extends Component
             unset($this->summary, $this->shippingOptions);
 
             return;
+        }
+
+        // Order sudah tersimpan dan stok terkunci. Kalau Komerce gagal, customer bisa coba lagi
+        // atau ganti metode dari halaman pesanan.
+        try {
+            $payments->create($order, $this->paymentMethod);
+        } catch (PaymentException $e) {
+            session()->flash('payment-error', $e->getMessage());
         }
 
         $this->dispatch('cart-updated');

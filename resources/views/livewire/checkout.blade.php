@@ -76,7 +76,26 @@
                 @error('shippingKey') <p class="mt-2 text-sm text-red-700">{{ $message }}</p> @enderror
             </section>
 
-            {{-- 3. Barang --}}
+            {{-- 3. Pembayaran --}}
+            <section>
+                <h2 class="text-lg font-medium">Pembayaran</h2>
+
+                <div class="mt-4">
+                    @if ($this->paymentMethods['error'])
+                        <div class="card flex flex-wrap items-center justify-between gap-3 p-4">
+                            <p class="text-sm text-red-800">{{ $this->paymentMethods['error'] }}</p>
+                            <button type="button" wire:click="$refresh" class="btn-secondary btn-sm">Coba lagi</button>
+                        </div>
+                    @elseif (empty($this->paymentMethods['methods']))
+                        <p class="text-sm text-ink-2">Belum ada metode pembayaran untuk total ini.</p>
+                    @else
+                        <x-shop.payment-methods :methods="$this->paymentMethods['methods']" :selected="$paymentMethod" />
+                    @endif
+                </div>
+                @error('paymentMethod') <p class="mt-2 text-sm text-red-700">{{ $message }}</p> @enderror
+            </section>
+
+            {{-- 4. Barang --}}
             <section>
                 <h2 class="text-lg font-medium">Barang</h2>
                 <ul class="mt-4 divide-y divide-line border-y border-line">
@@ -135,7 +154,7 @@
                     @endif
                     <div class="flex justify-between border-t border-line pt-3 text-lg">
                         <dt>Total</dt>
-                        <dd class="price font-medium" data-testid="total">{{ rupiah($this->summary->subtotal - $this->discount + ($this->selectedShipping?->cost ?? 0)) }}</dd>
+                        <dd class="price font-medium" data-testid="total">{{ rupiah($this->total) }}</dd>
                     </div>
                 </dl>
 

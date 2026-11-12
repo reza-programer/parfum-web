@@ -4,15 +4,18 @@ use App\Livewire\Checkout;
 use App\Models\Address;
 use App\Models\CartItem;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\ProductVariant;
 use App\Models\User;
 use App\Models\Voucher;
 use App\Support\FakeRajaOngkir;
 use Livewire\Livewire;
+use Tests\Support\FakeKomerce;
 
 beforeEach(function () {
     config(['services.rajaongkir.base_url' => 'https://rajaongkir.test/api/v1']);
     FakeRajaOngkir::register('https://rajaongkir.test/api/v1');
+    $this->komerce = FakeKomerce::register();
 
     $this->user = User::factory()->create();
     $this->home = Address::factory()->for($this->user)->create(['label' => 'Rumah', 'district_id' => 1001, 'is_default' => true]);
@@ -68,16 +71,58 @@ it('voucher valid mengurangi total, tidak valid menampilkan pesan', function () 
         ->assertSee('Rp212.000');
 });
 
-it('bayar sekarang membuat order dan mengarah ke halaman pesanan', function () {
+it('menampilkan pilihan VA bank dan QRIS dari Komerce', function () {
+    Livewire::actingAs($this->user)->test(Checkout::class)
+        ->assertSee('Pembayaran')
+        ->assertSee('BCA')
+        ->assertSee('Mandiri')
+        ->assertSee('QRIS');
+});
+
+it('bayar sekarang membuat order dan VA, lalu mengarah ke halaman pesanan', function () {
     $component = Livewire::actingAs($this->user)->test(Checkout::class)
         ->set('shippingKey', 'jne|REG')
+        ->set('paymentMethod', 'va:BCA')
         ->call('placeOrder');
 
     $order = Order::first();
     $component->assertRedirect(route('orders.show', $order));
 
     expect($order->total)->toBe(262000)
-        ->and($order->address_snapshot['label'])->toBe('Rumah');
+        ->and($order->address_snapshot['label'])->toBe('Rumah')
+        ->and($order->payment->channel_code)->toBe('BCA')
+        ->and($order->payment->amount)->toBe(262000)
+        ->and($order->payment->va_number)->not->toBeEmpty();
+});
+
+it('tidak bisa membuat order tanpa memilih metode bayar', function () {
+    Livewire::actingAs($this->user)->test(Checkout::class)
+        ->set('shippingKey', 'jne|REG')
+        ->call('placeOrder')
+        ->assertHasErrors('paymentMethod');
+
+    expect(Order::count())->toBe(0);
+});
+
+it('kalau pembayaran gagal dibuat, order tetap tersimpan dan customer diberi tahu di halaman pesanan', function () {
+    $component = Livewire::actingAs($this->user)->test(Checkout::class)
+        ->set('shippingKey', 'jne|REG')
+        ->set('paymentMethod', 'qris');
+
+    $this->komerce->down = true;
+    $component->call('placeOrder');
+
+    $order = Order::first();
+    $component->assertRedirect(route('orders.show', $order));
+    expect(Payment::count())->toBe(0)
+        ->and(session('payment-error'))->toBe('Pembayaran belum bisa dibuat. Coba lagi sebentar.');
+});
+
+it('metode bayar yang gagal dimuat menampilkan pesan', function () {
+    $this->komerce->down = true;
+
+    Livewire::actingAs($this->user)->test(Checkout::class)
+        ->assertSee('Metode pembayaran belum bisa dimuat. Coba lagi sebentar.');
 });
 
 it('tidak bisa membuat order tanpa memilih kurir', function () {
