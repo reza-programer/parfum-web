@@ -50,7 +50,7 @@ class CategoryResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Nama')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('slug')->color('gray'),
-                Tables\Columns\TextColumn::make('products_count')->label('Produk')->counts('products')->sortable(),
+                Tables\Columns\TextColumn::make('products_count')->alignEnd()->label('Produk')->counts('products')->sortable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

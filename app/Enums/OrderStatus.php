@@ -24,15 +24,14 @@ enum OrderStatus: string
     }
 
     /**
-     * Warna badge Filament.
+     * Warna badge Filament (tema monokrom): hitam untuk yang perlu ditindaklanjuti admin,
+     * abu-abu untuk menunggu/selesai, merah hanya untuk dibatalkan.
      */
     public function color(): string
     {
         return match ($this) {
-            self::PendingPayment => 'warning',
-            self::Paid, self::Processing => 'info',
-            self::Shipped => 'primary',
-            self::Completed => 'success',
+            self::PendingPayment, self::Completed => 'gray',
+            self::Paid, self::Processing, self::Shipped => 'primary',
             self::Cancelled => 'danger',
         };
     }

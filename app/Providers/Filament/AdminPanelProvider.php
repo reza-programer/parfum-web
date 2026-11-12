@@ -27,11 +27,26 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName(config('app.name').' Admin')
+            // Monokrom: shade 600 (tombol, link, badge) = #111111.
             ->colors([
-                'primary' => Color::hex('#8a4b1f'),
-                'gray' => Color::Stone,
+                'primary' => [
+                    50 => '248, 248, 246',
+                    100 => '241, 241, 239',
+                    200 => '232, 232, 232',
+                    300 => '189, 189, 189',
+                    400 => '112, 112, 112',
+                    500 => '64, 64, 64',
+                    600 => '17, 17, 17',
+                    700 => '10, 10, 10',
+                    800 => '5, 5, 5',
+                    900 => '0, 0, 0',
+                    950 => '0, 0, 0',
+                ],
+                'gray' => Color::Neutral,
             ])
-            ->font('Instrument Sans')
+            ->font('Inter')
+            ->darkMode(false)
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->navigationGroups(['Penjualan', 'Katalog', 'Layanan'])
             ->sidebarCollapsibleOnDesktop()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

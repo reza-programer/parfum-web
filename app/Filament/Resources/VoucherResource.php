@@ -62,10 +62,10 @@ class VoucherResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')->label('Kode')->searchable()->copyable()->weight('medium'),
-                Tables\Columns\TextColumn::make('value')->label('Potongan')
+                Tables\Columns\TextColumn::make('value')->alignEnd()->label('Potongan')
                     ->formatStateUsing(fn (Voucher $record) => $record->type === VoucherType::Percent ? "{$record->value}%" : rupiah($record->value)),
-                Tables\Columns\TextColumn::make('min_purchase')->label('Min. belanja')->money('IDR', locale: 'id'),
-                Tables\Columns\TextColumn::make('used')->label('Terpakai')
+                Tables\Columns\TextColumn::make('min_purchase')->alignEnd()->label('Min. belanja')->money('IDR', locale: 'id'),
+                Tables\Columns\TextColumn::make('used')->alignEnd()->label('Terpakai')
                     ->formatStateUsing(fn (Voucher $record) => "{$record->used} / {$record->quota}"),
                 Tables\Columns\TextColumn::make('ends_at')->label('Berlaku')
                     ->formatStateUsing(fn (Voucher $record) => $record->starts_at->format('j M').' – '.$record->ends_at->format('j M Y'))

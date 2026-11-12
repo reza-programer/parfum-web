@@ -1,0 +1,115 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+
+/*
+ | Tema admin monokrom (docs/plans/redesign-monokrom.md):
+ | sudut tegas, tanpa bayangan, garis tipis #E8E8E8, latar #F8F8F6, tabel rapat dan konsisten.
+ */
+
+.fi-body {
+    @apply bg-[#f8f8f6] text-[#171717];
+}
+
+/* Permukaan: kartu, tabel, widget, modal, dropdown, tab, login */
+.fi-section,
+.fi-ta-ctn,
+.fi-wi-stats-overview-stat,
+.fi-modal-window,
+.fi-dropdown-panel,
+.fi-tabs,
+.fi-simple-main,
+.fi-no-notification,
+.fi-fo-repeater-item,
+.fi-in-repeatable-item,
+.fi-fo-builder-item,
+.fi-wi-widget > .fi-section {
+    @apply rounded-none shadow-none ring-1 ring-[#e8e8e8];
+}
+
+/* Kontrol: tombol, input, badge, item navigasi */
+.fi-btn,
+.fi-icon-btn,
+.fi-input-wrp,
+.fi-badge,
+.fi-pagination-item,
+.fi-pagination-items,
+.fi-tabs-item,
+.fi-sidebar-item-button,
+.fi-sidebar-group-button,
+.fi-dropdown-list-item,
+.fi-select-input,
+.fi-fo-file-upload,
+.fi-ta-search-field,
+.fi-avatar,
+.fi-ac-btn-action {
+    @apply rounded-none;
+}
+
+.fi-btn {
+    @apply shadow-none;
+}
+
+.fi-input-wrp {
+    @apply shadow-none ring-[#e8e8e8];
+}
+
+.fi-input-wrp:focus-within {
+    @apply ring-1 ring-[#111111];
+}
+
+/* Topbar dan sidebar: garis, bukan bayangan */
+.fi-topbar > nav {
+    @apply bg-white shadow-none ring-1 ring-[#e8e8e8];
+}
+
+.fi-sidebar {
+    @apply bg-white;
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-button {
+    @apply bg-[#f1f1ef];
+}
+
+.fi-header-heading {
+    @apply text-2xl font-semibold tracking-tight sm:text-[28px];
+}
+
+/* Tabel: header #FAFAFA 12px medium, isi 13px, baris ~56px */
+.fi-ta-header-cell {
+    @apply bg-[#fafafa] px-4 py-3;
+}
+
+.fi-ta-header-cell-label {
+    @apply text-xs font-medium text-[#707070];
+}
+
+.fi-ta-header-cell-sort-button .fi-ta-header-cell-label {
+    @apply text-xs;
+}
+
+.fi-ta-cell {
+    @apply text-[13px];
+}
+
+.fi-ta-text-item-label {
+    @apply text-[13px];
+}
+
+.fi-ta-row {
+    @apply transition-colors duration-150;
+}
+
+.fi-ta-header-toolbar {
+    @apply gap-3;
+}
+
+/* Badge sederhana: huruf kapital kecil */
+.fi-badge {
+    @apply px-2 text-[11px] font-medium uppercase tracking-[0.06em];
+}
+
+/* Widget statistik */
+.fi-wi-stats-overview-stat-value {
+    @apply tracking-tight;
+}

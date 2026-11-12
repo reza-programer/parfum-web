@@ -31,7 +31,7 @@ class TopProductsTable extends TableWidget
             ->defaultPaginationPageOption(5)
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Produk')->description(fn (Product $record) => $record->brand->name),
-                Tables\Columns\TextColumn::make('sold_qty')->label('Terjual')->numeric(),
+                Tables\Columns\TextColumn::make('sold_qty')->alignEnd()->label('Terjual')->numeric(),
             ])
             ->emptyStateHeading('Belum ada penjualan');
     }

@@ -47,8 +47,8 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('status')->badge()
                     ->formatStateUsing(fn (OrderStatus $state) => $state->label())
                     ->color(fn (OrderStatus $state) => $state->color()),
-                Tables\Columns\TextColumn::make('items_count')->label('Item')->counts('items'),
-                Tables\Columns\TextColumn::make('total')->money('IDR', locale: 'id')->sortable(),
+                Tables\Columns\TextColumn::make('items_count')->alignEnd()->label('Item')->counts('items'),
+                Tables\Columns\TextColumn::make('total')->alignEnd()->money('IDR', locale: 'id')->sortable(),
                 Tables\Columns\TextColumn::make('courier')->label('Kurir')
                     ->formatStateUsing(fn (Order $record) => strtoupper((string) $record->courier).' '.$record->courier_service),
                 Tables\Columns\TextColumn::make('tracking_number')->label('Resi')->placeholder('–')->copyable(),

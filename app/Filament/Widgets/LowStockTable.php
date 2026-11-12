@@ -24,7 +24,7 @@ class LowStockTable extends TableWidget
                 Tables\Columns\TextColumn::make('product.name')->label('Produk'),
                 Tables\Columns\TextColumn::make('size_ml')->label('Ukuran')
                     ->formatStateUsing(fn (ProductVariant $record) => $record->label()),
-                Tables\Columns\TextColumn::make('stock')->label('Stok')->badge()
+                Tables\Columns\TextColumn::make('stock')->alignEnd()->label('Stok')->badge()
                     ->color(fn (int $state) => $state === 0 ? 'danger' : 'warning'),
             ])
             ->recordUrl(fn (ProductVariant $record) => ProductResource::getUrl('edit', ['record' => $record->product]))

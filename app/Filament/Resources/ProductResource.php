@@ -156,8 +156,8 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('category.name')->label('Kategori'),
                 Tables\Columns\TextColumn::make('scent_family')->label('Aroma')
                     ->formatStateUsing(fn (ScentFamily $state) => $state->label())->badge()->color('gray'),
-                Tables\Columns\TextColumn::make('min_price')->label('Mulai')->money('IDR', locale: 'id')->sortable(),
-                Tables\Columns\TextColumn::make('total_stock')->label('Stok')->numeric()->sortable()
+                Tables\Columns\TextColumn::make('min_price')->alignEnd()->label('Mulai')->money('IDR', locale: 'id')->sortable(),
+                Tables\Columns\TextColumn::make('total_stock')->alignEnd()->label('Stok')->numeric()->sortable()
                     ->color(fn (Product $record) => (int) $record->min_stock <= self::LOW_STOCK ? 'danger' : null)
                     ->description(fn (Product $record) => (int) $record->min_stock <= self::LOW_STOCK ? 'Ada ukuran menipis' : null),
                 Tables\Columns\ToggleColumn::make('is_active')->label('Aktif'),

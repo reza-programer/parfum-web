@@ -46,7 +46,7 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable()->copyable(),
                 Tables\Columns\TextColumn::make('phone')->label('No. HP')->placeholder('–'),
-                Tables\Columns\TextColumn::make('orders_count')->label('Pesanan')->counts('orders')->sortable(),
+                Tables\Columns\TextColumn::make('orders_count')->alignEnd()->label('Pesanan')->counts('orders')->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->label('Daftar')->date('j M Y')->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
