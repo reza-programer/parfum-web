@@ -29,6 +29,8 @@ class AddressForm extends Component
 
     public ?int $district_id = null;
 
+    public ?int $subdistrict_id = null;
+
     public string $detail = '';
 
     public string $postal_code = '';
@@ -43,7 +45,7 @@ class AddressForm extends Component
             $address = $this->ownedAddress($addressId);
             $this->addressId = $address->id;
             $this->fill($address->only([
-                'label', 'recipient', 'phone', 'province_id', 'city_id', 'district_id', 'detail', 'postal_code', 'is_default',
+                'label', 'recipient', 'phone', 'province_id', 'city_id', 'district_id', 'subdistrict_id', 'detail', 'postal_code', 'is_default',
             ]));
         } else {
             $user = auth()->user();
@@ -56,11 +58,30 @@ class AddressForm extends Component
     {
         $this->city_id = null;
         $this->district_id = null;
+        $this->subdistrict_id = null;
     }
 
     public function updatedCityId(): void
     {
         $this->district_id = null;
+        $this->subdistrict_id = null;
+    }
+
+    public function updatedDistrictId(): void
+    {
+        $this->subdistrict_id = null;
+    }
+
+    /**
+     * Kode pos ikut kelurahan. Customer masih bisa mengubahnya setelah ini.
+     */
+    public function updatedSubdistrictId(): void
+    {
+        $zip = $this->subdistricts[$this->subdistrict_id]['zip'] ?? null;
+
+        if ($zip) {
+            $this->postal_code = $zip;
+        }
     }
 
     #[Computed]
@@ -81,6 +102,15 @@ class AddressForm extends Component
         return $this->city_id ? $this->regions(fn (ShippingService $s) => $s->districts($this->city_id)) : [];
     }
 
+    /**
+     * @return array<int, array{name: string, zip: ?string}>
+     */
+    #[Computed]
+    public function subdistricts(): array
+    {
+        return $this->district_id ? $this->regions(fn (ShippingService $s) => $s->subdistricts($this->district_id)) : [];
+    }
+
     public function save(AddressBook $book): void
     {
         $data = $this->validate([
@@ -90,6 +120,10 @@ class AddressForm extends Component
             'province_id' => ['required', 'integer', Rule::in(array_keys($this->provinces))],
             'city_id' => ['required', 'integer', Rule::in(array_keys($this->cities))],
             'district_id' => ['required', 'integer', Rule::in(array_keys($this->districts))],
+            // Wajib, kecuali RajaOngkir tidak punya data kelurahan untuk kecamatan ini.
+            'subdistrict_id' => $this->subdistricts
+                ? ['required', 'integer', Rule::in(array_keys($this->subdistricts))]
+                : ['nullable'],
             'detail' => ['required', 'string', 'max:500'],
             'postal_code' => ['required', 'digits:5'],
             'is_default' => ['boolean'],
@@ -100,6 +134,7 @@ class AddressForm extends Component
             'province_id' => 'provinsi',
             'city_id' => 'kota/kabupaten',
             'district_id' => 'kecamatan',
+            'subdistrict_id' => 'kelurahan/desa',
             'detail' => 'alamat lengkap',
             'postal_code' => 'kode pos',
         ]);
@@ -109,6 +144,9 @@ class AddressForm extends Component
             'city_name' => $this->cities[$data['city_id']],
             'district_name' => $this->districts[$data['district_id']],
         ];
+
+        $data['subdistrict_id'] = $this->subdistricts ? (int) $data['subdistrict_id'] : null;
+        $data['subdistrict_name'] = $data['subdistrict_id'] ? $this->subdistricts[$data['subdistrict_id']]['name'] : null;
 
         $address = $this->addressId
             ? $book->update($this->ownedAddress($this->addressId), $data)

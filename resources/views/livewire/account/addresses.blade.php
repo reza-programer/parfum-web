@@ -34,6 +34,11 @@
                         </p>
                         <p class="mt-2 text-sm text-ink">{{ $address->recipient }} · <span class="tabular-nums">{{ $address->phone }}</span></p>
                         <p class="mt-1 max-w-md text-sm leading-6 text-ink-2">{{ $address->fullText() }}</p>
+                        @if ($address->needsSubdistrict())
+                            <button type="button" wire:click="edit({{ $address->id }})" class="mt-2 inline-flex items-center gap-1.5 text-label text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink">
+                                <x-lucide-circle-alert class="size-3.5" stroke-width="1.5" /> Lengkapi kelurahan
+                            </button>
+                        @endif
                     </div>
                     <div class="flex items-center gap-1">
                         @unless ($address->is_default)

@@ -2,6 +2,7 @@
 
 use App\Exceptions\ShippingException;
 use App\Services\ShippingService;
+use App\Support\FakeRajaOngkir;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -183,7 +184,7 @@ it('kecamatan tanpa data kelurahan menghasilkan daftar kosong', function () {
 });
 
 it('data kelurahan contoh tersedia untuk mode fake dan test', function () {
-    App\Support\FakeRajaOngkir::register('https://rajaongkir.test/api/v1');
+    FakeRajaOngkir::register('https://rajaongkir.test/api/v1');
 
     $rows = app(ShippingService::class)->subdistricts(1001);
 

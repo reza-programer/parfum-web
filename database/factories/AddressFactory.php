@@ -20,8 +20,10 @@ class AddressFactory extends Factory
             'city_name' => 'Kota Bandung',
             'district_id' => 1001,
             'district_name' => 'Coblong',
+            'subdistrict_id' => 10011,
+            'subdistrict_name' => 'Dago',
             'detail' => fake()->streetAddress(),
-            'postal_code' => '40132',
+            'postal_code' => '40135',
             'is_default' => false,
         ];
     }

@@ -40,8 +40,8 @@ it('menyimpan alamat baru dengan nama wilayah dari RajaOngkir', function () {
         ->set('province_id', 9)
         ->set('city_id', 23)
         ->set('district_id', 1001)
+        ->set('subdistrict_id', 10011)
         ->set('detail', 'Jl. Dago No. 1')
-        ->set('postal_code', '40135')
         ->call('save')
         ->assertHasNoErrors()
         ->assertDispatched('address-saved');
@@ -51,7 +51,93 @@ it('menyimpan alamat baru dengan nama wilayah dari RajaOngkir', function () {
     expect($address->province_name)->toBe('JAWA BARAT')
         ->and($address->city_name)->toBe('BANDUNG')
         ->and($address->district_name)->toBe('COBLONG')
+        ->and($address->subdistrict_id)->toBe(10011)
+        ->and($address->subdistrict_name)->toBe('DAGO')
+        ->and($address->postal_code)->toBe('40135')
         ->and($address->is_default)->toBeTrue();
+});
+
+it('pilihan kelurahan mengikuti kecamatan dan kode pos terisi otomatis tapi bisa diubah', function () {
+    Livewire::actingAs($this->user)->test(AddressForm::class)
+        ->set('province_id', 9)
+        ->set('city_id', 23)
+        ->set('district_id', 1001)
+        ->assertSee('Dago')
+        ->assertSee('Lebakgede')
+        ->set('subdistrict_id', 10011)
+        ->assertSet('postal_code', '40135')
+        ->set('subdistrict_id', 10012)
+        ->assertSet('postal_code', '40132')
+        ->set('postal_code', '40199')
+        ->assertSet('postal_code', '40199')
+        ->set('district_id', 1002)
+        ->assertSet('subdistrict_id', null)
+        ->assertSee('Pasteur')
+        ->assertDontSee('Lebakgede')
+        ->set('province_id', 6)
+        ->assertSet('district_id', null)
+        ->assertSet('subdistrict_id', null);
+});
+
+it('kelurahan wajib dipilih kalau kecamatan punya data kelurahan', function () {
+    Livewire::actingAs($this->user)->test(AddressForm::class)
+        ->set('label', 'Rumah')->set('recipient', 'Budi')->set('phone', '081234567890')
+        ->set('province_id', 9)->set('city_id', 23)->set('district_id', 1001)
+        ->set('detail', 'Jl. Dago')->set('postal_code', '40135')
+        ->call('save')
+        ->assertHasErrors(['subdistrict_id' => 'required']);
+});
+
+it('menolak kelurahan dari kecamatan lain', function () {
+    Livewire::actingAs($this->user)->test(AddressForm::class)
+        ->set('label', 'Rumah')->set('recipient', 'Budi')->set('phone', '081234567890')
+        ->set('province_id', 9)->set('city_id', 23)->set('district_id', 1001)
+        ->set('subdistrict_id', 10021) // Pasteur, milik Sukajadi
+        ->set('detail', 'Jl. Dago')->set('postal_code', '40135')
+        ->call('save')
+        ->assertHasErrors('subdistrict_id');
+
+    expect($this->user->addresses()->count())->toBe(0);
+});
+
+it('kecamatan yang tidak punya data kelurahan boleh disimpan tanpa kelurahan', function () {
+    Livewire::actingAs($this->user)->test(AddressForm::class)
+        ->set('label', 'Vila')->set('recipient', 'Budi')->set('phone', '081234567890')
+        ->set('province_id', 1)->set('city_id', 114)->set('district_id', 5102)
+        ->assertSee('Kode pos diketik manual')
+        ->set('detail', 'Jl. Gatot Subroto')->set('postal_code', '80116')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect($this->user->addresses()->first()->subdistrict_id)->toBeNull();
+});
+
+it('alamat lama tanpa kelurahan wajib dilengkapi saat diubah', function () {
+    $address = app(AddressBook::class)->add($this->user, Address::factory()->raw([
+        'subdistrict_id' => null, 'subdistrict_name' => null,
+    ]));
+
+    Livewire::actingAs($this->user)->test(AddressForm::class, ['addressId' => $address->id])
+        ->assertSet('subdistrict_id', null)
+        ->call('save')
+        ->assertHasErrors('subdistrict_id')
+        ->set('subdistrict_id', 10013)
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect($address->fresh()->subdistrict_name)->toBe('SEKELOA')
+        ->and($address->fresh()->postal_code)->toBe('40134');
+});
+
+it('daftar alamat menandai alamat lama yang belum punya kelurahan', function () {
+    $book = app(AddressBook::class);
+    $book->add($this->user, Address::factory()->raw(['label' => 'Lama', 'subdistrict_id' => null, 'subdistrict_name' => null]));
+
+    Livewire::actingAs($this->user)->test(Addresses::class)->assertSee('Lengkapi kelurahan');
+
+    $this->user->addresses()->update(['subdistrict_id' => 10011, 'subdistrict_name' => 'DAGO']);
+
+    Livewire::actingAs($this->user)->test(Addresses::class)->assertDontSee('Lengkapi kelurahan');
 });
 
 it('menolak kecamatan yang bukan milik kota terpilih', function () {

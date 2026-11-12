@@ -50,8 +50,30 @@
             @error('district_id') <p class="mt-1.5 text-label text-danger">{{ $message }}</p> @enderror
         </div>
         <div>
+            <label for="addr-subdistrict" class="label">Kelurahan/desa</label>
+            @if ($district_id && ! $this->subdistricts && ! $regionError)
+                {{-- RajaOngkir tidak punya data kelurahan untuk kecamatan ini --}}
+                <select id="addr-subdistrict" class="field" disabled>
+                    <option>Tidak tersedia</option>
+                </select>
+                <p class="meta mt-1.5">Data kelurahan untuk kecamatan ini belum tersedia. Kode pos diketik manual.</p>
+            @else
+                <select id="addr-subdistrict" wire:model.live="subdistrict_id" class="field" @disabled(! $district_id)>
+                    <option value="">Pilih kelurahan/desa</option>
+                    @foreach ($this->subdistricts as $id => $row)
+                        <option value="{{ $id }}">{{ region_name($row['name']) }}</option>
+                    @endforeach
+                </select>
+            @endif
+            @error('subdistrict_id') <p class="mt-1.5 text-label text-danger">{{ $message }}</p> @enderror
+        </div>
+        <div>
             <label for="addr-postal" class="label">Kode pos</label>
-            <input id="addr-postal" type="text" inputmode="numeric" maxlength="5" wire:model="postal_code" class="field tabular-nums" autocomplete="postal-code">
+            <input id="addr-postal" type="text" inputmode="numeric" maxlength="5" wire:model="postal_code" class="field tabular-nums" autocomplete="postal-code"
+                   wire:loading.class="opacity-50" wire:target="subdistrict_id">
+            @if ($subdistrict_id && ($this->subdistricts[$subdistrict_id]['zip'] ?? null))
+                <p class="meta mt-1.5">Terisi otomatis dari kelurahan. Ubah kalau kurang tepat.</p>
+            @endif
             @error('postal_code') <p class="mt-1.5 text-label text-danger">{{ $message }}</p> @enderror
         </div>
         <div class="sm:col-span-2">
