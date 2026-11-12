@@ -8,13 +8,24 @@
         <title>{{ isset($title) ? $title.' · '.config('app.name') : config('app.name') }}</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=cormorant-garamond:500,600|inter:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=cormorant-garamond:600|inter:400,500,600,700&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @stack('head')
     </head>
     <body class="min-h-screen">
         <div class="flex min-h-screen flex-col">
+            {{-- Bilah info: hanya fakta layanan toko, tanpa promo. Tidak ikut menempel. --}}
+            <div class="hidden bg-ink text-white/80 md:block">
+                <div class="page flex h-8 items-center justify-between gap-6 text-caption">
+                    <p class="flex items-center gap-4">
+                        <span class="inline-flex items-center gap-1.5"><x-lucide-shield-check class="size-3.5" stroke-width="2" /> Parfum original dan decant</span>
+                        <span class="inline-flex items-center gap-1.5"><x-lucide-truck class="size-3.5" stroke-width="2" /> Kirim ke seluruh Indonesia</span>
+                    </p>
+                    <p class="inline-flex items-center gap-1.5"><x-lucide-wallet class="size-3.5" stroke-width="2" /> Bayar lewat VA bank dan QRIS</p>
+                </div>
+            </div>
+
             <livewire:layout.navigation />
 
             @if (isset($header))

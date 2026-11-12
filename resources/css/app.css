@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tinggi header menempel, dipakai bilah filter katalog yang menempel di bawahnya. */
+:root {
+    --header-h: 109px;
+}
+
+@media (min-width: 768px) {
+    :root {
+        --header-h: 65px;
+    }
+}
+
+@media (min-width: 1024px) {
+    :root {
+        --header-h: 105px;
+    }
+}
+
 @layer base {
     html {
         -webkit-tap-highlight-color: transparent;
@@ -17,7 +34,7 @@
     }
 
     :focus-visible {
-        @apply outline-none ring-1 ring-ink ring-offset-2 ring-offset-paper;
+        @apply outline-none ring-2 ring-primary/50 ring-offset-1 ring-offset-white;
     }
 
     [x-cloak] {
@@ -26,33 +43,37 @@
 }
 
 @layer components {
-    /* Tombol: huruf kapital kecil, sudut tegas, tinggi 44px (area sentuh). */
+    /* Tombol: teks biasa (bukan kapital), sudut 6px, tinggi 44px di HP dan 40px di layar besar. */
     .btn {
-        @apply inline-flex h-11 items-center justify-center gap-2 px-6 text-label font-medium uppercase tracking-label transition-colors duration-200 ease-out disabled:pointer-events-none disabled:opacity-40;
+        @apply inline-flex h-11 items-center justify-center gap-2 rounded-md px-5 text-body font-semibold transition-colors duration-150 ease-out disabled:pointer-events-none disabled:opacity-40 sm:h-10;
     }
 
     .btn-primary {
-        @apply btn bg-primary text-white hover:bg-primary/85;
+        @apply btn bg-primary text-white hover:bg-primary-dark;
     }
 
     .btn-secondary {
-        @apply btn border border-ink bg-transparent text-ink hover:bg-ink hover:text-white;
+        @apply btn border border-primary bg-paper-card text-primary hover:bg-primary-soft;
+    }
+
+    .btn-outline {
+        @apply btn border border-line bg-paper-card text-ink hover:border-ink-faint;
     }
 
     .btn-ghost {
-        @apply btn px-3 text-ink-2 hover:text-ink;
+        @apply btn px-3 font-medium text-ink-2 hover:text-ink;
     }
 
     .btn-sm {
-        @apply h-11 px-4 sm:h-10;
+        @apply h-11 px-4 sm:h-9;
     }
 
     .link {
-        @apply text-ink underline decoration-ink/25 underline-offset-4 transition-colors duration-150 hover:decoration-ink;
+        @apply font-medium text-primary transition-colors duration-150 hover:text-primary-dark;
     }
 
     .field {
-        @apply block h-11 w-full border-line bg-paper-card text-body text-ink placeholder:text-ink-faint focus:border-ink focus:ring-0 disabled:text-ink-faint;
+        @apply block h-11 w-full rounded-md border-line bg-paper-card text-body text-ink placeholder:text-ink-faint focus:border-primary focus:ring-1 focus:ring-primary/20 disabled:bg-paper disabled:text-ink-faint sm:h-10;
     }
 
     textarea.field {
@@ -60,28 +81,29 @@
     }
 
     .label {
-        @apply mb-2 block text-label font-medium text-ink;
+        @apply mb-1.5 block text-label font-medium text-ink;
     }
 
-    /* Label kecil kapital: brand, keluarga aroma, judul kolom. */
+    /* Label kecil: brand, judul kolom, keterangan bagian. */
     .eyebrow {
-        @apply text-caption font-medium uppercase tracking-nav text-ink-2;
+        @apply text-label font-medium text-ink-2;
     }
 
+    /* Kartu putih di atas latar abu-abu muda. */
     .card {
-        @apply border border-line bg-paper-card;
+        @apply rounded-lg border border-line bg-paper-card;
     }
 
     .page {
-        @apply mx-auto w-full max-w-page px-4 sm:px-6;
+        @apply mx-auto w-full max-w-page px-3 sm:px-6;
     }
 
     .heading-page {
-        @apply font-serif text-page font-medium text-ink;
+        @apply text-page font-bold text-ink;
     }
 
     .heading-section {
-        @apply font-serif text-section font-medium text-ink;
+        @apply text-section font-bold text-ink;
     }
 
     .meta {
@@ -95,11 +117,29 @@
     .divider {
         @apply border-t border-line;
     }
+
+    /* Chip pilihan (ukuran, filter aktif, urutan). */
+    .chip {
+        @apply inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-paper-card px-3.5 text-label font-medium text-ink transition-colors duration-150 hover:border-primary hover:text-primary;
+    }
+
+    .chip-active {
+        @apply border-primary bg-primary-soft text-primary;
+    }
 }
 
-/* Halaman dengan bilah bayar menempel di bawah (keranjang, checkout): naikkan tombol chat di layar kecil. */
+/* Halaman dengan bilah bayar menempel di bawah (keranjang, checkout, detail produk): naikkan tombol chat di layar kecil. */
 @media (max-width: 1023px) {
     body:has([data-bottom-bar]) .chat-launcher {
         bottom: 6rem;
     }
+}
+
+/* Carousel banner: sembunyikan scrollbar, geser dengan snap. */
+.no-scrollbar {
+    scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
 }

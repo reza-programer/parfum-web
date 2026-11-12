@@ -10,13 +10,13 @@
     $variants = [
         'left' => [
             'panel' => 'inset-y-0 left-0 h-dvh w-[min(22rem,88vw)] border-r border-line',
-            'panelBottom' => 'max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[85dvh] sm:inset-y-0 sm:left-0 sm:h-dvh sm:w-[22rem]',
+            'panelBottom' => 'max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[85dvh] max-sm:rounded-t-xl sm:inset-y-0 sm:left-0 sm:h-dvh sm:w-[22rem]',
             'from' => '-translate-x-full',
             'fromBottom' => 'max-sm:translate-y-full sm:-translate-x-full',
         ],
         'right' => [
             'panel' => 'inset-y-0 right-0 h-dvh w-[min(24rem,92vw)] border-l border-line',
-            'panelBottom' => 'max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[85dvh] sm:inset-y-0 sm:right-0 sm:h-dvh sm:w-[24rem]',
+            'panelBottom' => 'max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[85dvh] max-sm:rounded-t-xl sm:inset-y-0 sm:right-0 sm:h-dvh sm:w-[24rem]',
             'from' => 'translate-x-full',
             'fromBottom' => 'max-sm:translate-y-full sm:translate-x-full',
         ],
@@ -48,10 +48,10 @@
                  x-on:click="if ($event.target.closest('a[href]')) open = false"
                  class="fixed z-[60] flex flex-col bg-paper-card {{ $panel }}"
                  role="dialog" aria-modal="true" @if ($title) aria-label="{{ $title }}" @endif>
-            <header class="flex h-16 shrink-0 items-center justify-between border-b border-line px-5">
-                <p class="eyebrow text-ink">{{ $title }}</p>
+            <header class="flex h-14 shrink-0 items-center justify-between border-b border-line px-5">
+                <p class="text-[15px] font-bold text-ink">{{ $title }}</p>
                 <button type="button" x-on:click="open = false" class="-mr-3 inline-flex size-11 items-center justify-center text-ink-2 transition-colors duration-150 hover:text-ink active:text-ink" aria-label="Tutup">
-                    <x-lucide-x class="size-5" stroke-width="1.25" />
+                    <x-lucide-x class="size-5" stroke-width="1.75" />
                 </button>
             </header>
             <div class="flex-1 overflow-y-auto overscroll-contain px-5 py-5">

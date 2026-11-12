@@ -2,8 +2,9 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 
 /**
- * Design system monokrom (docs/plans/redesign-monokrom.md).
- * Nama token lama (paper, ink, line) dipertahankan supaya semua view ikut berubah serentak.
+ * Design system marketplace (docs/plans/redesign-marketplace.md).
+ * Nama token (paper, ink, line, primary) dipertahankan supaya semua view ikut berubah serentak.
+ * Sudut membulat memakai skala bawaan Tailwind: rounded-md 6px (tombol, input), rounded-lg 8px (kartu).
  *
  * @type {import('tailwindcss').Config}
  */
@@ -15,70 +16,68 @@ export default {
     ],
 
     theme: {
-        // Sudut tegas di semua komponen; hanya lingkaran (titik, angka keranjang) yang tetap bulat.
-        borderRadius: {
-            none: '0',
-            sm: '0',
-            DEFAULT: '0',
-            md: '0',
-            lg: '0',
-            xl: '0',
-            '2xl': '0',
-            '3xl': '0',
-            full: '9999px',
-        },
         extend: {
             fontFamily: {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
+                // Hanya untuk wordmark logo.
                 serif: ['"Cormorant Garamond"', ...defaultTheme.fontFamily.serif],
             },
             fontSize: {
                 caption: ['11px', { lineHeight: '16px' }],
                 label: ['12px', { lineHeight: '18px' }],
-                body: ['14px', { lineHeight: '22px' }],
-                product: ['15px', { lineHeight: '22px' }],
-                section: ['clamp(1.375rem, 1.25rem + 0.4vw, 1.5rem)', { lineHeight: '1.2' }],
-                page: ['clamp(1.875rem, 1.55rem + 1.1vw, 2.5rem)', { lineHeight: '1.1' }],
-                hero: ['clamp(2.25rem, 1.65rem + 2vw, 3.25rem)', { lineHeight: '1.05' }],
+                body: ['14px', { lineHeight: '20px' }],
+                product: ['14px', { lineHeight: '20px' }],
+                section: ['clamp(1.0625rem, 1rem + 0.3vw, 1.25rem)', { lineHeight: '1.35' }],
+                page: ['clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem)', { lineHeight: '1.3' }],
+                banner: ['clamp(1.125rem, 0.75rem + 1.9vw, 2.5rem)', { lineHeight: '1.15' }],
             },
             colors: {
                 paper: {
-                    DEFAULT: '#f8f8f6', // latar halaman
-                    card: '#ffffff', // surface
-                    raised: '#f1f1ef', // latar foto/ilustrasi, skeleton
+                    DEFAULT: '#f5f5f5', // latar halaman
+                    card: '#ffffff', // kartu
+                    raised: '#f7f7f7', // latar foto, skeleton, hover baris
                 },
                 ink: {
-                    DEFAULT: '#171717', // teks utama
-                    2: '#707070', // teks sekunder (#777777 di brief, digelapkan sedikit untuk kontras AA)
-                    3: '#707070', // teks tersier = sekunder, supaya teks kecil tetap terbaca
+                    DEFAULT: '#212121', // teks utama
+                    2: '#6d6d6d', // teks sekunder (kontras AA di putih dan #f5f5f5)
+                    3: '#6d6d6d',
                     faint: '#bdbdbd', // disabled, placeholder
                 },
                 primary: {
-                    DEFAULT: '#111111',
-                    dark: '#000000',
-                    soft: '#f1f1ef',
+                    DEFAULT: '#e11d48', // merah mawar: tombol utama, harga, tab aktif
+                    dark: '#be123c',
+                    soft: '#fff1f2',
+                },
+                success: {
+                    DEFAULT: '#047857',
+                    soft: '#ecfdf5',
+                },
+                warning: {
+                    DEFAULT: '#b45309',
+                    soft: '#fff7ed',
                 },
                 danger: '#b42318',
             },
             borderColor: {
-                line: '#e8e8e8',
+                line: '#eaeaea',
             },
             ringColor: {
-                line: '#e8e8e8',
+                line: '#eaeaea',
             },
             letterSpacing: {
-                label: '0.08em',
-                nav: '0.12em',
+                label: '0.04em',
+                nav: '0.08em',
             },
             transitionTimingFunction: {
                 out: 'cubic-bezier(0.22, 1, 0.36, 1)',
             },
             boxShadow: {
-                // Tanpa bayangan: pemisah memakai garis tipis.
-                float: 'none',
+                card: '0 1px 2px rgba(0, 0, 0, 0.04)',
+                hover: '0 6px 18px rgba(0, 0, 0, 0.08)',
+                float: '0 10px 30px rgba(0, 0, 0, 0.12)',
             },
             maxWidth: {
-                page: '1280px',
+                page: '1200px',
             },
         },
     },
