@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Exceptions\CartException;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Queries\CatalogQuery;
 use App\Services\CartService;
 use App\Services\WishlistService;
 use Illuminate\Contracts\View\View;
@@ -128,19 +129,19 @@ class ProductDetail extends Component
             'rating' => $reviews->isEmpty() ? null : round($this->product->visibleReviews()->avg('rating'), 1),
             'reviewCount' => $this->product->visibleReviews()->count(),
             'soldOut' => $this->product->isSoldOut(),
-            // Aroma yang sama didahulukan, lalu kategori yang sama.
-            'related' => Product::query()
-                ->with(['brand:id,name,slug', 'variants:id,product_id,size_ml,is_decant,price,stock'])
-                ->withMin('variants as min_price', 'price')
-                ->withSum('variants as total_stock', 'stock')
-                ->where('id', '!=', $this->product->id)
+            'sold' => $this->product->soldCount(),
+            'brandProductCount' => $this->product->brand->products()->where('is_active', true)->count(),
+            // Aroma yang sama didahulukan, lalu kategori yang sama. Lewat CatalogQuery supaya kartu punya label, rating, dan terjual.
+            'related' => (new CatalogQuery)->builder()
+                ->reorder()
+                ->where('products.id', '!=', $this->product->id)
                 ->where('is_active', true)
                 ->where(fn ($q) => $q
                     ->where('scent_family', $this->product->scent_family)
                     ->orWhere('category_id', $this->product->category_id))
                 ->orderByRaw('scent_family = ? desc', [$this->product->scent_family->value])
-                ->orderByDesc('created_at')
-                ->limit(4)
+                ->orderByDesc('products.created_at')
+                ->limit(5)
                 ->get(),
         ])->title($this->product->name);
     }
