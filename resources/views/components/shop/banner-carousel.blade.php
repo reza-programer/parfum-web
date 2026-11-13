@@ -49,7 +49,7 @@
                             {{-- Desktop: teks di sisi kiri gambar --}}
                             <div class="absolute inset-0 hidden items-center md:flex">
                                 <div class="page">
-                                    <div class="max-w-md lg:max-w-lg">
+                                    <div class="max-w-md md:pl-12 lg:max-w-lg">
                                         <p class="text-label font-bold uppercase tracking-nav text-ink">{{ $banner['eyebrow'] }}</p>
                                         <h2 class="mt-3 text-banner font-semibold tracking-tight text-ink">{{ $banner['title'] }}</h2>
                                         <p class="mt-4 max-w-sm text-[15px] leading-6 text-ink">{{ $banner['text'] }}</p>
