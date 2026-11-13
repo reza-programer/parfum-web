@@ -4,7 +4,7 @@
     $tones = [
         'neutral' => 'bg-paper text-ink-2',
         'primary' => 'bg-primary text-white',
-        'soft' => 'bg-primary-soft text-primary',
+        'soft' => 'bg-paper-raised text-ink',
         'success' => 'bg-success-soft text-success',
         'warning' => 'bg-warning-soft text-warning',
         'info' => 'bg-sky-50 text-sky-700',

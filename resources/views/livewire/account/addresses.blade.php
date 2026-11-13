@@ -11,7 +11,7 @@
     </div>
 
     @if (session('status'))
-        <p class="mt-4 rounded-md border border-success/30 bg-success-soft px-4 py-3 text-body text-success" role="status">{{ session('status') }}</p>
+        <p class="mt-4 border border-success/30 bg-success-soft px-4 py-3 text-body text-success" role="status">{{ session('status') }}</p>
     @endif
 
     @if ($showForm)
@@ -35,17 +35,17 @@
                         <p class="mt-2 text-sm text-ink">{{ $address->recipient }} · <span class="tabular-nums">{{ $address->phone }}</span></p>
                         <p class="mt-1 max-w-md text-sm leading-6 text-ink-2">{{ $address->fullText() }}</p>
                         @if ($address->needsSubdistrict())
-                            <button type="button" wire:click="edit({{ $address->id }})" class="mt-2 inline-flex items-center gap-1.5 rounded-md bg-warning-soft px-2.5 py-1 text-label font-medium text-warning hover:bg-orange-100">
+                            <button type="button" wire:click="edit({{ $address->id }})" class="mt-2 inline-flex items-center gap-1.5 bg-warning-soft px-2.5 py-1 text-label font-medium text-warning hover:bg-orange-100">
                                 <x-lucide-circle-alert class="size-3.5" stroke-width="1.5" /> Lengkapi kelurahan
                             </button>
                         @endif
                     </div>
                     <div class="flex items-center gap-1">
                         @unless ($address->is_default)
-                            <button type="button" wire:click="makeDefault({{ $address->id }})" class="inline-flex h-10 items-center rounded-md px-3 text-body font-medium text-ink-2 hover:bg-paper hover:text-primary">Jadikan utama</button>
+                            <button type="button" wire:click="makeDefault({{ $address->id }})" class="inline-flex h-10 items-center px-3 text-body font-medium text-ink-2 hover:bg-paper hover:text-primary">Jadikan utama</button>
                         @endunless
-                        <button type="button" wire:click="edit({{ $address->id }})" class="inline-flex h-10 items-center rounded-md px-3 text-body font-medium text-primary hover:bg-primary-soft">Ubah</button>
-                        <button type="button" wire:click="delete({{ $address->id }})" wire:confirm="Hapus alamat {{ $address->label }}?" class="inline-flex h-10 items-center rounded-md px-3 text-body font-medium text-ink-2 hover:bg-paper hover:text-danger">Hapus</button>
+                        <button type="button" wire:click="edit({{ $address->id }})" class="inline-flex h-10 items-center px-3 text-body font-medium text-ink underline underline-offset-4 hover:bg-paper-raised">Ubah</button>
+                        <button type="button" wire:click="delete({{ $address->id }})" wire:confirm="Hapus alamat {{ $address->label }}?" class="inline-flex h-10 items-center px-3 text-body font-medium text-ink-2 hover:bg-paper hover:text-danger">Hapus</button>
                     </div>
                 </div>
             </div>

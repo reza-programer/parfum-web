@@ -19,13 +19,13 @@
     </div>
 
     @if (session('order-placed'))
-        <p class="mt-4 rounded-md border border-success/30 bg-success-soft px-4 py-3 text-body text-success" role="status">Pesanan dibuat dan stok sudah kami kunci untukmu.</p>
+        <p class="mt-4 border border-success/30 bg-success-soft px-4 py-3 text-body text-success" role="status">Pesanan dibuat dan stok sudah kami kunci untukmu.</p>
     @endif
     @if (session('status'))
-        <p class="mt-4 rounded-md border border-success/30 bg-success-soft px-4 py-3 text-body text-success" role="status">{{ session('status') }}</p>
+        <p class="mt-4 border border-success/30 bg-success-soft px-4 py-3 text-body text-success" role="status">{{ session('status') }}</p>
     @endif
     @error('action')
-        <p class="mt-4 rounded-md border border-danger/30 bg-red-50 px-4 py-3 text-body text-danger" role="alert">{{ $message }}</p>
+        <p class="mt-4 border border-danger/30 bg-red-50 px-4 py-3 text-body text-danger" role="alert">{{ $message }}</p>
     @enderror
 
     {{-- Progres --}}
@@ -34,10 +34,10 @@
             @foreach ($steps as $i => $step)
                 <li class="relative flex min-w-0 flex-col items-center text-center">
                     @unless ($loop->first)
-                        <span @class(['absolute right-1/2 top-3.5 h-0.5 w-full -translate-y-1/2', 'bg-primary' => $i <= $current, 'bg-line' => $i > $current]) aria-hidden="true"></span>
+                        <span @class(['absolute right-1/2 top-3.5 h-0.5 w-full -translate-y-1/2', 'bg-ink' => $i <= $current, 'bg-line' => $i > $current]) aria-hidden="true"></span>
                     @endunless
                     <span @class(['relative inline-flex size-7 items-center justify-center rounded-full text-label font-bold',
-                        'bg-primary text-white' => $i <= $current,
+                        'bg-ink text-white' => $i <= $current,
                         'bg-paper text-ink-faint ring-1 ring-line' => $i > $current])>
                         @if ($i < $current)<x-lucide-check class="size-4" stroke-width="2.5" />@else{{ $i + 1 }}@endif
                     </span>
@@ -49,7 +49,7 @@
     </div>
 
     @if ($justPaid)
-        <p class="mt-4 rounded-md border border-success/30 bg-success-soft px-4 py-3 text-body text-success" role="status">Pembayaran diterima. Pesananmu segera kami kemas.</p>
+        <p class="mt-4 border border-success/30 bg-success-soft px-4 py-3 text-body text-success" role="status">Pembayaran diterima. Pesananmu segera kami kemas.</p>
     @endif
 
     {{-- Aksi sesuai status --}}
@@ -62,10 +62,10 @@
         @endphp
         <div class="card mt-4 p-4 sm:p-6" @if ($payment) wire:poll.5s="checkPayment" @endif>
             @if (session('payment-error') && ! $payment)
-                <p class="mb-5 rounded-md border border-danger/30 bg-red-50 px-4 py-3 text-body text-danger" role="alert">{{ session('payment-error') }} Pilih metode lalu tekan Bayar lagi.</p>
+                <p class="mb-5 border border-danger/30 bg-red-50 px-4 py-3 text-body text-danger" role="alert">{{ session('payment-error') }} Pilih metode lalu tekan Bayar lagi.</p>
             @endif
             @error('payment')
-                <p class="mb-5 rounded-md border border-danger/30 bg-red-50 px-4 py-3 text-body text-danger" role="alert">{{ $message }}</p>
+                <p class="mb-5 border border-danger/30 bg-red-50 px-4 py-3 text-body text-danger" role="alert">{{ $message }}</p>
             @enderror
 
             @if ($order->expires_at->isPast() && ! $payment)
@@ -97,7 +97,7 @@
                     <p class="mt-1 text-body text-ink-2">Buka m-banking atau e-wallet, pilih bayar dengan QRIS, lalu scan kode ini.</p>
 
                     <div class="mt-5 flex flex-wrap items-center gap-6">
-                        <div data-qr class="rounded-lg border border-line bg-white p-3 [&_svg]:size-48 sm:[&_svg]:size-56">
+                        <div data-qr class="border border-line bg-white p-3 [&_svg]:size-48 sm:[&_svg]:size-56">
                             {!! \App\Support\QrCode::svg($payment->qr_string) !!}
                         </div>
                         <dl class="space-y-3">
@@ -137,7 +137,7 @@
 
                 <div class="mt-5">
                     @if ($this->paymentMethods['error'])
-                        <div class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-danger/30 bg-red-50 px-4 py-3">
+                        <div class="flex flex-wrap items-center justify-between gap-3 border border-danger/30 bg-red-50 px-4 py-3">
                             <p class="text-body text-danger">{{ $this->paymentMethods['error'] }}</p>
                             <button type="button" wire:click="$refresh" class="btn-secondary btn-sm">Coba lagi</button>
                         </div>
@@ -174,7 +174,7 @@
 
     <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div class="card p-4 sm:p-5">
-            <h2 class="flex items-center gap-2 text-[15px] font-bold text-ink"><x-lucide-truck class="size-[18px] text-primary" stroke-width="2" /> Pengiriman</h2>
+            <h2 class="flex items-center gap-2 text-[13px] font-bold uppercase tracking-nav text-ink"><x-lucide-truck class="size-[18px] text-ink" stroke-width="2" /> Pengiriman</h2>
             <dl class="mt-4 space-y-2.5 text-body">
                 <div class="flex justify-between gap-4"><dt class="text-ink-2">Kurir</dt><dd>{{ strtoupper($order->courier) }} {{ $order->courier_service }}</dd></div>
                 <div class="flex justify-between gap-4">
@@ -189,14 +189,14 @@
         </div>
 
         <div class="card p-4 sm:p-5">
-            <h2 class="flex items-center gap-2 text-[15px] font-bold text-ink"><x-lucide-wallet class="size-[18px] text-primary" stroke-width="2" /> Pembayaran</h2>
+            <h2 class="flex items-center gap-2 text-[13px] font-bold uppercase tracking-nav text-ink"><x-lucide-wallet class="size-[18px] text-ink" stroke-width="2" /> Pembayaran</h2>
             <dl class="mt-4 space-y-2.5 text-body">
                 <div class="flex justify-between"><dt class="text-ink-2">Subtotal</dt><dd class="price">{{ rupiah($order->subtotal) }}</dd></div>
                 <div class="flex justify-between"><dt class="text-ink-2">Ongkir</dt><dd class="price">{{ rupiah($order->shipping_cost) }}</dd></div>
                 @if ($order->discount > 0)
                     <div class="flex justify-between"><dt class="text-ink-2">Diskon</dt><dd class="price text-success">−{{ rupiah($order->discount) }}</dd></div>
                 @endif
-                <div class="flex items-baseline justify-between border-t border-line pt-2.5 text-body"><dt class="font-semibold">Total</dt><dd class="price text-[17px] font-bold text-primary">{{ rupiah($order->total) }}</dd></div>
+                <div class="flex items-baseline justify-between border-t border-line pt-2.5 text-body"><dt class="font-semibold">Total</dt><dd class="price text-[17px] font-bold text-ink">{{ rupiah($order->total) }}</dd></div>
                 @if ($order->payment?->paid_at)
                     <div class="flex justify-between pt-1"><dt class="text-ink-2">Dibayar</dt><dd>{{ $order->payment->methodLabel() }} · {{ $order->payment->paid_at->translatedFormat('j M Y, H:i') }}</dd></div>
                 @endif
@@ -205,14 +205,14 @@
     </div>
 
     <section class="card mt-4 p-4 sm:p-5">
-        <h2 class="flex items-center gap-2 text-[15px] font-bold text-ink"><x-lucide-package class="size-[18px] text-primary" stroke-width="2" /> Barang</h2>
+        <h2 class="flex items-center gap-2 text-[13px] font-bold uppercase tracking-nav text-ink"><x-lucide-package class="size-[18px] text-ink" stroke-width="2" /> Barang</h2>
         <ul class="mt-2 divide-y divide-line">
             @foreach ($order->items as $item)
                 <li class="flex flex-wrap items-center gap-3 py-3" wire:key="oi-{{ $item->id }}">
                     @if ($item->variant)
-                        <x-shop.product-image :product="$item->variant->product" class="aspect-square w-16 shrink-0 rounded-md border border-line" />
+                        <x-shop.product-image :product="$item->variant->product" class="aspect-square w-16 shrink-0 border border-line" />
                     @else
-                        <div class="aspect-square w-16 shrink-0 rounded-md bg-paper-raised"></div>
+                        <div class="aspect-square w-16 shrink-0 bg-paper-raised"></div>
                     @endif
                     <div class="min-w-0 flex-1">
                         @if ($item->variant)

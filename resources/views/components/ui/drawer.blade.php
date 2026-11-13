@@ -10,13 +10,13 @@
     $variants = [
         'left' => [
             'panel' => 'inset-y-0 left-0 h-dvh w-[min(22rem,88vw)] border-r border-line',
-            'panelBottom' => 'max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[85dvh] max-sm:rounded-t-xl sm:inset-y-0 sm:left-0 sm:h-dvh sm:w-[22rem]',
+            'panelBottom' => 'max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[85dvh] sm:inset-y-0 sm:left-0 sm:h-dvh sm:w-[22rem]',
             'from' => '-translate-x-full',
             'fromBottom' => 'max-sm:translate-y-full sm:-translate-x-full',
         ],
         'right' => [
             'panel' => 'inset-y-0 right-0 h-dvh w-[min(24rem,92vw)] border-l border-line',
-            'panelBottom' => 'max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[85dvh] max-sm:rounded-t-xl sm:inset-y-0 sm:right-0 sm:h-dvh sm:w-[24rem]',
+            'panelBottom' => 'max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[85dvh] sm:inset-y-0 sm:right-0 sm:h-dvh sm:w-[24rem]',
             'from' => 'translate-x-full',
             'fromBottom' => 'max-sm:translate-y-full sm:translate-x-full',
         ],

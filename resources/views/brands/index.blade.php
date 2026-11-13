@@ -20,18 +20,18 @@
             {{-- Indeks huruf --}}
             <nav class="card mt-3 flex flex-wrap gap-1 p-2" aria-label="Indeks brand">
                 @foreach ($groups->keys() as $letter)
-                    <a href="#huruf-{{ $letter }}" class="inline-flex size-9 items-center justify-center rounded-md text-body font-semibold text-ink transition-colors duration-150 hover:bg-primary-soft hover:text-primary">{{ $letter }}</a>
+                    <a href="#huruf-{{ $letter }}" class="inline-flex size-9 items-center justify-center text-body font-semibold text-ink transition-colors duration-150 hover:bg-paper-raised">{{ $letter }}</a>
                 @endforeach
             </nav>
 
             @foreach ($groups as $letter => $items)
                 <section id="huruf-{{ $letter }}" class="mt-5 scroll-mt-[calc(var(--header-h)+1rem)]">
-                    <h2 class="mb-2 text-[15px] font-bold text-ink">{{ $letter }}</h2>
+                    <h2 class="mb-3 text-[20px] font-bold uppercase text-ink">{{ $letter }}</h2>
                     <ul class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
                         @foreach ($items as $brand)
                             <li>
-                                <a href="{{ route('brands.show', $brand) }}" wire:navigate class="card group flex items-center gap-3 p-3 transition-shadow duration-200 hover:shadow-hover">
-                                    <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-soft font-serif text-base font-semibold uppercase text-primary">{{ mb_substr($brand->name, 0, 1) }}</span>
+                                <a href="{{ route('brands.show', $brand) }}" wire:navigate class="card group flex items-center gap-3 p-3 transition-shadow duration-200">
+                                    <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-paper-raised font-serif text-base font-semibold uppercase text-ink">{{ mb_substr($brand->name, 0, 1) }}</span>
                                     <span class="min-w-0 flex-1">
                                         <span class="block truncate text-body font-semibold text-ink group-hover:text-primary">{{ $brand->name }}</span>
                                         <span class="block text-label tabular-nums text-ink-2">{{ $brand->products_count }} parfum</span>

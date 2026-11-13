@@ -5,11 +5,11 @@
     $visible = 6;
     $selectedIndex = $banks->search(fn ($m) => $m->key() === $selected);
     $row = fn (string $key) => [
-        'flex min-h-14 cursor-pointer items-center gap-3 rounded-md border px-3.5 py-3 transition-colors duration-150 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary/40',
-        'border-primary bg-primary-soft' => $selected === $key,
+        'flex min-h-14 cursor-pointer items-center gap-3 border px-3.5 py-3 transition-colors duration-150 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary/40',
+        'border-ink ring-1 ring-inset ring-ink' => $selected === $key,
         'border-line bg-paper-card hover:border-ink-faint' => $selected !== $key,
     ];
-    $radio = 'size-4 shrink-0 border-ink-faint text-primary focus:ring-0 focus:ring-offset-0';
+    $radio = 'size-4 shrink-0 border-ink-faint text-ink focus:ring-0 focus:ring-offset-0';
     $logo = 'h-5 w-12 shrink-0 object-contain object-left';
 @endphp
 {{-- Pilihan bersudut: VA per bank lalu QRIS. Bank di luar 6 teratas dilipat supaya ringkas. --}}

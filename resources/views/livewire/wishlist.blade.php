@@ -10,7 +10,7 @@
 
     @if ($items->isEmpty())
         <div class="card mt-3 flex flex-col items-center px-6 py-14 text-center">
-            <span class="inline-flex size-16 items-center justify-center rounded-full bg-primary-soft text-primary">
+            <span class="inline-flex size-16 items-center justify-center rounded-full bg-paper-raised text-ink">
                 <x-lucide-heart class="size-7" stroke-width="1.75" />
             </span>
             <p class="mt-4 text-[16px] font-bold text-ink">Wishlist masih kosong</p>

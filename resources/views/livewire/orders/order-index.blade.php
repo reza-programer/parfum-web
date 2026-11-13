@@ -21,7 +21,7 @@
     <div class="mt-3 transition-opacity duration-150" wire:loading.class="opacity-50">
         @if ($orders->isEmpty())
             <div class="card flex flex-col items-center px-6 py-14 text-center">
-                <span class="inline-flex size-16 items-center justify-center rounded-full bg-primary-soft text-primary">
+                <span class="inline-flex size-16 items-center justify-center rounded-full bg-paper-raised text-ink">
                     <x-lucide-package class="size-7" stroke-width="1.75" />
                 </span>
                 <p class="mt-4 text-[16px] font-bold text-ink">Belum ada pesanan</p>
@@ -35,7 +35,7 @@
                         $first = $order->items->first();
                         $more = $order->items->count() - 1;
                     @endphp
-                    <li wire:key="o-{{ $order->id }}" class="card relative transition-shadow duration-200 hover:shadow-hover">
+                    <li wire:key="o-{{ $order->id }}" class="card relative transition-shadow duration-200">
                         <div class="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line px-4 py-2.5 text-label text-ink-2">
                             <x-lucide-shopping-bag class="size-4 text-ink" stroke-width="2" />
                             <span class="font-semibold text-ink">Belanja</span>
@@ -45,7 +45,7 @@
                         </div>
                         <div class="flex items-center gap-3 p-4">
                             @if ($first?->variant?->product)
-                                <x-shop.product-image :product="$first->variant->product" class="aspect-square w-14 shrink-0 rounded-md border border-line" />
+                                <x-shop.product-image :product="$first->variant->product" class="aspect-square w-14 shrink-0 border border-line" />
                             @endif
                             <div class="min-w-0 flex-1">
                                 <p class="truncate text-body font-semibold text-ink">{{ $summary($order) }}</p>

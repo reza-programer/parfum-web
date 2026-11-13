@@ -18,7 +18,7 @@
                 <x-application-logo />
             </a>
 
-            <div class="mt-8 w-full rounded-xl border border-line bg-paper-card px-5 py-8 shadow-card sm:max-w-[420px] sm:px-8">
+            <div class="mt-8 w-full border border-line bg-paper-card px-5 py-8 sm:max-w-[420px] sm:px-8">
                 {{ $slot }}
             </div>
         </div>

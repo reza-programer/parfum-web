@@ -8,7 +8,7 @@
 
     @if ($this->summary->isEmpty())
         <div class="card mt-4 flex flex-col items-center px-6 py-14 text-center">
-            <span class="inline-flex size-16 items-center justify-center rounded-full bg-primary-soft text-primary">
+            <span class="inline-flex size-16 items-center justify-center rounded-full bg-paper-raised text-ink">
                 <x-lucide-shopping-cart class="size-7" stroke-width="1.75" />
             </span>
             <p class="mt-4 text-[16px] font-bold text-ink">Keranjangmu masih kosong</p>
@@ -22,7 +22,7 @@
                     @php($variant = $item->variant)
                     <li class="flex gap-3 p-4 sm:gap-4" wire:key="ci-{{ $item->id }}">
                         <a href="{{ route('products.show', $variant->product) }}" wire:navigate class="shrink-0">
-                            <x-shop.product-image :product="$variant->product" class="aspect-square w-20 rounded-md border border-line sm:w-24" />
+                            <x-shop.product-image :product="$variant->product" class="aspect-square w-20 border border-line sm:w-24" />
                         </a>
                         <div class="flex min-w-0 flex-1 flex-col">
                             <div class="flex items-start justify-between gap-3">
@@ -34,33 +34,33 @@
                             </div>
 
                             <div class="mt-auto flex items-center justify-end gap-2 pt-3">
-                                <button type="button" wire:click="remove({{ $item->id }})" class="inline-flex size-10 items-center justify-center rounded-md text-ink-2 transition-colors duration-150 hover:bg-paper hover:text-danger" aria-label="Hapus {{ $variant->product->name }}">
+                                <button type="button" wire:click="remove({{ $item->id }})" class="inline-flex size-10 items-center justify-center text-ink-2 transition-colors duration-150 hover:bg-paper hover:text-danger" aria-label="Hapus {{ $variant->product->name }}">
                                     <x-lucide-trash-2 class="size-[18px]" stroke-width="1.75" />
                                 </button>
-                                <div class="inline-flex h-10 items-center rounded-md border border-line bg-paper-card">
-                                    <button type="button" wire:click="setQty({{ $item->id }}, {{ $item->qty - 1 }})" class="inline-flex size-10 items-center justify-center text-primary disabled:text-ink-faint" aria-label="Kurangi" @disabled($item->qty <= 1)>
+                                <div class="inline-flex h-10 items-center border border-line bg-paper-card">
+                                    <button type="button" wire:click="setQty({{ $item->id }}, {{ $item->qty - 1 }})" class="inline-flex size-10 items-center justify-center text-ink disabled:text-ink-faint" aria-label="Kurangi" @disabled($item->qty <= 1)>
                                         <x-lucide-minus class="size-4" stroke-width="2.25" />
                                     </button>
                                     <span class="w-8 text-center text-body font-medium tabular-nums">{{ $item->qty }}</span>
-                                    <button type="button" wire:click="setQty({{ $item->id }}, {{ $item->qty + 1 }})" class="inline-flex size-10 items-center justify-center text-primary disabled:text-ink-faint" aria-label="Tambah" @disabled($item->qty >= $variant->stock)>
+                                    <button type="button" wire:click="setQty({{ $item->id }}, {{ $item->qty + 1 }})" class="inline-flex size-10 items-center justify-center text-ink disabled:text-ink-faint" aria-label="Tambah" @disabled($item->qty >= $variant->stock)>
                                         <x-lucide-plus class="size-4" stroke-width="2.25" />
                                     </button>
                                 </div>
                             </div>
 
                             @if ($item->problem)
-                                <p class="mt-2 rounded-md bg-red-50 px-2.5 py-1.5 text-label text-danger">{{ $item->problem }}</p>
+                                <p class="mt-2 bg-red-50 px-2.5 py-1.5 text-label text-danger">{{ $item->problem }}</p>
                             @endif
                             @error('qty.'.$item->id)
-                                <p class="mt-2 rounded-md bg-red-50 px-2.5 py-1.5 text-label text-danger">{{ $message }}</p>
+                                <p class="mt-2 bg-red-50 px-2.5 py-1.5 text-label text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                     </li>
                 @endforeach
             </ul>
 
-            <aside class="card p-4 sm:p-5 lg:sticky lg:top-[calc(var(--header-h)+1rem)]">
-                <h2 class="text-[15px] font-bold text-ink">Ringkasan belanja</h2>
+            <aside class="bg-paper-raised p-5 sm:p-6 lg:sticky lg:top-[calc(var(--header-h)+1rem)]">
+                <h2 class="text-[13px] font-bold uppercase tracking-nav text-ink">Ringkasan belanja</h2>
                 <dl class="mt-4 space-y-2.5 text-body">
                     <div class="flex justify-between gap-4">
                         <dt class="text-ink-2">Subtotal ({{ $this->summary->itemCount }} barang)</dt>
@@ -77,7 +77,7 @@
                 </dl>
                 <div class="mt-4 flex items-baseline justify-between gap-4 border-t border-line pt-4">
                     <span class="text-body font-semibold text-ink">Total sementara</span>
-                    <span class="price text-[18px] font-bold text-primary">{{ rupiah($this->summary->subtotal) }}</span>
+                    <span class="price text-[18px] font-bold text-ink">{{ rupiah($this->summary->subtotal) }}</span>
                 </div>
                 @if ($canCheckout)
                     <a href="{{ route('checkout') }}" wire:navigate class="btn-primary mt-4 hidden w-full lg:inline-flex">Checkout</a>
@@ -93,7 +93,7 @@
             <div class="mx-auto flex max-w-page items-center gap-4">
                 <div class="min-w-0">
                     <p class="meta">Total sementara</p>
-                    <p class="price text-[17px] font-bold text-primary">{{ rupiah($this->summary->subtotal) }}</p>
+                    <p class="price text-[17px] font-bold text-ink">{{ rupiah($this->summary->subtotal) }}</p>
                 </div>
                 @if ($canCheckout)
                     <a href="{{ route('checkout') }}" wire:navigate class="btn-primary ms-auto flex-1">Checkout ({{ $this->summary->itemCount }})</a>

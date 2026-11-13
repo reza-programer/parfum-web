@@ -2,13 +2,13 @@
 @if ($paginator->hasPages())
     @php
         $pageName = $paginator->getPageName();
-        $box = 'inline-flex size-10 items-center justify-center rounded-md text-body font-medium tabular-nums transition-colors duration-150';
+        $box = 'inline-flex size-10 items-center justify-center text-body font-medium tabular-nums transition-colors duration-150';
     @endphp
     <nav role="navigation" aria-label="Halaman" class="flex items-center justify-center gap-1">
         @if ($paginator->onFirstPage())
             <span class="{{ $box }} text-ink-faint" aria-hidden="true"><x-lucide-chevron-left class="size-5" stroke-width="2" /></span>
         @else
-            <button type="button" wire:click="previousPage('{{ $pageName }}')" x-on:click="window.scrollTo({ top: 0, behavior: 'smooth' })" class="{{ $box }} text-ink hover:bg-paper-card hover:text-primary" aria-label="Halaman sebelumnya">
+            <button type="button" wire:click="previousPage('{{ $pageName }}')" x-on:click="window.scrollTo({ top: 0, behavior: 'smooth' })" class="{{ $box }} text-ink hover:bg-paper-raised" aria-label="Halaman sebelumnya">
                 <x-lucide-chevron-left class="size-5" stroke-width="2" />
             </button>
         @endif
@@ -21,10 +21,10 @@
                 @if (is_array($element))
                     @foreach ($element as $page => $url)
                         @if ($page == $paginator->currentPage())
-                            <span aria-current="page" class="{{ $box }} bg-primary text-white">{{ $page }}</span>
+                            <span aria-current="page" class="{{ $box }} bg-ink text-white">{{ $page }}</span>
                         @else
                             <button type="button" wire:click="gotoPage({{ $page }}, '{{ $pageName }}')" x-on:click="window.scrollTo({ top: 0, behavior: 'smooth' })"
-                                    class="{{ $box }} text-ink hover:bg-paper-card hover:text-primary">{{ $page }}</button>
+                                    class="{{ $box }} text-ink hover:bg-paper-raised">{{ $page }}</button>
                         @endif
                     @endforeach
                 @endif
@@ -33,7 +33,7 @@
         <p class="px-3 text-body text-ink-2 sm:hidden">Halaman {{ $paginator->currentPage() }} dari {{ $paginator->lastPage() }}</p>
 
         @if ($paginator->hasMorePages())
-            <button type="button" wire:click="nextPage('{{ $pageName }}')" x-on:click="window.scrollTo({ top: 0, behavior: 'smooth' })" class="{{ $box }} text-ink hover:bg-paper-card hover:text-primary" aria-label="Halaman berikutnya">
+            <button type="button" wire:click="nextPage('{{ $pageName }}')" x-on:click="window.scrollTo({ top: 0, behavior: 'smooth' })" class="{{ $box }} text-ink hover:bg-paper-raised" aria-label="Halaman berikutnya">
                 <x-lucide-chevron-right class="size-5" stroke-width="2" />
             </button>
         @else

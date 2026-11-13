@@ -1,7 +1,7 @@
 <div class="chat-launcher fixed bottom-4 right-4 z-40 transition-[bottom] duration-200 sm:bottom-6 sm:right-6">
     @if ($open)
-        <section wire:poll.4s="poll" class="mb-3 flex h-[min(560px,calc(100vh-7rem))] w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden rounded-xl border border-line bg-paper-card shadow-float" aria-label="Chat">
-            <header class="flex items-center justify-between bg-primary px-5 py-3 text-white">
+        <section wire:poll.4s="poll" class="mb-3 flex h-[min(560px,calc(100vh-7rem))] w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden border border-line bg-paper-card shadow-float" aria-label="Chat">
+            <header class="flex items-center justify-between bg-ink px-5 py-3 text-white">
                 <div>
                     <p class="text-[15px] font-bold">Tanya kami</p>
                     <p class="mt-0.5 flex items-center gap-1.5 text-label text-white/85">
@@ -18,7 +18,7 @@
             </header>
 
             <div class="flex-1 space-y-3 overflow-y-auto px-5 py-4" x-data x-init="$el.scrollTop = $el.scrollHeight" x-effect="$nextTick(() => $el.scrollTop = $el.scrollHeight)" aria-live="polite">
-                <div class="max-w-[85%] rounded-2xl rounded-tl-sm bg-paper px-3.5 py-2.5 text-body leading-6 text-ink">
+                <div class="max-w-[85%] bg-paper-raised px-3.5 py-2.5 text-body leading-6 text-ink">
                     Halo, ada yang bisa dibantu? Pilih pertanyaan di bawah atau tulis sendiri.
                 </div>
 
@@ -27,11 +27,11 @@
                     <div wire:key="m-{{ $message->id }}" @class(['flex', 'justify-end' => $mine])>
                         <div @class([
                             'max-w-[85%] whitespace-pre-line rounded-2xl px-3.5 py-2.5 text-body leading-6',
-                            'rounded-tr-sm bg-primary text-white' => $mine,
-                            'rounded-tl-sm bg-paper text-ink' => ! $mine,
+                            'bg-ink text-white' => $mine,
+                            'bg-paper-raised text-ink' => ! $mine,
                         ])>
                             @if ($message->sender_type === \App\Enums\MessageSender::Admin)
-                                <span class="mb-0.5 block text-caption font-semibold text-primary">Admin</span>
+                                <span class="mb-0.5 block text-caption font-bold uppercase tracking-label text-ink-2">Admin</span>
                             @endif
                             {{ $message->body }}
                             @if (! auth()->check() && $message->body === \App\Services\ChatService::LOGIN_MESSAGE)
@@ -56,7 +56,7 @@
                 <textarea id="chat-body" wire:model="body" rows="1" maxlength="1000" placeholder="Tulis pesan"
                           x-on:keydown.enter="if (! $event.shiftKey) { $event.preventDefault(); $wire.send() }"
                           class="field max-h-28 min-h-11 resize-none py-2.5"></textarea>
-                <button type="submit" class="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-white hover:bg-primary-dark sm:size-10" aria-label="Kirim">
+                <button type="submit" class="inline-flex size-11 shrink-0 items-center justify-center bg-ink text-white hover:bg-ink/85 sm:size-10" aria-label="Kirim">
                     <x-lucide-send-horizontal class="size-4" stroke-width="2" />
                 </button>
             </form>
