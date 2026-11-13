@@ -1,9 +1,13 @@
 <?php
 
+use App\Enums\OrderStatus;
 use App\Livewire\ProductDetail;
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\Review;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -82,4 +86,28 @@ it('produk terkait diambil dari aroma atau kategori yang sama', function () {
         ->assertSee('Produk terkait')
         ->assertSeeInOrder(['Sama Aroma', 'Sama Kategori'])
         ->assertDontSee('Tidak Terkait');
+});
+
+it('detail menampilkan rating dan jumlah terjual kalau ada datanya', function () {
+    $product = detailProduct();
+    $variantId = $product->variants()->first()->id;
+    $paid = Order::factory()->create(['status' => OrderStatus::Paid]);
+    OrderItem::factory()->for($paid)->create(['product_variant_id' => $variantId, 'qty' => 3]);
+    $pendingItem = OrderItem::factory()->for(Order::factory()->create())->create(['product_variant_id' => $variantId]);
+    Review::factory()->for($product)->create(['order_item_id' => $pendingItem->id, 'rating' => 4]);
+
+    Livewire::test(ProductDetail::class, ['product' => $product])
+        ->assertSeeHtml('data-rating="4"')
+        ->assertSee('3 terjual');
+});
+
+it('detail tanpa ulasan dan penjualan tidak menampilkan rating atau terjual', function () {
+    Livewire::test(ProductDetail::class, ['product' => detailProduct()])
+        ->assertDontSeeHtml('data-rating')
+        ->assertDontSee('terjual');
+});
+
+it('detail menandai stok terbatas kalau sisa 1 sampai 3', function () {
+    Livewire::test(ProductDetail::class, ['product' => detailProduct([], 2)])->assertSee('Stok terbatas');
+    Livewire::test(ProductDetail::class, ['product' => detailProduct([], 9)])->assertDontSee('Stok terbatas');
 });

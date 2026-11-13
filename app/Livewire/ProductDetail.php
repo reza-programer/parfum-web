@@ -141,7 +141,7 @@ class ProductDetail extends Component
                     ->orWhere('category_id', $this->product->category_id))
                 ->orderByRaw('scent_family = ? desc', [$this->product->scent_family->value])
                 ->orderByDesc('products.created_at')
-                ->limit(5)
+                ->limit(4)
                 ->get(),
         ])->title($this->product->name);
     }
