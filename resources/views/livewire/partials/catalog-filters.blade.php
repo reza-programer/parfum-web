@@ -1,20 +1,20 @@
 {{--
-    Isi kotak filter katalog (dipakai di sidebar desktop dan drawer HP). Tiap bagian bisa dibuka-tutup.
+    Isi SARING di katalog (sidebar desktop dan drawer HP), gaya polos NB: tiap bagian bisa dibuka-tutup.
     $prefix membedakan id input desktop (d) dan HP (m).
 --}}
 @php
-    $check = 'size-4 rounded border-ink-faint text-primary focus:ring-primary/30 focus:ring-offset-0';
-    $radio = 'size-4 border-ink-faint text-primary focus:ring-primary/30 focus:ring-offset-0';
-    $row = 'flex min-h-9 cursor-pointer items-center gap-2.5 text-body text-ink transition-colors duration-150 hover:text-primary';
-    $sizeChip = 'chip h-8 peer-checked:border-primary peer-checked:bg-primary-soft peer-checked:text-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary/40';
+    $check = 'size-4 rounded-none border-ink/40 text-ink focus:ring-0 focus:ring-offset-0';
+    $radio = 'size-4 border-ink/40 text-ink focus:ring-0 focus:ring-offset-0';
+    $row = 'flex min-h-9 cursor-pointer items-center gap-3 text-body text-ink-2 transition-colors duration-150 hover:text-ink has-[:checked]:font-medium has-[:checked]:text-ink';
+    $sizeChip = 'chip h-9 peer-checked:border-ink peer-checked:bg-ink peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-ink';
     $digits = fn (string $v) => preg_replace('/\D/', '', $v);
 @endphp
 <div class="divide-y divide-line">
     @unless ($this->lockedCategory)
-        <div x-data="{ open: true }" class="px-4 py-2.5" role="group" aria-labelledby="{{ $prefix }}-f-category">
-            <button type="button" id="{{ $prefix }}-f-category" x-on:click="open = ! open" :aria-expanded="open" class="flex h-9 w-full items-center justify-between text-body font-semibold text-ink">
+        <div x-data="{ open: true }" class="py-3" role="group" aria-labelledby="{{ $prefix }}-f-category">
+            <button type="button" id="{{ $prefix }}-f-category" x-on:click="open = ! open" :aria-expanded="open" class="flex h-9 w-full items-center justify-between text-label font-bold uppercase tracking-nav text-ink">
                 Kategori
-                <x-lucide-chevron-down class="size-4 text-ink-2 transition-transform duration-200" x-bind:class="open ? 'rotate-180' : ''" stroke-width="2" />
+                <x-lucide-chevron-down class="size-4 text-ink transition-transform duration-200" x-bind:class="open ? 'rotate-180' : ''" stroke-width="1.75" />
             </button>
             <div x-show="open" x-collapse>
                 <label class="{{ $row }}">
@@ -31,10 +31,10 @@
         </div>
     @endunless
 
-    <div x-data="{ open: true }" class="px-4 py-2.5" role="group" aria-labelledby="{{ $prefix }}-f-scent">
-        <button type="button" id="{{ $prefix }}-f-scent" x-on:click="open = ! open" :aria-expanded="open" class="flex h-9 w-full items-center justify-between text-body font-semibold text-ink">
+    <div x-data="{ open: true }" class="py-3" role="group" aria-labelledby="{{ $prefix }}-f-scent">
+        <button type="button" id="{{ $prefix }}-f-scent" x-on:click="open = ! open" :aria-expanded="open" class="flex h-9 w-full items-center justify-between text-label font-bold uppercase tracking-nav text-ink">
             Keluarga aroma
-            <x-lucide-chevron-down class="size-4 text-ink-2 transition-transform duration-200" x-bind:class="open ? 'rotate-180' : ''" stroke-width="2" />
+            <x-lucide-chevron-down class="size-4 text-ink transition-transform duration-200" x-bind:class="open ? 'rotate-180' : ''" stroke-width="1.75" />
         </button>
         <div x-show="open" x-collapse>
             @foreach ($scentOptions as $scent)
@@ -47,10 +47,10 @@
     </div>
 
     @unless ($this->lockedBrand)
-        <div x-data="{ open: true, more: false }" class="px-4 py-2.5" role="group" aria-labelledby="{{ $prefix }}-f-brand">
-            <button type="button" id="{{ $prefix }}-f-brand" x-on:click="open = ! open" :aria-expanded="open" class="flex h-9 w-full items-center justify-between text-body font-semibold text-ink">
+        <div x-data="{ open: true, more: false }" class="py-3" role="group" aria-labelledby="{{ $prefix }}-f-brand">
+            <button type="button" id="{{ $prefix }}-f-brand" x-on:click="open = ! open" :aria-expanded="open" class="flex h-9 w-full items-center justify-between text-label font-bold uppercase tracking-nav text-ink">
                 Brand
-                <x-lucide-chevron-down class="size-4 text-ink-2 transition-transform duration-200" x-bind:class="open ? 'rotate-180' : ''" stroke-width="2" />
+                <x-lucide-chevron-down class="size-4 text-ink transition-transform duration-200" x-bind:class="open ? 'rotate-180' : ''" stroke-width="1.75" />
             </button>
             <div x-show="open" x-collapse>
                 @foreach ($brandOptions as $brandOption)
@@ -67,10 +67,10 @@
         </div>
     @endunless
 
-    <div x-data="{ open: true }" class="px-4 py-2.5" role="group" aria-labelledby="{{ $prefix }}-f-price">
-        <button type="button" id="{{ $prefix }}-f-price" x-on:click="open = ! open" :aria-expanded="open" class="flex h-9 w-full items-center justify-between text-body font-semibold text-ink">
+    <div x-data="{ open: true }" class="py-3" role="group" aria-labelledby="{{ $prefix }}-f-price">
+        <button type="button" id="{{ $prefix }}-f-price" x-on:click="open = ! open" :aria-expanded="open" class="flex h-9 w-full items-center justify-between text-label font-bold uppercase tracking-nav text-ink">
             Harga
-            <x-lucide-chevron-down class="size-4 text-ink-2 transition-transform duration-200" x-bind:class="open ? 'rotate-180' : ''" stroke-width="2" />
+            <x-lucide-chevron-down class="size-4 text-ink transition-transform duration-200" x-bind:class="open ? 'rotate-180' : ''" stroke-width="1.75" />
         </button>
         <div x-show="open" x-collapse>
             <div class="space-y-2 pb-1 pt-1">
@@ -89,16 +89,16 @@
                 @foreach (\App\Livewire\Catalog::PRICE_RANGES as $range)
                     @php $isActive = $digits($min) === (string) ($range['min'] ?? '') && $digits($max) === (string) ($range['max'] ?? ''); @endphp
                     <button type="button" wire:click="setPriceRange({{ $range['min'] ?? 'null' }}, {{ $range['max'] ?? 'null' }})"
-                            @class(['chip h-8', 'chip-active' => $isActive]) aria-pressed="{{ $isActive ? 'true' : 'false' }}">{{ $range['label'] }}</button>
+                            @class(['chip h-9', 'chip-active' => $isActive]) aria-pressed="{{ $isActive ? 'true' : 'false' }}">{{ $range['label'] }}</button>
                 @endforeach
             </div>
         </div>
     </div>
 
-    <div x-data="{ open: true }" class="px-4 py-2.5" role="group" aria-labelledby="{{ $prefix }}-f-size">
-        <button type="button" id="{{ $prefix }}-f-size" x-on:click="open = ! open" :aria-expanded="open" class="flex h-9 w-full items-center justify-between text-body font-semibold text-ink">
+    <div x-data="{ open: true }" class="py-3" role="group" aria-labelledby="{{ $prefix }}-f-size">
+        <button type="button" id="{{ $prefix }}-f-size" x-on:click="open = ! open" :aria-expanded="open" class="flex h-9 w-full items-center justify-between text-label font-bold uppercase tracking-nav text-ink">
             Ukuran
-            <x-lucide-chevron-down class="size-4 text-ink-2 transition-transform duration-200" x-bind:class="open ? 'rotate-180' : ''" stroke-width="2" />
+            <x-lucide-chevron-down class="size-4 text-ink transition-transform duration-200" x-bind:class="open ? 'rotate-180' : ''" stroke-width="1.75" />
         </button>
         <div x-show="open" x-collapse>
             <div class="flex flex-wrap gap-1.5 pb-1 pt-1">
@@ -117,10 +117,10 @@
     </div>
 
     @if ($this->concentrationOptions)
-        <div x-data="{ open: true }" class="px-4 py-2.5" role="group" aria-labelledby="{{ $prefix }}-f-concentration">
-            <button type="button" id="{{ $prefix }}-f-concentration" x-on:click="open = ! open" :aria-expanded="open" class="flex h-9 w-full items-center justify-between text-body font-semibold text-ink">
+        <div x-data="{ open: true }" class="py-3" role="group" aria-labelledby="{{ $prefix }}-f-concentration">
+            <button type="button" id="{{ $prefix }}-f-concentration" x-on:click="open = ! open" :aria-expanded="open" class="flex h-9 w-full items-center justify-between text-label font-bold uppercase tracking-nav text-ink">
                 Konsentrasi
-                <x-lucide-chevron-down class="size-4 text-ink-2 transition-transform duration-200" x-bind:class="open ? 'rotate-180' : ''" stroke-width="2" />
+                <x-lucide-chevron-down class="size-4 text-ink transition-transform duration-200" x-bind:class="open ? 'rotate-180' : ''" stroke-width="1.75" />
             </button>
             <div x-show="open" x-collapse>
                 @foreach ($this->concentrationOptions as $concentration)
@@ -133,11 +133,11 @@
         </div>
     @endif
 
-    <div class="px-4 py-3">
-        <label class="flex cursor-pointer items-center justify-between gap-3 text-body font-semibold text-ink">
+    <div class="py-3" role="group" aria-label="Ketersediaan">
+        <p class="flex h-9 items-center text-label font-bold uppercase tracking-nav text-ink">Ketersediaan</p>
+        <label class="{{ $row }}">
+            <input type="checkbox" wire:model.live="tersedia" class="{{ $check }}">
             Hanya yang tersedia
-            <input type="checkbox" wire:model.live="tersedia" class="peer sr-only">
-            <span class="relative h-6 w-10 shrink-0 rounded-full bg-ink-faint transition-colors duration-200 after:absolute after:left-0.5 after:top-0.5 after:size-5 after:rounded-full after:bg-white after:shadow after:transition-transform after:duration-200 peer-checked:bg-primary peer-checked:after:translate-x-4 peer-focus-visible:ring-2 peer-focus-visible:ring-primary/40" aria-hidden="true"></span>
         </label>
     </div>
 </div>

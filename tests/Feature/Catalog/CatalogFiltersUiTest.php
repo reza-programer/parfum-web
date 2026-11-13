@@ -91,3 +91,33 @@ it('tab urutan mengganti urutan produk', function () {
         ->call('$set', 'sort', 'termurah')
         ->assertSeeInOrder(['Paling Murah', 'Paling Mahal']);
 });
+
+it('ubin promo decant muncul di grid hanya kalau ada decant berstok dan filter decant belum dipakai', function () {
+    foreach (range(1, 9) as $i) {
+        priced("Botol {$i}", 300000);
+    }
+    $withDecant = Product::factory()->create(['name' => 'Ada Decant']);
+    ProductVariant::factory()->for($withDecant)->create(['size_ml' => 5, 'is_decant' => true, 'price' => 49000, 'stock' => 2]);
+
+    Livewire::test(Catalog::class)
+        ->assertSeeHtml('data-promo="decant"')
+        ->assertSee('mulai Rp49.000')
+        ->set('sizes', ['decant'])
+        ->assertDontSeeHtml('data-promo="decant"');
+});
+
+it('ubin promo decant tidak muncul kalau semua decant habis', function () {
+    foreach (range(1, 9) as $i) {
+        priced("Botol {$i}", 300000);
+    }
+    $empty = Product::factory()->create();
+    ProductVariant::factory()->for($empty)->create(['size_ml' => 5, 'is_decant' => true, 'price' => 49000, 'stock' => 0]);
+
+    Livewire::test(Catalog::class)->assertDontSeeHtml('data-promo="decant"');
+});
+
+it('urutan dipilih lewat dropdown', function () {
+    Livewire::test(Catalog::class)
+        ->assertSeeHtml('<select id="sort"')
+        ->assertSeeHtml('value="termahal"');
+});

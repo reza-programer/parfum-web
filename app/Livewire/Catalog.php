@@ -193,6 +193,25 @@ class Catalog extends Component
         return $chips;
     }
 
+    /**
+     * Harga decant termurah yang masih ada stok, untuk ubin promo di tengah grid.
+     * Null kalau tidak ada decant berstok atau pengunjung sudah menyaring decant.
+     */
+    #[Computed]
+    public function promoDecant(): ?int
+    {
+        if (in_array('decant', $this->sizes, true)) {
+            return null;
+        }
+
+        $price = ProductVariant::query()
+            ->where('is_decant', true)->where('stock', '>', 0)
+            ->whereHas('product', fn ($q) => $q->where('is_active', true))
+            ->min('price');
+
+        return $price === null ? null : (int) $price;
+    }
+
     #[Computed]
     public function lockedCategory(): ?Category
     {
