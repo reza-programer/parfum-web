@@ -20,14 +20,17 @@ Baca docs/PRD.md sebelum mengerjakan apa pun. PRD adalah sumber kebenaran untuk 
 6. Satu fitur = satu branch + commit kecil dengan pesan jelas.
 
 ## UI dan teks (pakai skill unslop)
-- Gaya marketplace (docs/plans/redesign-marketplace.md, keputusan pemilik 12 Nov 2026):
-  - latar abu-abu muda (`bg-paper`), konten di kartu putih (`.card`, sudut 8px);
-  - aksen merah mawar `primary` untuk tombol utama, harga, tab aktif, dan chip terpilih;
+- Gaya newbalance.co.id (docs/plans/redesign-nb.md, keputusan pemilik 13 Nov 2026):
+  - latar putih polos tanpa kartu atau bayangan, pemisah memakai garis tipis atau ruang kosong;
+  - teks hitam, aksen merah `primary` hanya untuk tombol beli, titik carousel aktif, dan brand di detail;
+  - sudut tegas (semua token radius 0, kecuali lingkaran);
+  - judul bagian dan tombol berhuruf kapital tebal, teks isi kalimat biasa;
   - font Inter, serif hanya untuk logo.
-  - Pakai komponen yang ada: `.btn-*`, `.field`, `.chip`, `x-ui.badge`, `x-shop.product-card`.
+  - Pakai komponen yang ada: `.btn-*`, `.field`, `.chip`, `.tag`, `x-ui.badge`, `x-shop.product-card`.
+- Kartu produk polos: foto, satu tag hitam (Terlaris/Baru/Habis), wishlist, nama, harga. Rating, jumlah terjual, dan stok terbatas hanya di halaman detail.
 - Label, promo, rating, dan jumlah terjual harus dari data asli. Jangan mengarang diskon, "gratis ongkir", atau angka penjualan.
-- Jangan meniru identitas Shopee/Tokopedia: warna oranye/hijau khas mereka, logo, dan nama fitur mereka. Yang boleh diikuti hanya pola tata letak umum.
-- Banner beranda: gambarnya dari `database/seeders/images/source/render-banners.mjs`, sedangkan teks dan tombolnya ditulis di HTML.
+- Jangan meniru identitas brand yang dijadikan acuan (New Balance, Shopee, Tokopedia): logo, nama, foto, font, warna khas, dan teks kampanye mereka. Yang boleh diikuti hanya pola tata letak dan gaya visual umum.
+- Gambar beranda dan menu (banner, ubin aroma, ubin kategori): dari `database/seeders/images/source/render-banners.mjs`. Teks dan tombolnya ditulis di HTML.
 - Hindari tampilan template AI: gradien ungu, emoji di tombol, bayangan tebal, copy seperti "Elevate your scent journey".
 - Semua teks UI dalam bahasa Indonesia yang natural dan singkat.
 - Ikuti wireframe di PRD bagian Wireframe.
