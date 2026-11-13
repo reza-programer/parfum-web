@@ -1,6 +1,18 @@
 # Tampilan Marketplace (Redesign v2) — Rencana
 
-Status: **disetujui 12 Nov 2026**, sedang dikerjakan. Branch: `feat/tampilan-marketplace` (dari `main` terbaru).
+Status: **selesai 12 Nov 2026**, belum di-merge. Branch: `feat/tampilan-marketplace` (dari `main` terbaru).
+
+## Hasil verifikasi
+
+- **Test:** run penuh `php artisan test`: 347 lulus, 1 gagal (`navigation menu can be rendered`). Test itu lulus saat diulang sendiri; gagalnya karena cache view Blade dipakai bersama dev server yang sedang dibuka di browser. Run ulang dengan cache view terpisah terhenti di tengah (140 lulus, 0 gagal) saat sesi berakhir. Pint dan `npm run build` lulus.
+- **Arah tampilan ini lalu diganti** (13 Nov 2026) oleh `redesign-nb.md` atas permintaan pemilik. Logika dan test di branch ini dipakai ulang di sana.
+- **Overflow horizontal:** 0 px di semua halaman toko dan akun pada lebar 375 px. Pada 768 px dan 1440 px juga 0 px untuk halaman yang dicek (beranda, katalog, detail, checkout, pesanan, brand, wishlist).
+- **Carousel:** geser otomatis jalan, panah dan titik memindahkan slide, dan posisi scroll tepat per slide. Teks banner tidak tertutup panah di tablet maupun desktop.
+- **Katalog:** chip "Woody" menghapus filternya sendiri (URL ikut berubah), dan pilihan "Rp100rb – Rp250rb" mengisi batas harga sekaligus menandai chip-nya aktif.
+- **Alur belanja di sandbox Komerce:**
+  - detail produk → Keranjang → checkout (POS Reguler, VA BCA) → pesanan INV-20261112-9VJWH;
+  - simulasi bayar di sandbox → status **Dibayar** lewat cek status API, nominal Rp278.900 cocok.
+- **Data label saat ini:** label "Terlaris" dan jumlah terjual muncul di beberapa produk karena ada pesanan uji sandbox yang sudah Dibayar. Rating belum muncul karena belum ada ulasan.
 
 Masukan pemilik (12 Nov 2026), dengan screenshot beranda dan katalog:
 - Gambar hero di beranda jelek (ilustrasi botol abu-abu).

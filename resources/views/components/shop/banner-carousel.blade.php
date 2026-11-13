@@ -46,7 +46,7 @@
                              @if ($i > 0) loading="lazy" @else fetchpriority="high" @endif decoding="async">
                     </picture>
                     <div class="absolute inset-0 flex items-center">
-                        <div class="w-[50%] pl-4 pr-2 sm:w-[44%] sm:pl-8 lg:pl-14">
+                        <div class="w-[50%] pl-4 pr-2 sm:w-[46%] sm:pl-16 lg:pl-20">
                             <p @class(['text-caption font-semibold uppercase tracking-nav sm:text-label', 'text-white/80' => $light, 'text-primary' => ! $light])>{{ $banner['eyebrow'] }}</p>
                             <h2 @class(['mt-1.5 text-banner font-bold sm:mt-2', 'text-white' => $light, 'text-ink' => ! $light])>{{ $banner['title'] }}</h2>
                             <p @class(['mt-3 hidden max-w-md text-body md:block lg:text-[15px] lg:leading-6', 'text-white/85' => $light, 'text-ink-2' => ! $light])>{{ $banner['text'] }}</p>
