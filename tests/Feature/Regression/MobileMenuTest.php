@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Category;
+
 /*
  | Bug: di HP, menu hamburger hanya setinggi navbar (64px) dan halaman terkunci.
  | Akar masalah: drawer berada di dalam <nav> yang memakai backdrop-filter, sehingga
@@ -31,6 +33,11 @@ it('drawer mengunci scroll lewat x-trap dan menutup diri saat link dipilih', fun
 });
 
 it('link menu mobile tetap lengkap untuk tamu', function () {
+    // Menu kategori dibaca dari tabel categories (header gaya NB, docs/plans/redesign-nb.md).
+    foreach (['Pria', 'Wanita', 'Unisex'] as $name) {
+        Category::factory()->create(['name' => $name, 'slug' => strtolower($name)]);
+    }
+
     $nav = navMarkup($this->get('/')->getContent());
 
     foreach (['Pria', 'Wanita', 'Unisex', 'Brand', 'Semua parfum', 'Masuk', 'Daftar'] as $label) {

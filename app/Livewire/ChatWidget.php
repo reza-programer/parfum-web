@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 /**
@@ -29,6 +30,15 @@ class ChatWidget extends Component
     public function mount(): void
     {
         $this->conversationId = $this->findConversation()?->id;
+    }
+
+    /**
+     * Dibuka dari link "Bantuan" di bilah utilitas header.
+     */
+    #[On('open-chat')]
+    public function openChat(): void
+    {
+        $this->open = true;
     }
 
     public function send(ChatService $chat): void

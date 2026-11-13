@@ -126,3 +126,12 @@ it('admin menambah FAQ', function () {
 
     expect(Faq::where('question', 'Bisa retur?')->first()->keywords)->toBe('retur,tukar,kembalikan');
 });
+
+it('link Bantuan di header membuka panel chat lewat event open-chat', function () {
+    Livewire::test(ChatWidget::class)
+        ->assertSet('open', false)
+        ->dispatch('open-chat')
+        ->assertSet('open', true);
+
+    $this->get('/')->assertSeeHtml('$dispatch(\'open-chat\')');
+});

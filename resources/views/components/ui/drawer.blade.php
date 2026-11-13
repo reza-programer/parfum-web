@@ -49,7 +49,7 @@
                  class="fixed z-[60] flex flex-col bg-paper-card {{ $panel }}"
                  role="dialog" aria-modal="true" @if ($title) aria-label="{{ $title }}" @endif>
             <header class="flex h-14 shrink-0 items-center justify-between border-b border-line px-5">
-                <p class="text-[15px] font-bold text-ink">{{ $title }}</p>
+                <p class="text-[13px] font-bold uppercase tracking-nav text-ink">{{ $title }}</p>
                 <button type="button" x-on:click="open = false" class="-mr-3 inline-flex size-11 items-center justify-center text-ink-2 transition-colors duration-150 hover:text-ink active:text-ink" aria-label="Tutup">
                     <x-lucide-x class="size-5" stroke-width="1.75" />
                 </button>

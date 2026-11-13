@@ -15,18 +15,29 @@
     </head>
     <body class="min-h-screen">
         <div class="flex min-h-screen flex-col">
-            {{-- Bilah info: hanya fakta layanan toko, tanpa promo. Tidak ikut menempel. --}}
-            <div class="hidden bg-ink text-white/80 md:block">
-                <div class="page flex h-8 items-center justify-between gap-6 text-caption">
-                    <p class="flex items-center gap-4">
-                        <span class="inline-flex items-center gap-1.5"><x-lucide-shield-check class="size-3.5" stroke-width="2" /> Parfum original dan decant</span>
-                        <span class="inline-flex items-center gap-1.5"><x-lucide-truck class="size-3.5" stroke-width="2" /> Kirim ke seluruh Indonesia</span>
-                    </p>
-                    <p class="inline-flex items-center gap-1.5"><x-lucide-wallet class="size-3.5" stroke-width="2" /> Bayar lewat VA bank dan QRIS</p>
+            {{-- Bilah utilitas abu-abu tipis. Tidak ikut menempel. --}}
+            <div class="hidden bg-paper-raised md:block">
+                <div class="page flex h-8 items-center justify-between gap-6 text-caption text-ink">
+                    <p>Parfum original dan decant</p>
+                    <div class="flex items-center gap-5">
+                        <a href="{{ route('orders.index') }}" wire:navigate class="inline-flex items-center gap-1.5 hover:underline hover:underline-offset-4">
+                            <x-lucide-package class="size-3.5" stroke-width="1.75" /> Lacak pesanan
+                        </a>
+                        <button type="button" x-data x-on:click="$dispatch('open-chat')" class="inline-flex items-center gap-1.5 hover:underline hover:underline-offset-4">
+                            <x-lucide-message-circle class="size-3.5" stroke-width="1.75" /> Bantuan
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <livewire:layout.navigation />
+
+            {{-- Bilah pengumuman: hanya fakta layanan, tanpa promo yang tidak kita punya. --}}
+            <div class="border-b border-line bg-paper-card">
+                <p class="page flex h-9 items-center justify-center text-center text-caption font-bold uppercase tracking-nav text-ink">
+                    Original <span class="mx-2 text-ink-faint" aria-hidden="true">·</span> Bayar VA bank &amp; QRIS <span class="mx-2 hidden text-ink-faint sm:inline" aria-hidden="true">·</span> <span class="hidden sm:inline">Kirim ke seluruh Indonesia</span>
+                </p>
+            </div>
 
             @if (isset($header))
                 <header class="page pt-10 pb-2">

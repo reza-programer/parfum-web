@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Tinggi header menempel, dipakai bilah filter katalog yang menempel di bawahnya. */
+/* Tinggi header menempel (baris utama + kolom cari HP), dipakai elemen yang menempel di bawahnya. */
 :root {
     --header-h: 109px;
 }
@@ -10,12 +10,6 @@
 @media (min-width: 768px) {
     :root {
         --header-h: 65px;
-    }
-}
-
-@media (min-width: 1024px) {
-    :root {
-        --header-h: 105px;
     }
 }
 
@@ -34,7 +28,7 @@
     }
 
     :focus-visible {
-        @apply outline-none ring-2 ring-primary/50 ring-offset-1 ring-offset-white;
+        @apply outline-none ring-2 ring-ink ring-offset-2 ring-offset-white;
     }
 
     [x-cloak] {
@@ -43,9 +37,9 @@
 }
 
 @layer components {
-    /* Tombol: teks biasa (bukan kapital), sudut 6px, tinggi 44px di HP dan 40px di layar besar. */
+    /* Tombol: persegi, teks kapital tebal, tinggi 48px. */
     .btn {
-        @apply inline-flex h-11 items-center justify-center gap-2 rounded-md px-5 text-body font-semibold transition-colors duration-150 ease-out disabled:pointer-events-none disabled:opacity-40 sm:h-10;
+        @apply inline-flex h-12 items-center justify-center gap-2 px-6 text-[13px] font-bold uppercase tracking-nav transition-colors duration-150 ease-out disabled:pointer-events-none disabled:opacity-40;
     }
 
     .btn-primary {
@@ -53,27 +47,27 @@
     }
 
     .btn-secondary {
-        @apply btn border border-primary bg-paper-card text-primary hover:bg-primary-soft;
+        @apply btn border border-ink bg-paper-card text-ink hover:bg-ink hover:text-white;
     }
 
     .btn-outline {
-        @apply btn border border-line bg-paper-card text-ink hover:border-ink-faint;
+        @apply btn border border-line bg-paper-card text-ink hover:border-ink;
     }
 
     .btn-ghost {
-        @apply btn px-3 font-medium text-ink-2 hover:text-ink;
+        @apply btn px-3 text-ink-2 hover:text-ink;
     }
 
     .btn-sm {
-        @apply h-11 px-4 sm:h-9;
+        @apply h-11 px-4 text-label sm:h-10;
     }
 
     .link {
-        @apply font-medium text-primary transition-colors duration-150 hover:text-primary-dark;
+        @apply font-medium text-ink underline decoration-1 underline-offset-4 transition-colors duration-150 hover:text-primary;
     }
 
     .field {
-        @apply block h-11 w-full rounded-md border-line bg-paper-card text-body text-ink placeholder:text-ink-faint focus:border-primary focus:ring-1 focus:ring-primary/20 disabled:bg-paper disabled:text-ink-faint sm:h-10;
+        @apply block h-11 w-full border-line bg-paper-card text-body text-ink placeholder:text-ink-faint focus:border-ink focus:ring-0 disabled:bg-paper-raised disabled:text-ink-faint;
     }
 
     textarea.field {
@@ -81,29 +75,29 @@
     }
 
     .label {
-        @apply mb-1.5 block text-label font-medium text-ink;
+        @apply mb-1.5 block text-label font-bold uppercase tracking-label text-ink;
     }
 
-    /* Label kecil: brand, judul kolom, keterangan bagian. */
+    /* Label kecil kapital: brand, judul kolom, keterangan bagian. */
     .eyebrow {
-        @apply text-label font-medium text-ink-2;
+        @apply text-caption font-bold uppercase tracking-nav text-ink-2;
     }
 
-    /* Kartu putih di atas latar abu-abu muda. */
+    /* Kotak bergaris tipis (bagian checkout, akun). Tanpa bayangan. */
     .card {
-        @apply rounded-lg border border-line bg-paper-card;
+        @apply border border-line bg-paper-card;
     }
 
     .page {
-        @apply mx-auto w-full max-w-page px-3 sm:px-6;
+        @apply mx-auto w-full max-w-page px-4 sm:px-6 lg:px-8;
     }
 
     .heading-page {
-        @apply text-page font-bold text-ink;
+        @apply text-page font-bold uppercase tracking-heading text-ink;
     }
 
     .heading-section {
-        @apply text-section font-bold text-ink;
+        @apply text-section font-bold uppercase tracking-heading text-ink;
     }
 
     .meta {
@@ -118,13 +112,18 @@
         @apply border-t border-line;
     }
 
-    /* Chip pilihan (ukuran, filter aktif, urutan). */
+    /* Chip pilihan (ukuran, filter aktif): persegi bergaris. */
     .chip {
-        @apply inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-paper-card px-3.5 text-label font-medium text-ink transition-colors duration-150 hover:border-primary hover:text-primary;
+        @apply inline-flex h-9 items-center gap-1.5 border border-line bg-paper-card px-3 text-label font-medium text-ink transition-colors duration-150 hover:border-ink;
     }
 
     .chip-active {
-        @apply border-primary bg-primary-soft text-primary;
+        @apply border-ink bg-ink text-white hover:border-ink;
+    }
+
+    /* Tag hitam kotak di foto produk: TERLARIS, BARU, HABIS. */
+    .tag {
+        @apply inline-flex h-6 items-center bg-ink px-2 text-caption font-bold uppercase tracking-label text-white;
     }
 }
 
@@ -135,7 +134,7 @@
     }
 }
 
-/* Carousel banner: sembunyikan scrollbar, geser dengan snap. */
+/* Baris geser (carousel, ubin aroma): sembunyikan scrollbar. */
 .no-scrollbar {
     scrollbar-width: none;
 }
