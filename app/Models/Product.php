@@ -120,11 +120,6 @@ class Product extends Model
         return $this->is_active && $stock > 0 && $stock <= self::LOW_STOCK;
     }
 
-    public function hasDecant(): bool
-    {
-        return $this->variants->contains(fn (ProductVariant $v) => $v->is_decant);
-    }
-
     /**
      * Jumlah terjual dari pesanan yang sudah dibayar. Memakai sold_qty dari CatalogQuery kalau ada.
      */

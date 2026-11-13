@@ -23,9 +23,8 @@ function actions(?User $user = null)
         : Livewire::test(ProductActions::class, ['product' => $product]);
 }
 
-it('tamu yang menekan wishlist atau tambah cepat diarahkan ke login', function () {
+it('tamu yang menekan wishlist diarahkan ke login', function () {
     actions()->call('toggleWishlist')->assertRedirect(route('login'));
-    actions()->call('add', $this->bottle->id)->assertRedirect(route('login'));
 });
 
 it('customer menyimpan lalu menghapus wishlist dari kartu', function () {
@@ -44,33 +43,10 @@ it('customer menyimpan lalu menghapus wishlist dari kartu', function () {
     expect($this->user->wishlistItems()->count())->toBe(0);
 });
 
-it('tambah cepat memasukkan ukuran yang dipilih ke keranjang', function () {
-    actions($this->user)
-        ->call('add', $this->bottle->id)
-        ->assertDispatched('cart-updated')
-        ->assertDispatched('toast', message: 'Malam Rempah 100ml masuk keranjang');
-
-    $item = $this->user->cartItems()->sole();
-    expect($item->product_variant_id)->toBe($this->bottle->id)
-        ->and($item->qty)->toBe(1);
-});
-
-it('ukuran yang habis atau milik produk lain tidak masuk keranjang', function () {
-    $other = ProductVariant::factory()->create(['stock' => 9]);
-
-    actions($this->user)
-        ->call('add', $this->soldOut->id)
-        ->assertDispatched('toast')
-        ->assertNotDispatched('cart-updated')
-        ->call('add', $other->id)
-        ->assertNotDispatched('cart-updated');
-
-    expect($this->user->cartItems()->count())->toBe(0);
-});
-
-it('pilihan ukuran menampilkan semua ukuran dan menonaktifkan yang habis', function () {
+it('kartu tidak lagi punya tambah cepat (gaya NB: kartu polos + wishlist)', function () {
     actions()
-        ->assertSee('Decant 10ml')
-        ->assertSee('100ml')
-        ->assertSeeHtml('data-variant="'.$this->soldOut->id.'" disabled');
+        ->assertDontSeeHtml('data-variant')
+        ->assertDontSee('Tambah cepat');
+
+    expect(method_exists(ProductActions::class, 'add'))->toBeFalse();
 });

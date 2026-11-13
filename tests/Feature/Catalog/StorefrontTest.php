@@ -184,11 +184,11 @@ it('filter tersedia dan urutan harga tertinggi bisa diubah dari komponen', funct
         ->assertSeeInOrder(['Masih Ada', 'Kosong Semua']);
 });
 
-it('kartu di katalog punya tombol wishlist dan tambah cepat', function () {
+it('kartu di katalog punya tombol wishlist (tanpa tambah cepat, gaya NB)', function () {
     productWith(['name' => 'Ada Stok'], [[50, 300000, 3]]);
 
     Livewire::test(Catalog::class)
         ->assertSeeLivewire(ProductActions::class)
         ->assertSee('Simpan ke wishlist')
-        ->assertSee('Tambah cepat');
+        ->assertDontSee('Tambah cepat');
 });

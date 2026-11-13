@@ -100,41 +100,38 @@ it('Terlaris hanya untuk 5 produk teratas yang benar-benar terjual', function ()
         ->and(BestsellerIds::has($unsold->id))->toBeFalse();
 });
 
-it('stok terbatas untuk total stok 1 sampai 3, dan ada decant dari varian decant', function () {
+it('stok terbatas untuk total stok 1 sampai 3', function () {
     $low = labeled([], [[50, 300000, 2, false], [5, 49000, 1, true]]);
     $plenty = labeled([], [[50, 300000, 4, false]]);
     $empty = labeled([], [[50, 300000, 0, false]]);
 
     expect(fromCatalog($low)->isLowStock())->toBeTrue()
         ->and(fromCatalog($plenty)->isLowStock())->toBeFalse()
-        ->and(fromCatalog($empty)->isLowStock())->toBeFalse()
-        ->and(fromCatalog($low)->hasDecant())->toBeTrue()
-        ->and(fromCatalog($plenty)->hasDecant())->toBeFalse();
+        ->and(fromCatalog($empty)->isLowStock())->toBeFalse();
 });
 
-it('kartu katalog menampilkan label, rating, dan terjual dari data', function () {
-    $product = labeled(['name' => 'Laris Manis', 'created_at' => now()->subDays(60)], [[50, 300000, 2, false], [5, 49000, 8, true]]);
+it('kartu katalog polos: hanya satu tag dari data, tanpa rating, terjual, atau label tambahan', function () {
+    $product = labeled(['name' => 'Laris Manis', 'created_at' => now()->subDays(60)], [[50, 300000, 2, false], [5, 49000, 1, true]]);
     sell($product, 12);
     reviewFor($product, 5);
     reviewFor($product, 4);
 
     Livewire::test(Catalog::class)
+        ->assertSee('Laris Manis')
         ->assertSeeHtml('data-label="terlaris"')
-        ->assertSeeHtml('data-label="decant"')
         ->assertDontSeeHtml('data-label="baru"')
-        ->assertDontSeeHtml('data-label="stok-terbatas"') // total stok 10
-        ->assertSee('4,5')
-        ->assertSee('12 terjual');
+        ->assertDontSeeHtml('data-label="decant"')
+        ->assertDontSeeHtml('data-label="stok-terbatas"')
+        ->assertDontSeeHtml('data-rating')
+        ->assertDontSee('12 terjual');
 });
 
-it('kartu tanpa ulasan dan penjualan tidak menampilkan rating atau terjual', function () {
+it('kartu produk baru memakai tag Baru, dan produk habis memakai tag Habis', function () {
     labeled(['name' => 'Baru Datang'], [[50, 300000, 3, false]]);
+    labeled(['name' => 'Sudah Kosong', 'created_at' => now()->subDays(60)], [[50, 300000, 0, false]]);
 
     Livewire::test(Catalog::class)
-        ->assertSee('Baru Datang')
         ->assertSeeHtml('data-label="baru"')
-        ->assertSeeHtml('data-label="stok-terbatas"')
-        ->assertDontSeeHtml('data-label="terlaris"')
-        ->assertDontSeeHtml('data-rating')
-        ->assertDontSee('terjual');
+        ->assertSeeHtml('data-label="habis"')
+        ->assertDontSeeHtml('data-label="terlaris"');
 });
