@@ -1,6 +1,19 @@
 # Tampilan Gaya newbalance.co.id (Redesign v3) — Rencana
 
-Status: **disetujui 13 Nov 2026**, sedang dikerjakan. Branch: `feat/tampilan-nb` (dari `feat/tampilan-marketplace`).
+Status: **selesai 13 Nov 2026**, belum di-merge. Branch: `feat/tampilan-nb` (dari `feat/tampilan-marketplace`).
+
+## Hasil verifikasi
+
+- **Test:** `php artisan test` (dengan cache view terpisah dari dev server) lulus 358 test (1260 assertion), tanpa gagal. Setelah perbaikan padding banner, test beranda, katalog, dan header diulang dan lulus (27 test). Pint dan `npm run build` lulus.
+- **Overflow horizontal:**
+  - 375 px: 0 px di 12 halaman (beranda, katalog, brand, halaman brand, detail, keranjang, checkout, pesanan, detail pesanan, wishlist, alamat, profil);
+  - 768 px dan 1440 px: 0 px di halaman yang dicek.
+- **Header:** mega menu terbuka saat hover, berisi kolom aroma, ukuran, dan brand yang tersaring ke kategori, plus ubin gambar. Menu HP berlapis bisa dibuka-tutup per kategori.
+- **Banner:** di tablet (768 px) dan laptop kecil (1024 px), teks banner sempat tertutup panah. Sudah diperbaiki dan dicek: teks sekarang mulai di kanan panah.
+- **Katalog:** ubin promo decant muncul setelah produk ke-8, dan grid tetap rapat di 2, 3, maupun 4 kolom.
+- **Alur belanja di sandbox Komerce:**
+  - detail produk → Tambah ke keranjang → checkout (TIKI ECO, VA BCA) → pesanan INV-20261113-LF7YG;
+  - simulasi bayar di sandbox → status **Dibayar** lewat cek status API, nominal Rp199.000 cocok.
 
 Permintaan pemilik (13 Nov 2026): "UNDO", lalu "Ubah jadi seperti ini full: https://www.newbalance.co.id/".
 
