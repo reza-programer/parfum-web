@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
@@ -55,19 +54,28 @@ it('banner dilewati kalau datanya tidak ada', function () {
         ->assertDontSee('Coba dulu lewat decant');
 });
 
-it('beranda menampilkan shortcut kategori, produk baru, dan brand', function () {
+it('beranda menampilkan ubin aroma, ubin kategori dengan jumlah produk, dan produk baru', function () {
     $pria = Category::factory()->create(['name' => 'Pria', 'slug' => 'pria']);
-    $brand = Brand::factory()->create(['name' => 'Rimba Atelier', 'slug' => 'rimba-atelier']);
-    homeProduct(['name' => 'Hutan Pagi', 'category_id' => $pria->id, 'brand_id' => $brand->id, 'scent_family' => 'woody']);
+    Category::factory()->create(['name' => 'Wanita', 'slug' => 'wanita']); // belum ada produk
+    homeProduct(['name' => 'Hutan Pagi', 'category_id' => $pria->id, 'scent_family' => 'woody']);
+    homeProduct(['name' => 'Laut Biru', 'category_id' => $pria->id, 'scent_family' => 'fresh'], [[5, 59000, 2, true]]);
 
     $this->get('/')->assertOk()
+        ->assertSee('Belanja berdasarkan aroma')
+        ->assertSeeHtml('data-tile="aroma-woody"')
+        ->assertSeeHtml('data-tile="aroma-gourmand"')
+        ->assertSeeHtml('data-tile="kategori-pria"')
+        ->assertSee('2 parfum')
+        ->assertDontSeeHtml('data-tile="kategori-wanita"') // kategori tanpa produk aktif tidak ditampilkan
+        ->assertSeeHtml('data-tile="kategori-decant"')
         ->assertSee('Baru masuk')
-        ->assertSee('Hutan Pagi')
-        ->assertSeeHtml('data-shortcut="pria"')
-        ->assertSeeHtml('data-shortcut="decant"')
-        ->assertSeeHtml('data-shortcut="woody"')
-        ->assertSee('Brand pilihan')
-        ->assertSee(route('brands.show', 'rimba-atelier'), false);
+        ->assertSee('Hutan Pagi');
+});
+
+it('ubin decant tidak muncul kalau tidak ada decant yang berstok', function () {
+    homeProduct([], [[5, 59000, 0, true], [50, 300000, 3, false]]);
+
+    $this->get('/')->assertOk()->assertDontSeeHtml('data-tile="kategori-decant"');
 });
 
 it('bagian terlaris tidak muncul sebelum ada penjualan', function () {

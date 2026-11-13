@@ -1,18 +1,24 @@
-// Generator banner beranda dan ikon kategori Decant (render digital dari produk demo, bukan foto).
-// Teks banner TIDAK ada di gambar: judul dan tombol ditulis di HTML (resources/views/components/shop/banner-carousel.blade.php),
-// jadi sisi teks (kiri) sengaja dibuat polos dan cukup gelap/terang untuk kontras.
+// Generator gambar editorial untuk beranda dan menu (render digital dari produk demo, bukan foto kamera).
+// Gaya v3 (docs/plans/redesign-nb.md): latar studio polos lembut tanpa sambungan, cahaya dari kiri atas,
+// botol besar dengan bayangan dan pantulan tipis. Tidak ada teks di gambar: judul dan tombol ditulis di HTML.
 //
 // Pemakaian (alat yang sama dengan render-products.mjs):
 //   node <project>/database/seeders/images/source/render-banners.mjs <render-tools> <project>/public/images
 // Hasil:
-//   banners/{slug}.webp (2400x800, desktop 3:1) dan banners/{slug}-m.webp (1200x900, HP 4:3)
-//   categories/decant.webp (480x480)
+//   hero/{oriental,fresh,decant}.webp      2400x1000 (desktop, ruang kosong di kiri untuk teks)
+//   hero/{oriental,fresh,decant}-m.webp    1080x1350 (HP, potret; teks di bawah gambar)
+//   tiles/aroma-{woody,floral,fresh,oriental,gourmand}.webp   1000x1000
+//   tiles/kategori-{pria,wanita,unisex,decant}.webp           1600x1000
 import path from 'node:path';
-import { products, bottle, shadow, roundedPath, svg, lighten, darken, esc, createRenderer } from './render-lib.mjs';
+import { products, brands, bottle, shadow, reflection, roundedPath, svg, lighten, darken, esc, createRenderer } from './render-lib.mjs';
 
 const [toolsDir, outDir] = process.argv.slice(2);
 const render = createRenderer(toolsDir);
-const product = (slug) => products.find((p) => p.slug === slug);
+const product = (slug) => {
+    const p = products.find((item) => item.slug === slug);
+    if (!p) throw new Error(`Produk tidak dikenal: ${slug}`);
+    return p;
+};
 
 // ---------- vial decant 10 ml ----------
 function vial(p, id, cx, bottom) {
@@ -38,109 +44,147 @@ function vial(p, id, cx, bottom) {
     <path d="${body}" fill="url(#${id}-glass)"/>
     <path d="${body}" fill="none" stroke="#fff" stroke-opacity="0.9" stroke-width="2"/>
     <path d="${body}" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="1"/>
-    <rect x="${x - 3}" y="${top - 30}" width="${w + 6}" height="34" rx="4" fill="url(#${id}-metal)"/>
-    <rect x="${cx - 7}" y="${top - 46}" width="14" height="18" rx="2" fill="url(#${id}-metal)"/>
+    <rect x="${x - 3}" y="${top - 30}" width="${w + 6}" height="34" fill="url(#${id}-metal)"/>
+    <rect x="${cx - 7}" y="${top - 46}" width="14" height="18" fill="url(#${id}-metal)"/>
     <path d="${roundedPath(x + 1, top - 128, w - 2, 96, 16, 4)}" fill="#ffffff" fill-opacity="0.28" stroke="#ffffff" stroke-opacity="0.85" stroke-width="2"/>
-    <rect x="${x + 12}" y="${top - 118}" width="8" height="76" rx="4" fill="#fff" opacity="0.55"/>`,
+    <rect x="${x + 12}" y="${top - 118}" width="8" height="76" fill="#fff" opacity="0.55"/>`,
     };
 }
 
-// ---------- adegan studio: dinding berwarna, lengkung, podium ----------
-function studio(t, W, H, stage) {
-    const { cx, top, rx, ry, depth } = stage;
-    const archW = rx * 1.5, archTop = top - H * 0.62;
-    const arch = `M${cx - archW / 2},${top} V${archTop + archW / 2} A${archW / 2},${archW / 2} 0 0 1 ${cx + archW / 2},${archTop + archW / 2} V${top} Z`;
-    const dots = t.dots.map(([fx, fy, r, o]) => `<circle cx="${fx * W}" cy="${fy * H}" r="${r * H}" fill="${t.dot}" opacity="${o}"/>`).join('');
+// ---------- latar studio editorial: dinding dan lantai menyatu (cove), cahaya lembut ----------
+function backdrop(t, W, H, floorY) {
     return `<defs>
-        <linearGradient id="st-wall" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${t.wallText}"/><stop offset="0.45" stop-color="${t.wallText}"/><stop offset="1" stop-color="${t.wall}"/></linearGradient>
-        <radialGradient id="st-light" gradientUnits="userSpaceOnUse" cx="${cx}" cy="${top - H * 0.4}" r="${H * 0.95}"><stop offset="0" stop-color="#fff" stop-opacity="${t.light}"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-        <linearGradient id="st-floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${t.floor}"/><stop offset="1" stop-color="${darken(t.floor, 0.12)}"/></linearGradient>
-        <linearGradient id="st-arch" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${t.arch}"/><stop offset="1" stop-color="${darken(t.arch, 0.08)}"/></linearGradient>
-        <linearGradient id="st-side" x1="0" x2="1"><stop offset="0" stop-color="${darken(t.podium, 0.16)}"/><stop offset="0.45" stop-color="${darken(t.podium, 0.04)}"/><stop offset="1" stop-color="${darken(t.podium, 0.2)}"/></linearGradient>
-        <filter id="st-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${H * 0.03}"/></filter>
+        <linearGradient id="bd-wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${lighten(t.bg, 0.22)}"/><stop offset="1" stop-color="${t.bg}"/></linearGradient>
+        <linearGradient id="bd-floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${darken(t.bg, 0.05)}"/><stop offset="1" stop-color="${lighten(t.bg, 0.12)}"/></linearGradient>
+        <radialGradient id="bd-light" gradientUnits="userSpaceOnUse" cx="${W * t.lightX}" cy="${H * 0.18}" r="${Math.max(W, H) * 0.75}">
+            <stop offset="0" stop-color="#fff" stop-opacity="0.5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="bd-vig" cx="0.5" cy="0.5" r="0.8"><stop offset="0.65" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.08"/></radialGradient>
+        <filter id="bd-blur" x="0" y="-50%" width="100%" height="200%"><feGaussianBlur stdDeviation="${H * 0.03}"/></filter>
     </defs>
-    <rect width="${W}" height="${H}" fill="url(#st-wall)"/>
-    <rect y="${top + depth * 0.6}" width="${W}" height="${H}" fill="url(#st-floor)"/>
-    ${dots}
-    <path d="${arch}" fill="url(#st-arch)"/>
-    <rect width="${W}" height="${H}" fill="url(#st-light)"/>
-    <ellipse cx="${cx + rx * 0.12}" cy="${top + depth + ry * 0.9}" rx="${rx * 1.08}" ry="${ry * 0.9}" fill="#000" opacity="0.22" filter="url(#st-blur)"/>
-    <path d="M${cx - rx},${top} V${top + depth} A${rx},${ry} 0 0 0 ${cx + rx},${top + depth} V${top} Z" fill="url(#st-side)"/>
-    <ellipse cx="${cx}" cy="${top}" rx="${rx}" ry="${ry}" fill="${t.podium}"/>
-    <ellipse cx="${cx}" cy="${top}" rx="${rx}" ry="${ry}" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="2"/>`;
+    <rect width="${W}" height="${H}" fill="url(#bd-wall)"/>
+    <rect y="${floorY}" width="${W}" height="${H - floorY}" fill="url(#bd-floor)"/>
+    <rect y="${floorY - H * 0.04}" width="${W}" height="${H * 0.08}" fill="${darken(t.bg, 0.02)}" filter="url(#bd-blur)" opacity="0.9"/>
+    <rect width="${W}" height="${H}" fill="url(#bd-light)"/>
+    <rect width="${W}" height="${H}" fill="url(#bd-vig)"/>`;
 }
 
-// Satu benda (botol atau vial) di atas podium. Skala lokal di sekitar titik alasnya.
-function place(item, idx, x, bottom, scale) {
+// Balok batu sederhana sebagai alas (variasi komposisi, warna senada latar).
+function plinth(t, x, w, h, floorY) {
+    const top = floorY - h;
+    return `<defs><linearGradient id="pl-${x}" x1="0" x2="1"><stop offset="0" stop-color="${darken(t.plinth, 0.08)}"/><stop offset="0.4" stop-color="${t.plinth}"/><stop offset="1" stop-color="${darken(t.plinth, 0.14)}"/></linearGradient>
+        <filter id="pls-${x}" x="-50%" y="-200%" width="200%" height="500%"><feGaussianBlur stdDeviation="18"/></filter></defs>
+    <ellipse cx="${x + w * 0.55}" cy="${floorY + 6}" rx="${w * 0.62}" ry="22" fill="#000" opacity="0.14" filter="url(#pls-${x})"/>
+    <rect x="${x}" y="${top}" width="${w}" height="${h}" fill="url(#pl-${x})"/>
+    <rect x="${x}" y="${top}" width="${w}" height="4" fill="#fff" opacity="0.35"/>`;
+}
+
+// Satu benda di (x, bottom), skala di sekitar titik alasnya. Pantulan hanya untuk benda yang berdiri di lantai.
+function place(item, idx, x, bottom, scale, W, H, withReflection) {
     const id = `i${idx}`;
-    const drawn = item.vial ? vial(product(item.slug), id, x, bottom) : bottle(product(item.slug), id, x, bottom);
-    const liquid = product(item.slug).liquid;
-    return `<g transform="translate(${x} ${bottom}) scale(${scale}) translate(${-x} ${-bottom})">${shadow(id, x, bottom, drawn.w, liquid)}${drawn.markup}</g>`;
+    const p = product(item.slug);
+    const drawn = item.vial ? vial(p, id, x, bottom) : bottle(p, id, x, bottom);
+    const refl = withReflection ? reflection(id, drawn.markup, bottom, -W, W * 3, H * 3) : '';
+    return `<g transform="translate(${x} ${bottom}) scale(${scale}) translate(${-x} ${-bottom})">${refl}${shadow(id, x, bottom, drawn.w, p.liquid)}${drawn.markup}</g>`;
 }
 
-// Posisi relatif terhadap podium: dx dalam satuan rx, dy dalam satuan ry (negatif = lebih ke belakang).
-function scene(t, W, H, stage, items) {
-    const sorted = [...items].sort((a, b) => a.dy - b.dy);
-    const things = sorted.map((it, i) => place(it, i, stage.cx + it.dx * stage.rx, stage.top + it.dy * stage.ry, it.s * stage.scale)).join('');
-    return svg(`${studio(t, W, H, stage)}${things}`, W, H);
+/**
+ * items: { slug, vial?, x (0-1 dari lebar), s (skala), lift? (pecahan tinggi), z? (urutan gambar) }
+ * Benda dengan lift berdiri di atas balok yang lebarnya mengikuti lebar botol.
+ */
+function scene(t, W, H, floor, items) {
+    const floorY = H * floor;
+    const base = H / 1000;
+    const things = [...items]
+        .sort((a, b) => (a.z ?? 0) - (b.z ?? 0))
+        .map((it, i) => {
+            const x = W * it.x;
+            const scale = it.s * base;
+            if (!it.lift) return place(it, i, x, floorY, scale, W, H, true);
+            const width = (it.vial ? 74 : brands[product(it.slug).brand].w) * scale * 1.3;
+            return plinth(t, x - width / 2, width, it.lift * H, floorY) + place(it, i, x, floorY - it.lift * H, scale, W, H, false);
+        })
+        .join('');
+    return svg(`${backdrop(t, W, H, floorY)}${things}`, W, H);
 }
 
-const themes = {
+// Palet latar lembut per tema (bukan warna mencolok).
+const tones = {
+    oriental: { bg: '#ddcbbb', plinth: '#c9ad97', lightX: 0.2 },
+    fresh: { bg: '#d3e0e3', plinth: '#b9ccd1', lightX: 0.2 },
+    decant: { bg: '#ecdfdb', plinth: '#ddc7c1', lightX: 0.2 },
+    woody: { bg: '#d8ccb9', plinth: '#c2b29a', lightX: 0.3 },
+    floral: { bg: '#ecd6d4', plinth: '#dcbcb9', lightX: 0.3 },
+    gourmand: { bg: '#dfcbb6', plinth: '#cbb196', lightX: 0.3 },
+    pria: { bg: '#d6d3cd', plinth: '#c2bdb4', lightX: 0.3 },
+    wanita: { bg: '#eedcd7', plinth: '#dec6bf', lightX: 0.3 },
+    unisex: { bg: '#dcdcd2', plinth: '#c7c7ba', lightX: 0.3 },
+};
+
+const jobs = [];
+
+// ---------- banner beranda ----------
+const hero = {
     oriental: {
-        wallText: '#8f3b1f', wall: '#c4683d', arch: '#d98457', floor: '#7a321b', podium: '#f1dccb', dot: '#ffd7a8', light: 0.28,
-        dots: [[0.62, 0.18, 0.025, 0.35], [0.95, 0.72, 0.04, 0.25], [0.56, 0.8, 0.018, 0.3]],
+        desktop: [{ slug: 'dupa-keraton', x: 0.62, s: 0.95, lift: 0.12, z: 0 }, { slug: 'malam-rempah', x: 0.84, s: 1.05, z: 1 }],
+        mobile: [{ slug: 'dupa-keraton', x: 0.32, s: 0.95, lift: 0.1, z: 0 }, { slug: 'malam-rempah', x: 0.66, s: 1.0, z: 1 }],
     },
     fresh: {
-        wallText: '#1f6178', wall: '#4fa2b9', arch: '#79c2d3', floor: '#1b5568', podium: '#f3f8f9', dot: '#e3f6fb', light: 0.3,
-        dots: [[0.6, 0.22, 0.03, 0.3], [0.96, 0.18, 0.02, 0.4], [0.58, 0.78, 0.022, 0.25]],
+        desktop: [{ slug: 'teh-melati', x: 0.6, s: 0.9, z: 0 }, { slug: 'hujan-pertama', x: 0.73, s: 1.05, lift: 0.12, z: 1 }, { slug: 'laut-biru', x: 0.87, s: 0.95, z: 0 }],
+        mobile: [{ slug: 'teh-melati', x: 0.24, s: 0.8, z: 0 }, { slug: 'hujan-pertama', x: 0.5, s: 0.92, lift: 0.1, z: 1 }, { slug: 'laut-biru', x: 0.77, s: 0.84, z: 0 }],
     },
     decant: {
-        wallText: '#fde4ea', wall: '#f7c3cf', arch: '#fbd7df', floor: '#eaa4b4', podium: '#ffffff', dot: '#e11d48', light: 0.45,
-        dots: [[0.6, 0.2, 0.014, 0.18], [0.95, 0.75, 0.02, 0.14], [0.57, 0.74, 0.01, 0.2]],
+        desktop: [
+            { slug: 'melati-senja', x: 0.8, s: 1.0, z: 0 },
+            { slug: 'malam-rempah', vial: true, x: 0.57, s: 1.45, z: 1 },
+            { slug: 'laut-biru', vial: true, x: 0.62, s: 1.45, z: 1 },
+            { slug: 'mawar-kebun', vial: true, x: 0.67, s: 1.45, z: 1 },
+            { slug: 'gula-aren', vial: true, x: 0.92, s: 1.45, z: 1 },
+        ],
+        mobile: [
+            { slug: 'melati-senja', x: 0.66, s: 0.92, z: 0 },
+            { slug: 'malam-rempah', vial: true, x: 0.16, s: 1.25, z: 1 },
+            { slug: 'laut-biru', vial: true, x: 0.28, s: 1.25, z: 1 },
+            { slug: 'mawar-kebun', vial: true, x: 0.4, s: 1.25, z: 1 },
+        ],
     },
 };
 
-const compositions = {
-    oriental: [
-        { slug: 'dupa-keraton', dx: -0.42, dy: -0.25, s: 0.92 },
-        { slug: 'malam-rempah', dx: 0.36, dy: 0.15, s: 1 },
-    ],
-    fresh: [
-        { slug: 'teh-melati', dx: -0.62, dy: -0.2, s: 0.86 },
-        { slug: 'laut-biru', dx: 0.6, dy: -0.25, s: 0.9 },
-        { slug: 'hujan-pertama', dx: -0.02, dy: 0.2, s: 1 },
-    ],
-    decant: [
-        { slug: 'melati-senja', dx: 0.42, dy: -0.35, s: 0.9 },
-        { slug: 'malam-rempah', vial: true, dx: -0.78, dy: -0.05, s: 1.3 },
-        { slug: 'laut-biru', vial: true, dx: -0.5, dy: 0.25, s: 1.3 },
-        { slug: 'mawar-kebun', vial: true, dx: -0.2, dy: 0.42, s: 1.3 },
-        { slug: 'gula-aren', vial: true, dx: 0.86, dy: 0.1, s: 1.3 },
-    ],
-};
-
-// Desktop 2400x800: teks di 40% kiri, podium di kanan. HP 1200x900: teks di kiri atas, podium di kanan bawah.
-const stages = {
-    desktop: { W: 2400, H: 800, stage: { cx: 1720, top: 640, rx: 470, ry: 62, depth: 70, scale: 0.84 } },
-    mobile: { W: 1200, H: 900, stage: { cx: 870, top: 740, rx: 320, ry: 44, depth: 56, scale: 0.6 } },
-};
-
-for (const slug of Object.keys(themes)) {
-    for (const [kind, { W, H, stage }] of Object.entries(stages)) {
-        const file = path.join(outDir, 'banners', kind === 'desktop' ? `${slug}.webp` : `${slug}-m.webp`);
-        await render(scene(themes[slug], W, H, stage, compositions[slug]), W, file, 82);
-    }
+for (const [key, def] of Object.entries(hero)) {
+    jobs.push([scene(tones[key], 2400, 1000, 0.84, def.desktop), 2400, `hero/${key}.webp`]);
+    jobs.push([scene(tones[key], 1080, 1350, 0.8, def.mobile), 1080, `hero/${key}-m.webp`]);
 }
 
-// Ikon kategori Decant (bulat di beranda): tiga vial di latar terang.
-{
-    const W = 480, H = 480;
-    const t = { ...themes.decant, wallText: '#fbe3e8', wall: '#fbe3e8', arch: '#fdeef1', dots: [] };
-    const stage = { cx: 240, top: 412, rx: 170, ry: 22, depth: 30, scale: 0.74 };
-    const items = [
-        { slug: 'laut-biru', vial: true, dx: -0.5, dy: -0.2, s: 1 },
-        { slug: 'malam-rempah', vial: true, dx: 0.5, dy: -0.2, s: 1 },
-        { slug: 'mawar-kebun', vial: true, dx: 0, dy: 0.3, s: 1.08 },
-    ];
-    await render(scene(t, W, H, stage, items), W, path.join(outDir, 'categories', 'decant.webp'), 84);
+// ---------- ubin keluarga aroma (satu botol, alas balok bergantian) ----------
+const aroma = {
+    woody: { slug: 'hutan-pagi', block: true },
+    floral: { slug: 'mawar-kebun', block: false },
+    fresh: { slug: 'laut-biru', block: true },
+    oriental: { slug: 'malam-rempah', block: false },
+    gourmand: { slug: 'kopi-tubruk', block: true },
+};
+for (const [key, a] of Object.entries(aroma)) {
+    const items = [{ slug: a.slug, x: 0.5, s: 1.0, lift: a.block ? 0.12 : 0 }];
+    jobs.push([scene(tones[key], 1000, 1000, 0.84, items), 1000, `tiles/aroma-${key}.webp`]);
+}
+
+// ---------- ubin kategori (kelompok botol dari kategori itu, sesuai CatalogDemoSeeder) ----------
+const kategori = {
+    pria: [{ slug: 'laut-biru', x: 0.3, s: 0.78, z: 0 }, { slug: 'malam-rempah', x: 0.5, s: 0.88, lift: 0.1, z: 1 }, { slug: 'hutan-pagi', x: 0.7, s: 0.8, z: 0 }],
+    wanita: [{ slug: 'kenanga', x: 0.3, s: 0.8, z: 0 }, { slug: 'mawar-kebun', x: 0.5, s: 0.86, lift: 0.1, z: 1 }, { slug: 'gula-aren', x: 0.7, s: 0.78, z: 0 }],
+    unisex: [{ slug: 'hujan-pertama', x: 0.3, s: 0.8, z: 0 }, { slug: 'dupa-keraton', x: 0.5, s: 0.84, lift: 0.1, z: 1 }, { slug: 'akar-wangi', x: 0.7, s: 0.8, z: 0 }],
+    decant: [
+        { slug: 'melati-senja', x: 0.62, s: 0.82, z: 0 },
+        { slug: 'malam-rempah', vial: true, x: 0.3, s: 1.2, z: 1 },
+        { slug: 'laut-biru', vial: true, x: 0.37, s: 1.2, z: 1 },
+        { slug: 'mawar-kebun', vial: true, x: 0.44, s: 1.2, z: 1 },
+        { slug: 'gula-aren', vial: true, x: 0.8, s: 1.2, z: 1 },
+    ],
+};
+for (const [key, items] of Object.entries(kategori)) {
+    jobs.push([scene(tones[key], 1600, 1000, 0.84, items), 1600, `tiles/kategori-${key}.webp`]);
+}
+
+for (const [markup, width, file] of jobs) {
+    await render(markup, width, path.join(outDir, file), 82);
 }
