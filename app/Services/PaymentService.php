@@ -202,7 +202,8 @@ class PaymentService
             'customer' => [
                 'name' => (string) ($snapshot['recipient'] ?? $order->user->name),
                 'email' => $order->user->email,
-                'phone' => (string) ($snapshot['phone'] ?? $order->user->phone ?? ''),
+                // Form alamat menerima +62; Komerce hanya menerima digit.
+                'phone' => ltrim((string) ($snapshot['phone'] ?? $order->user->phone ?? ''), '+'),
             ],
             'items' => [['name' => "Pesanan {$order->code}", 'quantity' => 1, 'price' => $order->total]],
             ...$this->callbackFields(),

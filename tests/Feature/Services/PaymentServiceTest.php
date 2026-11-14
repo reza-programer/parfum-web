@@ -44,6 +44,15 @@ it('memakai base URL sandbox kecuali mode produksi', function () {
         ->and($this->payments->isSandbox())->toBeFalse();
 });
 
+it('mengirim nomor berawalan plus sebagai digit tanpa mengubah snapshot', function (string $method) {
+    $this->order->update(['address_snapshot' => ['recipient' => 'Sari Dewi', 'phone' => '+6281311112222']]);
+
+    $this->payments->create($this->order, $method);
+
+    expect(createRequests()->sole()['customer']['phone'])->toBe('6281311112222')
+        ->and($this->order->fresh()->address_snapshot['phone'])->toBe('+6281311112222');
+})->with(['va:BCA', 'qris']);
+
 it('daftar metode mengikuti batas nominal dan di-cache', function () {
     $keys = fn (int $amount) => collect($this->payments->methods($amount))->map->key()->all();
 
