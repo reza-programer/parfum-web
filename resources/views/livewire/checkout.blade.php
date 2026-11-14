@@ -68,7 +68,7 @@
                     @elseif (empty($this->shippingOptions['options']))
                         <p class="text-body text-ink-2">Belum ada kurir yang melayani alamat ini.</p>
                     @else
-                        <div class="space-y-2" role="radiogroup" aria-label="Kurir">
+                        <div class="grid grid-cols-1 gap-2 md:grid-cols-2" role="radiogroup" aria-label="Kurir">
                             @foreach ($this->shippingOptions['options'] as $shipping)
                                 <label wire:key="ship-{{ $shipping->key() }}"
                                        @class([$option, 'flex min-h-14 items-center gap-3 px-3.5 py-3',
