@@ -2,6 +2,24 @@
 
 Toko parfum online: Laravel 12, Livewire 3, Filament 3 (`/admin`), MySQL 8. Spesifikasi ada di [docs/PRD.md](docs/PRD.md), aturan kerja di [CLAUDE.md](CLAUDE.md), dan rencana per fase di [docs/plans](docs/plans).
 
+## Tampilan aplikasi
+
+![Beranda Toko Parfum](docs/images/01-beranda.png)
+
+Alur belanja: **katalog → detail parfum → keranjang → checkout → VA / QRIS → status pesanan**. Pelanggan juga bisa menyimpan wishlist, mengelola alamat, dan menghubungi admin lewat chat.
+
+| Katalog | Detail parfum |
+| --- | --- |
+| ![Katalog](docs/images/02-katalog.png) | ![Detail parfum](docs/images/03-detail-produk.png) |
+
+| Checkout | Pembayaran VA |
+| --- | --- |
+| ![Checkout](docs/images/06-checkout.png) | ![Pembayaran VA](docs/images/07-pembayaran-va.png) |
+
+**[Lihat panduan lengkap: 16 screenshot customer, pembayaran, admin, dan versi HP →](docs/panduan-bergambar.md)**
+
+Screenshot memakai data demo pada 14 November 2026. VA, QRIS, ongkir, dan status pembayaran di galeri merupakan simulasi lokal, bukan transaksi nyata.
+
 ## Menjalankan di lokal
 
 Kebutuhan: PHP 8.2+ (ekstensi intl, pdo_mysql, gd, zip, mbstring, fileinfo), Composer, Node 20+, MySQL 8.
