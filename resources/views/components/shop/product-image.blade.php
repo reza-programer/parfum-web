@@ -2,7 +2,7 @@
 @php
     $path ??= $product->coverImage();
 @endphp
-<div {{ $attributes->merge(['class' => 'relative overflow-hidden bg-paper-raised']) }}>
+<div {{ $attributes->merge(['class' => 'relative overflow-hidden bg-white']) }}>
     @if ($path)
         <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($path) }}"
              alt="{{ $product->name }}"
