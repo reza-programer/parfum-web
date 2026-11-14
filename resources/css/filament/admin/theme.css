@@ -113,3 +113,21 @@
 .fi-wi-stats-overview-stat-value {
     @apply tracking-tight;
 }
+
+/* Inbox: empat status tetap terlihat dalam panel 320px maupun layar HP. */
+.chat-inbox .chat-inbox-tabs {
+    @apply grid w-full grid-cols-2 gap-1 overflow-visible;
+}
+
+.chat-inbox .chat-inbox-tabs .fi-tabs-item {
+    @apply min-w-0 flex-wrap whitespace-normal;
+}
+
+.chat-inbox-thread .fi-section-header {
+    @apply flex-wrap;
+}
+
+.chat-inbox-thread .fi-section-header > div {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
